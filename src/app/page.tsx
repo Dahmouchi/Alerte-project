@@ -2,7 +2,7 @@ import { Hero1 } from "./_components/Hero";
 import Header from "./_components/Header"
 export default function Home() {
   return (
-    <div className="relative h-screen bg-cover   flex items-center bg-white dark:bg-slate-900" style={{backgroundImage:'url("/Element.png")'}}>
+    <div className="relative min-h-screen bg-cover   flex items-center bg-white dark:bg-slate-900" style={{backgroundImage:'url("/Element.png")'}}>
       <div className="absolute top-0 w-full">
         <Header />
       </div>
