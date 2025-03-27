@@ -1,7 +1,5 @@
 import { NextRequest } from "next/server";
 import speakeasy from "speakeasy";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/nextAuth";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -12,13 +10,8 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
         }
 
-        const session = await getServerSession(authOptions);
 
         // If the user is logged in, get their ID from the session
-        const authUserId = session?.user?.id;
-        if (!authUserId || authUserId !== userId) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-        }
 
         // Verify TOTP
         const isVerified = speakeasy.totp.verify({
