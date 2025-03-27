@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Step2 from "@/app/[local]/user/_components/Step2";
 import prisma from "@/lib/prisma";
 
-export default async function Update({ params }: { params: { id: string } }) {
+export default async function Update(params:any) {
     const alert = await prisma.alert.findUnique({
-        where: { code: params.id },
+        where: { code: params.params.id },
         include:{
           persons:true,
           files:true,

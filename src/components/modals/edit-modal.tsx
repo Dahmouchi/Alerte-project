@@ -4,10 +4,8 @@
 
 import { z } from "zod";
 import {
-  TaskType,
-  labels,
-  priorities,
-  statuses,
+  AlertType,
+  alertStatuses,
 } from "@/lib/validations/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { label_options, priority_options, status_options } from "../filters";
+import {  status_options } from "../filters";
 import {
   Popover,
   PopoverContent,
@@ -40,15 +38,13 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 
 type EditProps = {
-  task: TaskType;
+  task: AlertType
 };
 
 const editSchema = z.object({
   id: z.string(),
   title: z.string().min(1, { message: "Title Required" }),
-  status: z.enum(statuses),
-  label: z.enum(labels),
-  priority: z.enum(priorities),
+  status: z.enum(alertStatuses),
   due_date: z.date({
     required_error: "Due date is required.",
   }),
@@ -61,11 +57,9 @@ export default function EditDialog({ task }: EditProps) {
     resolver: zodResolver(editSchema),
     defaultValues: {
       id: task.id,
-      title: task.title,
+      title: task.title || "",
       status: task.status,
-      label: task.label,
-      priority: task.priority,
-      due_date: task.due_date,
+      due_date: task.createdAt,
     },
   });
 
@@ -125,70 +119,8 @@ export default function EditDialog({ task }: EditProps) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name='label'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Label</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select a Label to Update' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {label_options.map((label, index) => (
-                          <SelectItem key={index} value={label.value}>
-                            <span className='flex items-center'>
-                              <label.icon className='mr-2 h-5 w-5 text-muted-foreground' />
-                              {label.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='priority'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Priority</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select a Priority to Update' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {priority_options.map((priority, index) => (
-                          <SelectItem key={index} value={priority.value}>
-                            <span className='flex items-center'>
-                              <priority.icon className='mr-2 h-5 w-5 text-muted-foreground' />
-                              {priority.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+           
+           
             <FormField
               control={form.control}
               name='due_date'

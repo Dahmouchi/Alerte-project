@@ -3,18 +3,19 @@
 import { useState, useRef } from "react";
 
 const AudioRecorder = () => {
-  const [recording, setRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [audioBlob, setAudioBlob] = useState(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+  const [recording, setRecording] = useState<boolean>(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Start recording
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorderRef.current = new MediaRecorder(stream);
 
-    mediaRecorderRef.current.ondataavailable = (event) => {
+    mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
       if (event.data.size > 0) {
         audioChunksRef.current.push(event.data);
       }
@@ -50,7 +51,7 @@ const AudioRecorder = () => {
   const changeVoice = async () => {
     if (!audioBlob) return;
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = new (window.AudioContext || window.AudioContext)();
     const source = audioContext.createBufferSource();
     const gainNode = audioContext.createGain();
     const pitchShift = audioContext.createBiquadFilter();
@@ -61,24 +62,25 @@ const AudioRecorder = () => {
     gainNode.gain.value = 1.2; // Increase volume slightly
 
     const arrayBuffer = await audioBlob.arrayBuffer();
-    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+    
+    audioContext.decodeAudioData(arrayBuffer).then((buffer) => {
       source.buffer = buffer;
       source.connect(pitchShift);
       pitchShift.connect(gainNode);
       gainNode.connect(audioContext.destination);
       source.start();
+    }).catch((error) => {
+      console.error("Error decoding audio data:", error);
     });
   };
 
   return (
     <div className="p-4 text-center">
       <h2 className="text-xl font-bold mb-4">Audio Recorder with Voice Change</h2>
-      
+
       {/* Record Button */}
       <button
-        className={`px-4 py-2 rounded ${
-          recording ? "bg-red-500" : "bg-green-500"
-        } text-white mr-2`}
+        className={`px-4 py-2 rounded ${recording ? "bg-red-500" : "bg-green-500"} text-white mr-2`}
         onClick={recording ? stopRecording : startRecording}
       >
         {recording ? "Stop Recording" : "Start Recording"}
@@ -99,9 +101,7 @@ const AudioRecorder = () => {
       )}
 
       {/* Audio Player */}
-      {audioUrl && (
-        <audio className="mt-4" controls src={audioUrl}></audio>
-      )}
+      {audioUrl && <audio className="mt-4" controls src={audioUrl}></audio>}
     </div>
   );
 };

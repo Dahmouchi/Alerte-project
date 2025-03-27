@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import  prisma  from "@/lib/prisma";
 
-export default async function AlertPage({ params }: { params: { id: string } }) {
+export default async function AlertPage(params:any ) {
   const alert = await prisma.alert.findUnique({
     where: { id: params.id },
     include:{

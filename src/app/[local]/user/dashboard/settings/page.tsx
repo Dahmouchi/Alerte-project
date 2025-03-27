@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * v0 by Vercel.
  * @see https://v0.dev/t/WabQ7ZZcq3X
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -177,7 +177,7 @@ export default function Component() {
   )
 }
 
-function AtSignIcon(props) {
+function AtSignIcon(props:any) {
   return (
     <svg
       {...props}
@@ -198,7 +198,7 @@ function AtSignIcon(props) {
 }
 
 
-function BellIcon(props) {
+function BellIcon(props:any) {
   return (
     <svg
       {...props}
@@ -219,7 +219,7 @@ function BellIcon(props) {
 }
 
 
-function EyeOffIcon(props) {
+function EyeOffIcon(props:any) {
   return (
     <svg
       {...props}
@@ -242,30 +242,8 @@ function EyeOffIcon(props) {
 }
 
 
-function FrameIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="22" x2="2" y1="6" y2="6" />
-      <line x1="22" x2="2" y1="18" y2="18" />
-      <line x1="6" x2="6" y1="2" y2="22" />
-      <line x1="18" x2="18" y1="2" y2="22" />
-    </svg>
-  )
-}
 
-
-function MonitorIcon(props) {
+function MonitorIcon(props:any) {
   return (
     <svg
       {...props}
@@ -287,7 +265,7 @@ function MonitorIcon(props) {
 }
 
 
-function MoonIcon(props) {
+function MoonIcon(props:any) {
   return (
     <svg
       {...props}
@@ -307,7 +285,7 @@ function MoonIcon(props) {
 }
 
 
-function SunIcon(props) {
+function SunIcon(props:any) {
   return (
     <svg
       {...props}
@@ -335,7 +313,7 @@ function SunIcon(props) {
 }
 
 
-function TextIcon(props) {
+function TextIcon(props:any) {
   return (
     <svg
       {...props}
