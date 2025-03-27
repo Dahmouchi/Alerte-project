@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// Dummy encryption function (Replace with actual encryption logic)
+
 async function encrypt(secret: string): Promise<string> {
     return secret; // Implement actual encryption before storing in the database
 }
