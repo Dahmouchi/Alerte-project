@@ -74,7 +74,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Record from "./Record";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
-import check from "../../../../../public/checked.json";
+import check from "../../../../public/checked.json";
 import Link from "next/link";
 import { useReactToPrint } from "react-to-print";
 

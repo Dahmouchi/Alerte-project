@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
-export async function generateStaticParams() {
-  return [{ lang: "en" }, { lang: "fr" }];
-}
+import { ThemeProvider } from "next-themes";
+import { ToastContainer } from "react-toastify";
+import NextAuthProvider from "../../providers/NextAuthProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,11 +13,33 @@ export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ lang: "en" | "fr" }>;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
-    </html>
+    <body>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <NextAuthProvider>
+          <div className="dark:bg-slate-800 bg-slate-100">{children}</div>
+        </NextAuthProvider>
+      </ThemeProvider>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+    </body>
+  </html>
   );
 }
