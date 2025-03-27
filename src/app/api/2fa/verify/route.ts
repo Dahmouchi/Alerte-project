@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import speakeasy from "speakeasy";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
@@ -10,28 +9,11 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
         }
 
-
-        // If the user is logged in, get their ID from the session
-
-        // Verify TOTP
-        const isVerified = speakeasy.totp.verify({
-            secret,
-            encoding: "base32",
-            token,
-            window: 1, // Allow slight time drift
-        });
-
-        if (!isVerified) {
-            return new Response(JSON.stringify({ error: "Invalid 2FA code" }), { status: 400 });
-        }
-
-        // Encrypt the secret before storing it (replace this with real encryption)
-        const encryptedSecret = await encrypt(secret);
-
+       
         // Update the user's 2FA secret
         await prisma.user.update({
             where: { id: userId },
-            data: { twoFactorSecret: encryptedSecret, twoFactorEnabled: true },
+            data: { twoFactorSecret: "encryptedSecret", twoFactorEnabled: true },
         });
 
         return new Response(JSON.stringify({ success: true, message: "2FA enabled successfully" }), { status: 200 });
@@ -42,6 +24,3 @@ export async function POST(req: NextRequest) {
 }
 
 
-async function encrypt(secret: string): Promise<string> {
-    return secret; // Implement actual encryption before storing in the database
-}
