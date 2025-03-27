@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { compare } from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.SECRET,
+  secret:"18f105de83a4db48a323a67b4077dbe1",
   debug: true,
   providers: [
     GoogleProvider({
