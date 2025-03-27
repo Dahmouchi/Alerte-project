@@ -1,0 +1,6 @@
+{
+    "rewrites": [
+      { "source": "/:locale(en|fr)/:path*", "destination": "/:path*" }
+    ]
+  }
+  
