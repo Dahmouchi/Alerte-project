@@ -63,7 +63,6 @@ export default function UsernameLogin() {
   /* Fetch User Info */
   async function fetchUserInfo() {
     if (!session?.user) return;
-
     setLoading(true);
     try {
       const userData = await UserInfo(session.user.id);
@@ -87,7 +86,7 @@ export default function UsernameLogin() {
       console.log(session);
       fetchUserInfo();
     }
-  }, [session]); // Add session as a dependency
+  }, []); // Add session as a dependency
 
   /* Generate a QR Code */
   const get2faQrCode = async () => {
