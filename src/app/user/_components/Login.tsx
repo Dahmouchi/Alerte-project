@@ -29,7 +29,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { UserInfo } from "@/actions/alertActions";
+import { saveQr, UserInfo } from "@/actions/alertActions";
 import Loading from "@/components/Loading";
 import { Card } from "@/components/ui/card";
 import { CloudLightningIcon, QrCodeIcon, SendHorizontal } from "lucide-react";
@@ -63,11 +63,20 @@ export default function UsernameLogin() {
   /* Fetch User Info */
   async function fetchUserInfo() {
     if (!session?.user) return;
+
     setLoading(true);
     try {
       const userData = await UserInfo(session.user.id);
-      if (!userData.twoFactorSecret) {
+      console.log(userData);
+      if (!userData.twoFactorSecret && !userData.qrSecret) {
         await get2faQrCode();
+      } else if (!userData.twoFactorSecret && userData.qrSecret) {
+        setIsTwoFactor(true);
+        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+        if (response.status === 200) {
+          setQrImage(response.data.data);
+          setSecret(response.data.secret);
+        }
       } else {
         setSecret(userData.twoFactorSecret);
         setIsTwoFactor(true);
@@ -91,10 +100,12 @@ export default function UsernameLogin() {
   /* Generate a QR Code */
   const get2faQrCode = async () => {
     try {
-      const response = await axios.get(`/api/2fa/qrcode`);
-      if (response.status === 200) {
-        setQrImage(response.data.data);
-        setSecret(response.data.secret);
+      if (session) {
+        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+        if (response.status === 200) {
+          setQrImage(response.data.data);
+          setSecret(response.data.secret);
+        }
       }
     } catch (error) {
       console.error("Error generating QR Code:", error);
@@ -107,6 +118,9 @@ export default function UsernameLogin() {
       try {
         const token = value;
         const userId = session?.user?.id;
+        console.log("sec", secret);
+        console.log("sec", token);
+        console.log("sec", userId);
         if (!userId) return;
 
         const response = await axios.post(`/api/2fa/verify`, {
@@ -251,7 +265,6 @@ export default function UsernameLogin() {
                     />
                   )}
                   <div>
-                    
                     <ul className="list-none list-inside mb-4 text-gray-700">
                       <li className="mb-2">
                         <span className="font-bold">Step 1:</span> Scan the QR
@@ -263,30 +276,30 @@ export default function UsernameLogin() {
                       </li>
                     </ul>
                     <div className="flex items-center justify-center flex-col lg:items-start">
-                    <InputOTP
-                      maxLength={6}
-                      value={value}
-                      onChange={(value) => setValue(value)}
-                    >
-                      <InputOTPGroup className="bg-white">
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                      </InputOTPGroup>
-                      <InputOTPSeparator />
-                      <InputOTPGroup className="bg-white">
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                    {/* OTP Input */}
-                    <button
-                      onClick={handleOtpChange}
-                      className="bg-blue-700 cursor-pointer text-white font-semibold py-2 px-10 rounded-sm my-3"
-                    >
-                      validate
-                    </button>
+                      <InputOTP
+                        maxLength={6}
+                        value={value}
+                        onChange={(value) => setValue(value)}
+                      >
+                        <InputOTPGroup className="bg-white">
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup className="bg-white">
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                      {/* OTP Input */}
+                      <button
+                        onClick={handleOtpChange}
+                        className="bg-blue-700 cursor-pointer text-white font-semibold py-2 px-10 rounded-sm my-3"
+                      >
+                        validate
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (!isVerified) {
-            return new Response(JSON.stringify({ error: "Invalid 2FA code" }), { status: 400 });
+            return new Response(JSON.stringify({ error: "Invalid 2FA code" }), { status: 401 });
         }
 
         // Encrypt the secret before storing it (replace this with real encryption)
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         // Update the user's 2FA secret
         await prisma.user.update({
             where: { id: userId },
-            data: { twoFactorSecret: encryptedSecret, twoFactorEnabled: true },
+            data: { twoFactorSecret: encryptedSecret},
         });
 
         return new Response(JSON.stringify({ success: true, message: "2FA enabled successfully" }), { status: 200 });

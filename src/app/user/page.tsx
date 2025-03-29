@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,12 +12,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from "react-toastify"
-import Header from "./_components/Header"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-toastify";
+import Header from "./_components/Header";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // ✅ Zod Schema for Validation
 const formSchema = z
@@ -52,14 +52,14 @@ export default function RegisterForm() {
     try {
       const response = await axios.post("/api/auth/register", {
         username: values.username,
-       
+
         password: values.password,
-      
-        name:values.username,
+
+        name: values.username,
       });
       if (response.status === 200) {
-          router.push("/user/login")
-          toast.success("Utilisateur inscrit avec succès");
+        router.push("/user/login");
+        toast.success("Utilisateur inscrit avec succès");
       }
     } catch (error) {
       console.log(error);
@@ -68,77 +68,131 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="w-full relative h-screen bg-contain dark:bg-slate-950" style={{backgroundImage:'url("/Element.png")'}}>
+    <div
+      className="w-full relative h-screen bg-contain dark:bg-slate-950"
+      style={{ backgroundImage: 'url("/Element.png")' }}
+    >
       <div className="w-full absolute top-0">
-      <Header />
+        <Header />
       </div>
       <div className="w-full h-full flex justify-center items-center p-2">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 lg:w-1/3 w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-900 bg-white"
-        >
-          {/* Username Field */}
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 lg:w-1/3 w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-900 bg-white"
+          >
+            {/* Username Field */}
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Password Field */}
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>mot de passe</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Enter password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Password Field */}
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mot de passe</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <div className="mt-1 text-xs text-gray-600">
+                    <p
+                      className={
+                        form.watch("password")?.length >= 8
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      • Minimum 8 caractères
+                    </p>
+                    <p
+                      className={
+                        /[A-Z]/.test(form.watch("password") || "")
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      • Une lettre majuscule
+                    </p>
+                    <p
+                      className={
+                        /[0-9]/.test(form.watch("password") || "")
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      • Un chiffre
+                    </p>
+                    <p
+                      className={
+                        /[@$!%*?&]/.test(form.watch("password") || "")
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }
+                    >
+                      • Un caractère spécial (@$!%*?&)
+                    </p>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Confirm Password Field */}
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirmez le mot de passe</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Confirm password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Confirm Password Field */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirmez le mot de passe</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Confirm password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Submit Button */}
-          <Button type="submit" className="w-full">Register</Button>
-          <div className="mt-4 text-sm text-slate-600 text-center">
-                <p>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+            >
+              Register
+            </Button>
+            <div className="mt-4 text-sm text-slate-600 text-center">
+              <p>
                 Vous avez déjà un compte ?{" "}
-                  <Link
-                    href={"/user/dashboard"}
-                    className="text-black hover:underline font-semibold"
-                  >
-                    Connectez-vous ici
-                  </Link>
-                </p>
-              </div>
-        </form>
-      </Form>
-      
+                <Link
+                  href={"/user/dashboard"}
+                  className="text-black hover:underline font-semibold"
+                >
+                  Connectez-vous ici
+                </Link>
+              </p>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

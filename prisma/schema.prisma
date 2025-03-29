@@ -49,6 +49,7 @@ model User {
   verified_email  String?
   alerts          Alert[] 
   profile         Profile?
+  qrSecret        String?
   twoFactorEnabled Boolean  @default(true)
   twoFactorSecret  String?  // Secret for TOTP
 }

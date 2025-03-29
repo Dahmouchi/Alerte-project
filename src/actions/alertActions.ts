@@ -91,6 +91,7 @@ export async function UserInfo(userId: string) {
         twoFactorEnabled: true,
         twoFactorSecret: true,
         createdAt: true,
+        qrSecret:true,
       },
     });
 
@@ -99,6 +100,24 @@ export async function UserInfo(userId: string) {
     }
 
     return user;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+
+export async function saveQr(
+  userId: string,
+  qrSecret:string,
+) {
+  try { 
+    const updatedAlert = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        qrSecret,
+      }
+    })
+    return updatedAlert
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw new Error("Failed to retrieve user info");
