@@ -36,7 +36,7 @@ export async function GET(
 
     if (secret) {
       // If qrSecret exists, generate QR from it
-      const otpauth_url = `otpauth://totp/CompliRisk?secret=${secret}&issuer=CompliRisk`;
+      const otpauth_url = `otpauth://totp/CompliRisk?secret=${secret}&issuer=${user.username}`;
       qrCodeData = await QRCode.toDataURL(otpauth_url);
     } else {
       // If no qrSecret, generate a new one and store it
@@ -47,7 +47,6 @@ export async function GET(
 
       if (secret.otpauth_url) {
         qrCodeData = await QRCode.toDataURL(secret.otpauth_url);
-        
         await saveQr(user.id, secret.base32);
       } else {
         return new Response(JSON.stringify({ error: "2FA already enabled" }), {
