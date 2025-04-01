@@ -25,6 +25,15 @@ enum AlertStatus {
   REJETE
   INFORMATIONS_MANQUANTES
 }
+
+enum AdminAlertStatus {
+  PENDING
+  ASSIGNED
+  APPROVED
+  DECLINED
+  ESCALATED
+}
+
 enum ContactPreference {
   YES
   NO
@@ -115,11 +124,13 @@ model Alert {
   title         String?
   description   String?      @db.Text
   type          String?      @default("text")
+  audioUrl      String?
   dateLieu      DateTime?    // Date of the incident
   location      String?      // Location description
   involvedPersons String?    // Names of involved persons (can be "Inconnu")
   step          Int            @default(1)  // Track progress step
   status        AlertStatus  @default(EN_COURS_TRAITEMENT)
+  adminStatus   AdminAlertStatus @default(PENDING)
   involved      Boolean   @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt

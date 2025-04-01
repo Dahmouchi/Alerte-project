@@ -67,10 +67,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="dark:bg-slate-950 flex items-center justify-center p-4">
+      <SidebarHeader className="dark:bg-slate-800 flex items-center justify-center p-4">
         <Image src={"/logo.png"} alt="logo" width={300} height={200}/>
       </SidebarHeader>
-      <SidebarContent className="dark:bg-slate-950 pt-4">
+      <SidebarContent className="dark:bg-slate-800 pt-4">
         <NavMain items={datas.navMain} />
       </SidebarContent>
 

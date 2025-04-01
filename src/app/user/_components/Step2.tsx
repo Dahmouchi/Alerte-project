@@ -77,6 +77,7 @@ import dynamic from "next/dynamic";
 import check from "../../../../public/checked.json";
 import Link from "next/link";
 import { useReactToPrint } from "react-to-print";
+import AudioRecorder from "./Record";
 
 const categories = [
   {
@@ -177,10 +178,11 @@ export type Category = {
 };
 const formSchema = z.object({
   title: z.string().min(1),
-  description: z.string(),
-  location: z.string().min(1),
-  dateLieu: z.coerce.date(),
+  description: z.string().max(2000, "Maximum 2000 caractères.").optional(),
+  location: z.string().min(1).optional(),
+  dateLieu: z.coerce.date().optional(),
   file: z.string().optional(),
+  audioUrl: z.string().optional(),
   type: z.string().optional(),
   nom: z.string().optional(),
   prenom: z.string().optional(),
@@ -195,6 +197,8 @@ const Step2 = (alert: { alert: any }) => {
   const [al, setAl] = useState(alert.alert);
   const [textAudio, setTextAudio] = useState(al.type);
   const [files, setFiles] = useState<File[] | null>(null);
+  const [audio, setAudio] = useState<File | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [anonyme, setAnonyme] = useState(al.involved);
   const [steps, setSteps] = useState(al.step);
@@ -206,7 +210,7 @@ const Step2 = (alert: { alert: any }) => {
   >(defaultCategory);
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
-  
+
   const [persons, setPersons] = useState<
     { nom: string; prenom: string; fonction: string }[]
   >(al.persons || []);
@@ -231,7 +235,9 @@ const Step2 = (alert: { alert: any }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPersonData({ ...personData, [e.target.name]: e.target.value });
   };
-
+  const handleAudioUpload = (file: File) => {
+    setAudio(file);
+  };
   // Add person to array
   const addPerson = () => {
     if (!personData.nom) return toast.error("Nom is required!");
@@ -245,8 +251,8 @@ const Step2 = (alert: { alert: any }) => {
   };
 
   useEffect(() => {
-    console.log("files : ", files);
-  }, [files]);
+    console.log("files : ", audio);
+  }, [audio]);
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
@@ -263,6 +269,7 @@ const Step2 = (alert: { alert: any }) => {
 
       console.log(values);
       const filesToPass = files ?? [];
+      const audioPass = audio;
       setLoading(true);
 
       if (selectedCategory) {
@@ -272,12 +279,13 @@ const Step2 = (alert: { alert: any }) => {
           2,
           persons,
           filesToPass,
+          audioPass, // Pass the audio file here
           anonymeUser,
           textAudio,
           anonyme,
           selectedCategory.value
         );
-        if(res) {
+        if (res) {
           setAl(res);
           toast.success("Success");
           setSteps(2);
@@ -337,8 +345,8 @@ const Step2 = (alert: { alert: any }) => {
                       </div>
                     </div>
                     <div className="flex w-full lg:items-center lg:justify-end gap-2 mt-2">
-                      <div className="flex itce justify-center p-1 bg-blue-700 text-white rounded-md">
-                        <Pencil />
+                      <div className="flex itce justify-center p-2 bg-blue-700 text-white rounded-md">
+                        <Pencil className="w-4 h-4" />
                       </div>
                       <Select
                         value={selectedCategory?.value} // ✅ Ensure selected value is always defined
@@ -506,19 +514,18 @@ const Step2 = (alert: { alert: any }) => {
                                       <h1>{person?.prenom} </h1>
                                     </div>
                                     <Badge className="text-sm mr-6 bg-blue-500 w-full  text-white">
-                                  {person?.fonction}
-                                </Badge>
+                                      {person?.fonction}
+                                    </Badge>
                                   </div>
                                 </div>
-                               <div className="flex items-center gap-2">
-                             
-                                <div
-                                  className=" text-red-600 dark:text-red-400  border-red-300 dark:bg-slate-800 rounded-md cursor-pointer"
-                                  onClick={() => removePerson(index)}
-                                >
-                                  <CopyX  className="w-6 h-6" />
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className=" text-red-600 dark:text-red-400  border-red-300 dark:bg-slate-800 rounded-md cursor-pointer"
+                                    onClick={() => removePerson(index)}
+                                  >
+                                    <CopyX className="w-6 h-6" />
+                                  </div>
                                 </div>
-                               </div>
                               </div>
                             ))}
                           </div>
@@ -646,7 +653,7 @@ const Step2 = (alert: { alert: any }) => {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                              <FormItem className="w-full ">
+                              <FormItem className="w-full">
                                 <FormLabel>
                                   Description{" "}
                                   <span className="text-red-600">*</span>
@@ -656,12 +663,12 @@ const Step2 = (alert: { alert: any }) => {
                                     placeholder="Placeholder"
                                     className="h-full bg-transparent"
                                     {...field}
+                                    maxLength={2000} // Empêche l'utilisateur de taper plus de 2000 caractères
                                   />
                                 </FormControl>
-                                <FormDescription>
-                                  You can @mention other users and
-                                  organizations.
-                                </FormDescription>
+                                <div className="text-right text-sm text-gray-500">
+                                  {field.value?.length || 0} / 2000 caractères
+                                </div>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -669,7 +676,24 @@ const Step2 = (alert: { alert: any }) => {
                         </div>
                       ) : (
                         <div>
-                          <Record />
+                          <FormField
+                            control={form.control}
+                            name="audioUrl"
+                            render={({ field }) => (
+                              <FormItem className="w-full">
+                                <FormLabel>
+                                  Enregistrer un audio{" "}
+                                  <span className="text-red-600">*</span>
+                                </FormLabel>
+                                <AudioRecorder
+                                  onUpload={(audioUrl) =>
+                                    field.onChange(audioUrl)
+                                  }
+                                />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
                       )}
                       <FormField
@@ -826,112 +850,140 @@ const Step2 = (alert: { alert: any }) => {
           </div>
         )}
         {steps === 2 && (
-         <div className="lg:p-4 space-y-3">
-         {/* Success Banner */}
-         <section className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl">
-           <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-8 lg:grid-cols-12">
-             <div className="mr-auto place-self-center lg:col-span-7">
-               <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight text-white">
-                 Félicitations ! Alerte créée avec succès !
-               </h1>
-               <p className="max-w-2xl mb-6 font-light text-gray-100">
-                 Vous avez maintenant accès à votre contenu.
-               </p>
-               <div className="flex items-center justify-between">
-                 <Link
-                   href={"/user/dashboard"}
-                   className="inline-flex items-center px-5 py-3 text-base font-medium text-green-900 bg-green-200 rounded-lg hover:text-white hover:bg-green-900"
-                 >
-                   retour à l&apos;accueil
-                   <svg className="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20">
-                     <path
-                       fillRule="evenodd"
-                       d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                       clipRule="evenodd"
-                     ></path>
-                   </svg>
-                 </Link>
-                 <LottiePlayer loop animationData={check} play className="h-32 w-auto lg:hidden" />
-               </div>
-             </div>
-             <div className="hidden lg:mt-0 lg:col-span-5 lg:flex justify-center items-center">
-               <LottiePlayer loop animationData={check} play />
-             </div>
-           </div>
-         </section>
-   
-         {/* Printable Alert Information */}
-         <div ref={contentRef} className="bg-white border border-green-500 dark:bg-slate-800 p-6 rounded-lg shadow-md">
-           <div className="mt-4 space-y-4">
-             {/* Title & Code */}
-           <div className="flex items-center justify-between">
-           <div>
-            <h3 className="text-lg font-semibold">Title : {al.title}</h3>
-            <h3 className="text-lg font-semibold">Code d&apos;alerte : #{al.code}</h3>
+          <div className="lg:p-4 space-y-3">
+            {/* Success Banner */}
+            <section className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl">
+              <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-8 lg:grid-cols-12">
+                <div className="mr-auto place-self-center lg:col-span-7">
+                  <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight text-white">
+                    Félicitations ! Alerte créée avec succès !
+                  </h1>
+                  <p className="max-w-2xl mb-6 font-light text-gray-100">
+                    Vous avez maintenant accès à votre contenu.
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={"/user/dashboard"}
+                      className="inline-flex items-center px-5 py-3 text-base font-medium text-green-900 bg-green-200 rounded-lg hover:text-white hover:bg-green-900"
+                    >
+                      retour à l&apos;accueil
+                      <svg
+                        className="w-5 h-5 ml-2 -mr-1"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </Link>
+                    <LottiePlayer
+                      loop
+                      animationData={check}
+                      play
+                      className="h-32 w-auto lg:hidden"
+                    />
+                  </div>
+                </div>
+                <div className="hidden lg:mt-0 lg:col-span-5 lg:flex justify-center items-center">
+                  <LottiePlayer loop animationData={check} play />
+                </div>
+              </div>
+            </section>
+
+            {/* Printable Alert Information */}
+            <div
+              ref={contentRef}
+              className="bg-white border border-green-500 dark:bg-slate-800 p-6 rounded-lg shadow-md"
+            >
+              <div className="mt-4 space-y-4">
+                {/* Title & Code */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      Title : {al.title}
+                    </h3>
+                    <h3 className="text-lg font-semibold">
+                      Code d&apos;alerte : #{al.code}
+                    </h3>
+                  </div>
+                  <img src="/logo.png" alt="" className="max-w-sm h-auto" />
+                </div>
+
+                {/* Date & Category */}
+                <div className="text-lg font-semibold flex items-center gap-2">
+                  <Calendar size={20} />
+                  <span>
+                    Date de création :{" "}
+                    {new Date(al.createdAt!).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-gray-500 dark:text-gray-300">
+                  <span className="font-semibold text-slate-800">Category</span>
+                  :{" "}
+                  {categories.find((cat) => cat.value === al.category)?.title ||
+                    "Unknown"}
+                </p>
+
+                {/* Description */}
+                <p className="text-gray-500 dark:text-gray-300">
+                  {al.description}
+                </p>
+
+                {/* Additional Info */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <Calendar size={20} />
+                    <span>{new Date(al.dateLieu!).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <MapPin size={20} />
+                    <span>{al.location}</span>
+                  </div>
+
+                  {/* Involved Persons */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                      <User size={20} />
+                      <h3 className="font-semibold">Persons Involved:</h3>
+                    </div>
+                    {al.persons?.map((person: any, index: any) => (
+                      <div
+                        key={index}
+                        className="flex justify-between shadow items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="p-4 border shadow-sm rounded-full bg-white dark:bg-slate-800">
+                            <UserRound />
+                          </div>
+                          <div className="text-gray-600 dark:text-slate-100 font-semibold text-sm">
+                            <h1>{person?.nom}</h1>
+                            <h1>{person?.prenom}</h1>
+                          </div>
+                        </div>
+                        <Badge className="text-md mr-6 bg-blue-500 text-white">
+                          {person?.fonction}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-            <img src="/logo.png" alt="" className="max-w-sm h-auto" />
-           </div>
-   
-             {/* Date & Category */}
-             <div className="text-lg font-semibold flex items-center gap-2">
-               <Calendar size={20} />
-               <span>Date de création : {new Date(al.createdAt!).toLocaleDateString()}</span>
-             </div>
-             <p className="text-gray-500 dark:text-gray-300">
-               <span className="font-semibold text-slate-800">Category</span>:{" "}
-               {categories.find((cat) => cat.value === al.category)?.title || "Unknown"}
-             </p>
-   
-             {/* Description */}
-             <p className="text-gray-500 dark:text-gray-300">{al.description}</p>
-   
-             {/* Additional Info */}
-             <div className="grid grid-cols-1 gap-4">
-               <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                 <Calendar size={20} />
-                 <span>{new Date(al.dateLieu!).toLocaleDateString()}</span>
-               </div>
-               <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                 <MapPin size={20} />
-                 <span>{al.location}</span>
-               </div>
-   
-               {/* Involved Persons */}
-               <div className="space-y-2">
-                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                   <User size={20} />
-                   <h3 className="font-semibold">Persons Involved:</h3>
-                 </div>
-                 {al.persons?.map((person:any, index:any) => (
-                   <div key={index} className="flex justify-between shadow items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2">
-                     <div className="flex items-center gap-4">
-                       <div className="p-4 border shadow-sm rounded-full bg-white dark:bg-slate-800">
-                         <UserRound />
-                       </div>
-                       <div className="text-gray-600 dark:text-slate-100 font-semibold text-sm">
-                         <h1>{person?.nom}</h1>
-                         <h1>{person?.prenom}</h1>
-                       </div>
-                     </div>
-                     <Badge className="text-md mr-6 bg-blue-500 text-white">{person?.fonction}</Badge>
-                   </div>
-                 ))}
-               </div>
-             </div>
-           </div>
-         </div>
-   
-         {/* Print Button */}
-         <div className="flex justify-end mt-4">
-           <Button
-             onClick={() => reactToPrintFn()}
-             className="px-5 py-3 text-white bg-green-500 rounded-sm shadow cursor-pointer hover:bg-green-700 focus:ring-4 focus:ring-green-300"
-           >
-            <Printer />
-             Imprimer
-           </Button>
-         </div>
-       </div>
+
+            {/* Print Button */}
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={() => reactToPrintFn()}
+                className="px-5 py-3 text-white bg-green-500 rounded-sm shadow cursor-pointer hover:bg-green-700 focus:ring-4 focus:ring-green-300"
+              >
+                <Printer />
+                Imprimer
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>

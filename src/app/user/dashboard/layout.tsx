@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextAuth";
 import { redirect } from "next/navigation";
+import AccessDenied from "@/components/access";
 
 export default async function RootLayout({
   children,
@@ -15,13 +16,16 @@ export default async function RootLayout({
   if (!session?.user ||( session.user.twoFactorEnabled && !session.user.twoFactorVerified) ) {
     redirect("/user/login")
   } 
+  if(session.user.role !== "USER"){
+    return <AccessDenied role={session.user.role} />
+  }
   return (
     <div>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className=" p-2 dark:bg-slate-800 bg-slate-100 ">
           <Header />
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 dark:bg-slate-900">{children}</div>
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 dark:bg-slate-900 rounded-b-lg">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </div>

@@ -180,12 +180,12 @@ export default function RegisterForm() {
             >
               Register
             </Button>
-            <div className="mt-4 text-sm text-slate-600 text-center">
+            <div className="mt-4 text-sm text-slate-600 text-center dark:text-slate-300">
               <p>
                 Vous avez déjà un compte ?{" "}
                 <Link
                   href={"/user/dashboard"}
-                  className="text-black hover:underline font-semibold"
+                  className="text-black hover:underline font-semibold dark:text-slate-200"
                 >
                   Connectez-vous ici
                 </Link>

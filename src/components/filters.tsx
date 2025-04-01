@@ -11,6 +11,34 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { User, ShieldCheck, Briefcase, UserCog } from "lucide-react";
+
+export const role_options = [
+  {
+    value: "USER",
+    label: "User",
+    icon: User,
+    color: "text-blue-500 bg-blue-100 dark:bg-blue-900",
+  },
+  {
+    value: "ADMIN",
+    label: "Admin",
+    icon: ShieldCheck,
+    color: "text-green-500 bg-green-100 dark:bg-green-900",
+  },
+  {
+    value: "ANALYSTE",
+    label: "Analyst",
+    icon: Briefcase,
+    color: "text-purple-500 bg-purple-100 dark:bg-purple-900",
+  },
+  {
+    value: "RESPONSABLE",
+    label: "Manager",
+    icon: UserCog,
+    color: "text-orange-500 bg-orange-100 dark:bg-orange-900",
+  },
+];
 
 export const status_options = [
   {

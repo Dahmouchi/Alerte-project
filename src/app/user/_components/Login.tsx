@@ -187,7 +187,7 @@ export default function UsernameLogin() {
       {isTwoFactor ? (
         <div className="flex justify-center w-full">
           {user.twoFactorSecret ? (
-            <Card className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
+            <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">
               <div className="flex items-center justify-center ">
                 <div className="flex items-center gap-4">
                   <Image src={"/logo.png"} alt="logo" width={300} height={50} />
@@ -204,16 +204,16 @@ export default function UsernameLogin() {
                   value={value}
                   onChange={(value) => setValue(value)}
                 >
-                  <InputOTPGroup className="bg-white">
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
+                  <InputOTPGroup >
+                    <InputOTPSlot index={0} className="bg-white dark:bg-slate-900"/>
+                    <InputOTPSlot index={1} className="bg-white dark:bg-slate-900"/>
+                    <InputOTPSlot index={2} className="bg-white dark:bg-slate-900"/>
                   </InputOTPGroup>
                   <InputOTPSeparator />
-                  <InputOTPGroup className="bg-white">
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
+                  <InputOTPGroup >
+                    <InputOTPSlot index={3} className="bg-white dark:bg-slate-900"/>
+                    <InputOTPSlot index={4} className="bg-white dark:bg-slate-900"/>
+                    <InputOTPSlot index={5} className="bg-white dark:bg-slate-900"/>
                   </InputOTPGroup>
                 </InputOTP>
                 {/* OTP Input */}
@@ -245,7 +245,7 @@ export default function UsernameLogin() {
             </Card>
           ) : (
             <div className="container mx-auto  flex justify-center w-full">
-              <Card className=" bg-white p-8 shadow-lg rounded-lg ">
+              <Card className=" bg-white p-8 shadow-lg rounded-lg dark:bg-slate-800 ">
                 <div className="flex items-center justify-center ">
                   <div className="flex items-center gap-4">
                     <Image
@@ -265,7 +265,7 @@ export default function UsernameLogin() {
                     />
                   )}
                   <div>
-                    <ul className="list-none list-inside mb-4 text-gray-700">
+                    <ul className="list-none list-inside mb-4 text-gray-700 dark:text-slate-100">
                       <li className="mb-2">
                         <span className="font-bold">Step 1:</span> Scan the QR
                         Code with your Authenticator app.
@@ -281,17 +281,35 @@ export default function UsernameLogin() {
                         value={value}
                         onChange={(value) => setValue(value)}
                       >
-                        <InputOTPGroup className="bg-white">
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                        </InputOTPGroup>
-                        <InputOTPSeparator />
-                        <InputOTPGroup className="bg-white">
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
+                        <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
                       </InputOTP>
                       {/* OTP Input */}
                       <button

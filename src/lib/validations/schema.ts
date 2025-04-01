@@ -7,6 +7,12 @@ export const alertStatuses = [
   "TRAITE",
   "REJETE",
 ] as const; // Adjust based on actual statuses
+export const userStatus = [
+  "ADMIN",
+  "USER",
+  "ANALYSTE",
+  "RESPONSABLE",
+] as const; // Adjust based on actual statuses
 
 
 // Define Zod Schema for Alert
@@ -25,3 +31,18 @@ export const alertSchema = z.object({
 
 // TypeScript Type for Alert
 export type AlertType = z.infer<typeof alertSchema>;
+
+export const userSchema = z.object({
+  id: z.string().cuid(), // ✅ Change from .uuid() to .cuid()
+  name: z.string().nullable(),
+  prenom: z.string().nullable(),
+  email: z.string().nullable(),
+  username: z.string(),
+  statut: z.boolean().default(false),
+  role: z.enum(userStatus).default("USER"),
+  createdAt: z.date().default(new Date()),
+  updatedAt: z.date().default(new Date()),
+});
+
+// TypeScript Type for User
+export type UserType = z.infer<typeof userSchema>;

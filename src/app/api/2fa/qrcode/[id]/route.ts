@@ -36,15 +36,14 @@ export async function GET(
 
     if (secret) {
       // If qrSecret exists, generate QR from it
-      const otpauth_url = `otpauth://totp/CompliRisk?secret=${secret}&issuer=${user.username}`;
+      const otpauth_url = `otpauth://totp/CompliRisk:${user.username}?secret=${secret}&issuer=CompliRisk`;
       qrCodeData = await QRCode.toDataURL(otpauth_url);
     } else {
       // If no qrSecret, generate a new one and store it
-
       const secret = speakeasy.generateSecret({
-        name: "CompliRisk",
+        name: `CompliRisk:${user.username}`, // Include username in the secret name
       });
-
+    
       if (secret.otpauth_url) {
         qrCodeData = await QRCode.toDataURL(secret.otpauth_url);
         await saveQr(user.id, secret.base32);
@@ -54,7 +53,7 @@ export async function GET(
         });
       }
     }
-
+    
     return new Response(
       JSON.stringify({ data: qrCodeData, secret, status: 200 }),
       { status: 200 }
