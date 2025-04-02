@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { label_options, status_options } from "@/components/filters"
+import { admin_alert_status_options, label_options } from "@/components/filters"
 import {
   HoverCard,
   HoverCardContent,
@@ -70,39 +70,12 @@ export const columns: ColumnDef<AlertType>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: "category",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Catégorie" />
     ),
     cell: ({ row }) => {
-      const status = status_options.find(
-        (status) => status.value === row.getValue("status")
-      );
-
-      if (!status) {
-        return null;
-      }
-
-      return (
-        <div
-          className={`flex w-[220px] items-center px-2 py-1 rounded-md ${status.color}`}
-        >
-          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium">{status.label}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    accessorKey: "conclusion",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Conclusion" />
-    ),
-    cell: ({ row }) => {
-      const conclusion = row.getValue("conclusion") as string;
+      const conclusion = row.getValue("category") as string;
       return (
         <div className="w-[80px]">
           <HoverCard>
@@ -119,6 +92,34 @@ export const columns: ColumnDef<AlertType>[] = [
       );
     },
   },
+  {
+    accessorKey: "adminStatus",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      const status = admin_alert_status_options.find(
+        (status) => status.value === row.getValue("adminStatus")
+      );
+
+      if (!status) {
+        return null;
+      }
+
+      return (
+        <div
+          className={`flex w-[150px] items-center px-2 py-1 rounded-md ${status.color}`}
+        >
+          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
+          <span className="font-medium">{status.label}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  
   {
     accessorKey: "createdAt",
     header: ({ column }) => (

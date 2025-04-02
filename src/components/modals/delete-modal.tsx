@@ -16,6 +16,7 @@ import {
   import { Button } from "@/components/ui/button";
   import axios from "axios";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
   type DeleteProps = {
     task: AlertType;
@@ -28,10 +29,12 @@ import { toast } from "react-toastify";
     isOpen,
     showActionToggle,
   }: DeleteProps) {
+      const router = useRouter();
       const handleDelete = async (id: string) => {
         try {
           await axios.delete(`/api/alerte/${id}`);
           toast.success("Item deleted successfully");
+          router.refresh();
           // Refresh data or update state after deletion
         } catch (error) {
           toast.error("Failed to delete item");

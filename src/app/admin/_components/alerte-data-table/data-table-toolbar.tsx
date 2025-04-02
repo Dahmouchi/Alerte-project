@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
-import { priority_options, status_options } from "@/components/filters"
+import { admin_alert_status_options } from "@/components/filters"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -29,20 +29,14 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("status") && (
+        {table.getColumn("adminStatus") && (
           <DataTableFacetedFilter
-            column={table.getColumn("status")}
+            column={table.getColumn("adminStatus")}
             title="Status"
-            options={status_options}
+            options={admin_alert_status_options}
           />
         )}
-        {table.getColumn("conclusion") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("conclusion")}
-            title="Conclusion"
-            options={priority_options}
-          />
-        )}
+        
         {isFiltered && (
           <Button
             variant="ghost"

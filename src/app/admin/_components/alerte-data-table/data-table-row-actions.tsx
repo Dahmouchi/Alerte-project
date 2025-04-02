@@ -9,21 +9,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Copy, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { alertSchema  } from "@/lib/validations/schema";
-import { label_options } from "@/components/filters";
-import EditDialog from "@/components/modals/edit-modal";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog,  DialogTrigger } from "@/components/ui/dialog";
 import DeleteDialog from "@/components/modals/delete-modal";
+import { useRouter } from "next/navigation";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -32,15 +26,11 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const [dialogContent, setDialogContent] =
-    React.useState<React.ReactNode | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] =
     React.useState<boolean>(false);
   const task = alertSchema.parse(row.original);
-
-  const handleEditClick = () => {
-    setDialogContent(<EditDialog task={task} />);
-  };
+  const router = useRouter();
+  
 
   return (
     <Dialog>
@@ -63,17 +53,11 @@ export function DataTableRowActions<TData>({
             Copy Task ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {}}>
+          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/${task.id}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
               View Details
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogTrigger asChild onClick={handleEditClick}>
-            <DropdownMenuItem>
-              <Pencil className='mr-2 h-4 w-4' />
-              Edit Details
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem
@@ -82,24 +66,9 @@ export function DataTableRowActions<TData>({
           >
             <Trash2 className='mr-2 h-4 w-4' />
             Delete Details
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup value={task.code}>
-                {label_options.map((label) => (
-                  <DropdownMenuRadioItem key={label.value} value={label.value}>
-                    <label.icon className="w-4 h-4 mr-2" />
-                    {label.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+          </DropdownMenuItem>          
         </DropdownMenuContent>
       </DropdownMenu>
-      {dialogContent && <DialogContent>{dialogContent}</DialogContent>}
       <DeleteDialog
         task={task}
         isOpen={showDeleteDialog}

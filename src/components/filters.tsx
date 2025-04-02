@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ArrowDown,
   ArrowRight,
   ArrowUp,
@@ -8,6 +9,7 @@ import {
   PackagePlus,
   ScrollText,
   Timer,
+  UserCheck,
   XCircle,
 } from "lucide-react";
 
@@ -64,6 +66,38 @@ export const status_options = [
     label: "Traité",
     icon: CheckCircle2,
     color: "text-green-500 bg-green-100 dark:bg-green-900",
+  },
+];
+export const admin_alert_status_options = [
+  {
+    value: "PENDING",
+    label: "En Attente",
+    icon: Timer,
+    color: "text-yellow-500 bg-yellow-100 dark:bg-yellow-900",
+  },
+  {
+    value: "ASSIGNED",
+    label: "Assigné",
+    icon: UserCheck,
+    color: "text-blue-500 bg-blue-100 dark:bg-blue-900",
+  },
+  {
+    value: "APPROVED",
+    label: "Approuvé",
+    icon: CheckCircle2,
+    color: "text-green-500 bg-green-100 dark:bg-green-900",
+  },
+  {
+    value: "DECLINED",
+    label: "Refusé",
+    icon: XCircle,
+    color: "text-red-500 bg-red-100 dark:bg-red-900",
+  },
+  {
+    value: "ESCALATED",
+    label: "Escaladé",
+    icon: AlertTriangle,
+    color: "text-orange-500 bg-orange-100 dark:bg-orange-900",
   },
 ];
 
