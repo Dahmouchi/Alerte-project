@@ -3,17 +3,15 @@ import AlertDetails from "@/app/admin/_components/AlertDetails";
 import prisma from "@/lib/prisma";
 import React from "react";
 
-interface AlertDetailsProps {
-  params: { id: string };
-}
 
-const Alert = async ({ params }: AlertDetailsProps) => {
-  if (!params?.id) {
+
+const Alert = async (params:any ) => {
+  if (!params?.params.id) {
     return <p>Invalid alert ID</p>;
   }
 
   const alert = await prisma.alert.findUnique({
-    where: { id: params.id },
+    where: { id: params.params.id },
     include: {
       persons: true,
     },
