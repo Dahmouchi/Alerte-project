@@ -31,12 +31,12 @@ const Header = () => {
         <Separator orientation="vertical" className="mr-2 h-4 dark:bg-slate-50" />
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbItem className="">
               <BreadcrumbLink href="/">Alert Application</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="capitalize">
+              <BreadcrumbPage className="capitalize hidden lg:block">
                 {lastSegment}
               </BreadcrumbPage>
             </BreadcrumbItem>

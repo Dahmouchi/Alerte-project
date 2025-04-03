@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
-
 import {
   Card,
   CardContent,
@@ -27,10 +26,6 @@ const chartConfig = {
   },
   alertes: {
     label: 'Alertes',
-    color: 'var(--primary)'
-  },
-  users: {
-    label: 'Users',
     color: 'var(--primary)'
   },
   error: {
@@ -62,13 +57,7 @@ export function BarGraph() {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('alertes');
 
-  const total = React.useMemo(
-    () => ({
-      alertes: chartData,
-    }),
-    []
-  );
-
+  
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -110,9 +99,6 @@ export function BarGraph() {
               >
                 <span className='text-muted-foreground text-xs'>
                   {chartConfig[chart].label}
-                </span>
-                <span className='text-lg leading-none font-bold sm:text-3xl'>
-                  {total[key as keyof typeof total]?.toLocaleString()}
                 </span>
               </button>
             );

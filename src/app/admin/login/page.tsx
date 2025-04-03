@@ -3,6 +3,7 @@ import UsernameLogin from "../_components/Login";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextAuth";
 import { redirect } from "next/navigation";
+import Header from "../_components/Header";
 
 const Login = async () => {
   const session = await getServerSession(authOptions);
@@ -13,6 +14,9 @@ const Login = async () => {
 
   return (
     <div className="w-full relative h-screen bg-contain dark:bg-slate-950" style={{backgroundImage:'url("/Element.png")'}}>
+      <div className="w-full absolute top-0">
+              <Header session={session}/>
+            </div>
       <div className="flex items-center justify-center w-full h-full">
         <UsernameLogin />
       </div>

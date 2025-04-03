@@ -134,3 +134,23 @@ export async function saveQr(
     throw new Error("Failed to retrieve user info");
   }
 }
+export async function AssignAlert(
+  analysteId: string,
+  responsableId:string,
+  alertId:string,
+) {
+  try { 
+    const updatedAlert = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        assignedAnalystId:analysteId,
+        assignedResponsableId:responsableId,
+        adminStatus:"ASSIGNED",
+      }
+    })
+    return updatedAlert
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}

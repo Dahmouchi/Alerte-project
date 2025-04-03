@@ -56,11 +56,15 @@ model User {
   statut          Boolean   @default(false)
   role            Role      @default(USER)
   verified_email  String?
-  alerts          Alert[] 
   profile         Profile?
   qrSecret        String?
   twoFactorEnabled Boolean  @default(true)
   twoFactorSecret  String?  // Secret for TOTP
+
+  Alert Alert[] @relation(name: "AlertCreator")
+  AlertAnalyst Alert[] @relation(name: "AlertAssignmentAnalyste")
+  AlertResponsable Alert[] @relation(name: "AlertAssignmentResponsable")
+
 }
 
 model Account {
@@ -135,8 +139,18 @@ model Alert {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   conclusion    String?
+  analysteValidation Boolean @default(false)
+  responsableValidation Boolean @default(false)
+  globalValidation Boolean @default(false)
   createdById   String
-  createdBy     User         @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy     User @relation(name: "AlertCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  // Relationship to the User (Analyst) assigned to the alert
+  assignedAnalystId String?
+  assignedAnalyst   User? @relation(name: "AlertAssignmentAnalyste", fields: [assignedAnalystId], references: [id], onDelete: SetNull)
+  assignedResponsableId String?
+  assignedResponsable   User? @relation(name: "AlertAssignmentResponsable", fields: [assignedResponsableId], references: [id], onDelete: SetNull)
+
   contactPreference ContactPreference @default(ANONYMOUS) // Contact option
   nom           String?
   prenom        String?

@@ -15,9 +15,6 @@ const Users = async () => {
         not: "ADMIN",
       },
     },
-    include:{
-      alerts:true,
-    },
     orderBy:{
       createdAt:"desc"
     }

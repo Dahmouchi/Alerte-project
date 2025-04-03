@@ -255,9 +255,10 @@ const Step2 = (alert: { alert: any }) => {
   }, [audio]);
   const dropZoneConfig = {
     maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
+    maxSize: 1024 * 1024 * 6,  // Now allows files up to 6MB
     multiple: true,
-  };
+};
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {

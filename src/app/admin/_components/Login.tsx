@@ -173,7 +173,7 @@ export default function UsernameLogin() {
         setUser(session.user);
       } else {
         toast.success("Connexion réussie");
-        redirect("/admiin/dashboard");
+        redirect("/admin/dashboard");
       }
       setLoading(false);
     }

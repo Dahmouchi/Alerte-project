@@ -25,7 +25,6 @@ export default function Component(session:any) {
 
         <Link href="/" className="mr-6  lg:flex" prefetch={false}>
           <img src="/logo.png" alt="" className="w-56 h-auto" />
-          <span className="sr-only">Car E-commerce</span>
         </Link>
         <div className="ml-auto -2 ">
           <div className=" flex items-center gap-1">
@@ -67,7 +66,7 @@ export default function Component(session:any) {
  
                <DropdownMenuSeparator />
                <DropdownMenuItem
-                 onClick={() => signOut({ callbackUrl: "/user/login" })}
+                 onClick={() => signOut({ callbackUrl: "/admin/login" })}
                  className="cursor-pointer"
                >
                  <LogOut />

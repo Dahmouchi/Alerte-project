@@ -9,6 +9,7 @@ import {
 import { Eye } from "lucide-react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 
 export async function RecentSales(alerts: any) {
   const startDate = startOfMonth(new Date()); // First day of the month
@@ -62,9 +63,11 @@ export async function RecentSales(alerts: any) {
               >
                 {sale.adminStatus}
               </div>
-              <div className="ml-2 bg-slate-200 rounded-sm p-1 cursor-pointer">
-                <Eye className=" h-4 w-4" />
-              </div>
+              <Link href={`/admin/dashboard/alertes/${sale.id}`}>
+                <div className="ml-2 bg-slate-200 rounded-sm p-1 cursor-pointer">
+                  <Eye className=" h-4 w-4" />
+                </div>
+              </Link>
             </div>
           ))}
         </div>
