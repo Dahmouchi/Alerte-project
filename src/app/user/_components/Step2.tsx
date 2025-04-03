@@ -297,6 +297,10 @@ const Step2 = (alert: { alert: any }) => {
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
+      setLoading(false)
+
+    }finally{
+      setLoading(false)
     }
   }
 

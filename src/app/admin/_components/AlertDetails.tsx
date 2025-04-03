@@ -125,9 +125,9 @@ const categories = [
 const AlertDetails = (alert: any) => {
   const al = alert.alert;
   const [analysts, setAnalysts] = useState<any[]>([]);
-  const [selectedAnalyst, setSelectedAnalyst] = useState<string>(al.assignedAnalyst.id || "");
+  const [selectedAnalyst, setSelectedAnalyst] = useState<string>(al.assignedAnalyst?.id || "");
   const [responsable, setResponsable] = useState<any[]>([]);
-  const [selectedResponsable, setSelectedResponsable] = useState<string>(al.assignedResponsable.id || "");
+  const [selectedResponsable, setSelectedResponsable] = useState<string>(al.assignedResponsable?.id || "");
   const [isOpen, setIsOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
