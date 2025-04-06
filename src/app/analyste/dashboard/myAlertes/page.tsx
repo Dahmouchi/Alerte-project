@@ -1,12 +1,10 @@
-import { columns } from "@/components/data-table/columns";
-import { DataTable } from "@/components/data-table/data-table";
 import { Shell } from "@/components/shells/shell";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { authOptions } from "@/lib/nextAuth";
 import prisma from "@/lib/prisma";
-import { FilePlus } from "lucide-react";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
+import { DataTable } from "../../_components/myAlertes-data-table/data-table";
+import { columns } from "../../_components/myAlertes-data-table/columns";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
@@ -15,22 +13,14 @@ const Dashboard = async () => {
 
   if (session) {
     alerts = await prisma.alert.findMany({
-      where: { createdById: session.user.id },
+      where: { assignedAnalystId: session.user.id },
       include: { persons: true },
     });
   }
   return (
     <div className="overflow-scroll lg:overflow-hidden max-w-full">
-      <div className="w-full flex itce justify-between mt-2">
-        <div>
-          <h1>List des Alertes </h1>
-        </div>
-        <Link href={"/user/dashboard/alerte/create"}>
-          <div className="bg-red-600 text-white rounded-sm items-center gap-2 font-semibold justify-center flex px-6 py-2 w-full ">
-            <FilePlus />
-            Create Alert
-          </div>
-        </Link>
+      <div className="flex items-center justify-center lg:justify-between space-y-2">
+        <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold tracking-tight">Liste des Alertes</h2>
       </div>
       <ScrollArea className="lg:w-auto w-96 whitespace-nowrap rounded-md ">
           <Shell>

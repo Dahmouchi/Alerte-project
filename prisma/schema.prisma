@@ -25,7 +25,12 @@ enum AlertStatus {
   REJETE
   INFORMATIONS_MANQUANTES
 }
-
+enum UserAlertStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  INFORMATIONS_MANQUANTES
+}
 enum AdminAlertStatus {
   PENDING
   ASSIGNED
@@ -60,6 +65,7 @@ model User {
   qrSecret        String?
   twoFactorEnabled Boolean  @default(true)
   twoFactorSecret  String?  // Secret for TOTP
+  conlusions    Conclusion[]   
 
   Alert Alert[] @relation(name: "AlertCreator")
   AlertAnalyst Alert[] @relation(name: "AlertAssignmentAnalyste")
@@ -139,9 +145,9 @@ model Alert {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   conclusion    String?
-  analysteValidation Boolean @default(false)
-  responsableValidation Boolean @default(false)
-  globalValidation Boolean @default(false)
+  analysteValidation UserAlertStatus @default(PENDING)
+  responsableValidation UserAlertStatus @default(PENDING)
+  globalValidation UserAlertStatus @default(PENDING)
   createdById   String
   createdBy     User @relation(name: "AlertCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
@@ -166,6 +172,8 @@ model Conclusion {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  createdById   String
+  createdBy     User @relation(fields: [createdById], references: [id], onDelete: Cascade)
   // Foreign key linking to Alert
   alertId   String
   alert     Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)

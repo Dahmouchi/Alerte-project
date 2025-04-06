@@ -40,7 +40,7 @@ export function NavMain({
         {items.map((item) => {
           const isActive =
           getPathWithoutLocale(pathname) === item.url ||
-          (item.url !== "/admin/dashboard" && getPathWithoutLocale(pathname).startsWith(item.url));
+          (item.url !== "/analyste/dashboard" && getPathWithoutLocale(pathname).startsWith(item.url));
         
           return (
             <Collapsible key={item.title} asChild  className="group/collapsible">

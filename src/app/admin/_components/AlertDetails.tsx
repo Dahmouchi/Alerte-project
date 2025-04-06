@@ -32,7 +32,8 @@ import { GetAnalyste, GetResponsable } from "@/actions/user";
 import { AssignAlert } from "@/actions/alertActions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-const categories = [
+import { format, toZonedTime } from 'date-fns-tz';
+import { fr } from 'date-fns/locale';const categories = [
   {
     title: "Corruption et atteintes à la probité",
     value: "corruption",
@@ -125,9 +126,13 @@ const categories = [
 const AlertDetails = (alert: any) => {
   const al = alert.alert;
   const [analysts, setAnalysts] = useState<any[]>([]);
-  const [selectedAnalyst, setSelectedAnalyst] = useState<string>(al.assignedAnalyst?.id || "");
+  const [selectedAnalyst, setSelectedAnalyst] = useState<string>(
+    al.assignedAnalyst?.id || ""
+  );
   const [responsable, setResponsable] = useState<any[]>([]);
-  const [selectedResponsable, setSelectedResponsable] = useState<string>(al.assignedResponsable?.id || "");
+  const [selectedResponsable, setSelectedResponsable] = useState<string>(
+    al.assignedResponsable?.id || ""
+  );
   const [isOpen, setIsOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
@@ -137,26 +142,64 @@ const AlertDetails = (alert: any) => {
   );
   // Fetch analysts from API
   useEffect(() => {
+    console.log(al);
     const fetchAnalysts = async () => {
       try {
         const response = await GetAnalyste(); // Adjust API route
         const responses = await GetResponsable(); // Adjust API route
         setAnalysts(response);
         setResponsable(responses);
-        console.log(al.assignedAnalyst)
       } catch (error) {
         console.error("Error fetching analysts:", error);
       }
     };
     fetchAnalysts();
   }, [al]);
-
+  const formatFrenchDate = (isoString:any) => {
+    const parisTime = toZonedTime(isoString, 'Europe/Paris');
+    return format(parisTime, 'dd/MM/yyyy à HH:mm', {
+      timeZone: 'Europe/Paris',
+      locale: fr
+    });
+  };
+  const getStatusStyles = (status:any) => {
+    switch (status) {
+      case "APPROVED":
+        return {
+          className:
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+          label: "Approuvé",
+        };
+      case "DECLINED":
+        return {
+          className:
+            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+          label: "Rejeté",
+        };
+      case "INFORMATIONS_MANQUANTES":
+        return {
+          className:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+          label: "Infos manquantes",
+        };
+      default: // PENDING
+        return {
+          className:
+            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+          label: "En attente",
+        };
+    }
+  };
   // Handle assigning alert
   const assignAlert = async () => {
     if (!selectedAnalyst) return alert("Please select an analyst");
 
     try {
-      const ocp = await AssignAlert(selectedAnalyst,selectedResponsable, al.id);
+      const ocp = await AssignAlert(
+        selectedAnalyst,
+        selectedResponsable,
+        al.id
+      );
       if (ocp) {
         toast.success("Alert assigned successfully!");
         setIsOpen(false);
@@ -196,7 +239,7 @@ const AlertDetails = (alert: any) => {
                   <DialogHeader>
                     <DialogTitle>Attribuer une alerte</DialogTitle>
                     <DialogDescription>
-                    Sélectionnez un analyste et attribuez-lui cette alerte.
+                      Sélectionnez un analyste et attribuez-lui cette alerte.
                     </DialogDescription>
                   </DialogHeader>
                   {/* Dropdown for selecting analysts */}
@@ -255,13 +298,15 @@ const AlertDetails = (alert: any) => {
               </p>
               <p className="text-gray-500 dark:text-gray-300">
                 <span className="font-semibold text-slate-800">Analiste</span>:{" "}
-                {al.assignedAnalyst && al.assignedAnalyst.name} {" "}  {al.assignedAnalyst && al.assignedAnalyst.prenom}
-
+                {al.assignedAnalyst && al.assignedAnalyst.name}{" "}
+                {al.assignedAnalyst && al.assignedAnalyst.prenom}
               </p>
               <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">Responsalbe</span>:{" "}
-                {al.assignedResponsable && al.assignedResponsable.name} {" "}  {al.assignedResponsable && al.assignedResponsable.prenom}
-
+                <span className="font-semibold text-slate-800">
+                  Responsalbe
+                </span>
+                : {al.assignedResponsable && al.assignedResponsable.name}{" "}
+                {al.assignedResponsable && al.assignedResponsable.prenom}
               </p>
             </div>
           )}
@@ -449,6 +494,140 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
         </div>
+        {al.conlusions &&
+          al.conlusions.map((con: any, index: any) => (
+            <div key={index}>
+              {" "}
+              {con.createdBy.role === "ANALYSTE" ? (
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-green-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="flex flex-col space-y-4">
+                    {/* Analyst Info */}
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-slate-700 flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-green-600 dark:text-green-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Analyste
+                        </p>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {con.createdBy.name} {con.createdBy.prenom}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Decision Status */}
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          getStatusStyles(al.analysteValidation).className
+                        }`}
+                      >
+                        {getStatusStyles(al.analysteValidation).label}
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        Statut
+                      </span>
+                    </div>
+
+                    {/* Conclusion */}
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Commentaire
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        The alert has been reviewed and verified. All necessary
+                        actions have been taken to resolve the issue. No further
+                        investigation is required at this time.
+                      </p>
+                    </div>
+                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Validé le: {formatFrenchDate(con.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-blue-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="flex flex-col space-y-4">
+                    {/* Section Responsable */}
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Responsable
+                        </p>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {con.createdBy.name} {con.createdBy.prenom}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Statut de Décision */}
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          getStatusStyles(al.responsableValidation).className
+                        }`}
+                      >
+                        {getStatusStyles(al.responsableValidation).label}
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        Statut
+                      </span>
+                    </div>
+                    {/* Commentaire */}
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Commentaire
+                      </p>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        L&pos;alerte a été analysée et confirmée. Les mesures
+                        correctives ont été mises en œuvre. Une surveillance
+                        supplémentaire sera maintenue pendant 48 heures.
+                      </p>
+                    </div>
+
+                    {/* Date de Validation */}
+                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Validé le: {formatFrenchDate(con.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
 
         {/* Print Button */}
         <div className="flex justify-end mt-4">

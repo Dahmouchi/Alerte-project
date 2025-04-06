@@ -15,11 +15,6 @@ const Alert = async (params: any) => {
       persons: true,
       assignedAnalyst:true,
       assignedResponsable:true,
-      conlusions:{
-        include:{
-          createdBy:true,
-        }
-      },
     },
   });
   
