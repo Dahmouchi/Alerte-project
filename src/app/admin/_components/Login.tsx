@@ -32,7 +32,7 @@ import {
 import { saveQr, UserInfo } from "@/actions/alertActions";
 import Loading from "@/components/Loading";
 import { Card } from "@/components/ui/card";
-import { CloudLightningIcon, QrCodeIcon, SendHorizontal } from "lucide-react";
+import { CloudLightningIcon, Eye, EyeOff, QrCodeIcon, SendHorizontal } from "lucide-react";
 import Image from "next/image";
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -52,6 +52,8 @@ export default function UsernameLogin() {
   const [secret, setSecret] = useState<any>();
   const { data: session, update } = useSession(); // Use session and update function
   const router = useRouter();
+  const [isView, setIsView] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -398,11 +400,27 @@ export default function UsernameLogin() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="Entrer votre Password"
-                                {...field}
-                                type="password"
-                              />
+                            <div className="relative">
+                      <Input
+                        type={isView ? "text" : "password"}
+                        id="password"
+                        placeholder="entrer votre mot de pass"
+                        {...field}
+                      />
+                      {isView ? (
+                        <Eye
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => {
+                            setIsView(!isView)
+                          }}
+                        />
+                      ) : (
+                        <EyeOff
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => setIsView(!isView)}
+                        />
+                      )}
+                    </div>
                             </FormControl>
 
                             <FormMessage />

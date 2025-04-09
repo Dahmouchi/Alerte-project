@@ -4,6 +4,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
+import { RecevalbeStatus } from "@prisma/client";
 
 export async function updateAlert(
   alertId: string,
@@ -140,17 +141,122 @@ export async function AssignAlert(
   alertId:string,
 ) {
   try { 
-    const updatedAlert = await prisma.alert.update({
-      where: { id: alertId },
-      data: {
-        assignedAnalystId:analysteId,
-        assignedResponsableId:responsableId,
-        adminStatus:"ASSIGNED",
-      }
-    })
-    return updatedAlert
+      const updatedAlert = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          assignedAnalystId: analysteId,
+          ...(responsableId && { assignedResponsableId: responsableId }),
+          adminStatus: "ASSIGNED",
+        },
+      });
+      return updatedAlert;
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw new Error("Failed to retrieve user info");
   }
 }
+export async function analysteAssign(
+  analysteId: string,
+  alertId:string,
+) {
+  try { 
+      const updatedAlert = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          assignedAnalystId: analysteId,
+          adminStatus: "ASSIGNED",
+        },
+      });
+      return updatedAlert;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+export async function ResponsableAssign(
+  responsableId: string,
+  alertId:string,
+) {
+  try { 
+      const updatedAlert = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          assignedResponsableId: responsableId,
+          adminStatus: "ASSIGNED",
+        },
+      });
+      return updatedAlert;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+export async function removeAnalysteAssignment(alertId: string) {
+  try {
+    const updatedAlert = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        assignedAnalystId: null,
+        adminStatus: "PENDING", // or "UNASSIGNED" if that's your logic
+        recevable:"NON_DECIDE",
+      },
+    });
+
+    return updatedAlert;
+  } catch (error) {
+    console.error("Error removing analyst assignment:", error);
+    throw new Error("Failed to remove analyst assignment");
+  }
+}
+export async function saveConclusion(
+  userId: string,
+  content:string,
+  alertId:string,
+  recevable:RecevalbeStatus,
+  criticite:string,
+) {
+  try { 
+    if(recevable === "RECEVALBE")
+    {
+      const updatedAlert = await prisma.conclusion.create({
+        data: {
+          content,
+          alertId,
+          createdById:userId,
+          
+        }
+      })
+      const res = await prisma.alert.update({
+        where:{id:alertId},
+        data:{
+          analysteValidation:"APPROVED",
+          recevable:recevable,
+          criticite:parseInt(criticite),
+        }
+      })
+      return {updatedAlert,res}
+    }else{
+      const updatedAlert = await prisma.conclusion.create({
+        data: {
+          content,
+          alertId,
+          createdById:userId,
+          
+        }
+      })
+      const res = await prisma.alert.update({
+        where:{id:alertId},
+        data:{
+          analysteValidation:"DECLINED",
+          recevable:recevable,
+          criticite:parseInt(criticite),
+        }
+      })
+      return {updatedAlert,res}
+    }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+

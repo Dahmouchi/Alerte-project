@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Alert" ALTER COLUMN "recevable" SET DEFAULT 'NON_DECIDE';

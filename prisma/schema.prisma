@@ -38,7 +38,12 @@ enum AdminAlertStatus {
   DECLINED
   ESCALATED
 }
-
+enum RecevalbeStatus {
+  RECEVALBE
+  NON_RECEVABLE
+  NON_RECEVABLE_VALIDER
+  NON_DECIDE
+}
 enum ContactPreference {
   YES
   NO
@@ -66,11 +71,11 @@ model User {
   twoFactorEnabled Boolean  @default(true)
   twoFactorSecret  String?  // Secret for TOTP
   conlusions    Conclusion[]   
-
   Alert Alert[] @relation(name: "AlertCreator")
   AlertAnalyst Alert[] @relation(name: "AlertAssignmentAnalyste")
   AlertResponsable Alert[] @relation(name: "AlertAssignmentResponsable")
-
+  AlertHistory AlertHistory[]
+  ChatMessage ChatMessage[]
 }
 
 model Account {
@@ -127,6 +132,20 @@ model Authenticator {
  
   @@id([userId, credentialID])
 }
+
+model AlertHistory {
+  id        String   @id @default(uuid())
+  alertId   String
+  alert     Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action    String   // e.g. "ASSIGN_ANALYST", "SET_STATUS", "VALIDATE"
+  details   String?  // optional text or JSON with context
+  createdAt DateTime @default(now())
+}
+
 model Alert {
   id            String       @id @default(uuid())
   code          String       @unique
@@ -134,10 +153,12 @@ model Alert {
   title         String?
   description   String?      @db.Text
   type          String?      @default("text")
+  recevable     RecevalbeStatus @default(NON_DECIDE)
   audioUrl      String?
   dateLieu      DateTime?    // Date of the incident
   location      String?      // Location description
   involvedPersons String?    // Names of involved persons (can be "Inconnu")
+  criticite     Int    @default(1)
   step          Int            @default(1)  // Track progress step
   status        AlertStatus  @default(EN_COURS_TRAITEMENT)
   adminStatus   AdminAlertStatus @default(PENDING)
@@ -150,13 +171,11 @@ model Alert {
   globalValidation UserAlertStatus @default(PENDING)
   createdById   String
   createdBy     User @relation(name: "AlertCreator", fields: [createdById], references: [id], onDelete: Cascade)
-
   // Relationship to the User (Analyst) assigned to the alert
   assignedAnalystId String?
   assignedAnalyst   User? @relation(name: "AlertAssignmentAnalyste", fields: [assignedAnalystId], references: [id], onDelete: SetNull)
   assignedResponsableId String?
   assignedResponsable   User? @relation(name: "AlertAssignmentResponsable", fields: [assignedResponsableId], references: [id], onDelete: SetNull)
-
   contactPreference ContactPreference @default(ANONYMOUS) // Contact option
   nom           String?
   prenom        String?
@@ -165,6 +184,28 @@ model Alert {
   files         File[] 
   persons       Persons[]   
   conlusions    Conclusion[]   
+  AlertHistory AlertHistory[]
+  AlertChat AlertChat[]
+}
+model AlertChat {
+  id          String    @id @default(uuid())
+  alertId     String    @unique
+  alert       Alert     @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ChatMessage {
+  id          String    @id @default(uuid())
+  chatId      String
+  chat        AlertChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId    String
+  sender      User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content     String    @db.Text
+  attachments String[]  // URLs to attached files
+  createdAt   DateTime  @default(now())
+  isRead      Boolean   @default(false)
 }
 model Conclusion {
   id        String    @id @default(uuid())

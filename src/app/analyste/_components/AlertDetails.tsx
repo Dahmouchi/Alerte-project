@@ -1,26 +1,34 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { admin_alert_status_options } from "@/components/filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  AlertCircle,
+  AlertOctagon,
+  AlertTriangle,
   Calendar,
+  CheckCheck,
+  CheckCircle2,
+  Copy,
+  EllipsisVertical,
   Eye,
   FileAudio,
+  FilePenLine,
   FileVideo,
   MapPin,
   MessageCircle,
+  MessageCircleMore,
+  MoreHorizontal,
   Printer,
   ScanBarcode,
+  Trash2,
   User,
   UserRound,
 } from "lucide-react";
-import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -28,12 +36,36 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { GetAnalyste, GetResponsable } from "@/actions/user";
-import { AssignAlert } from "@/actions/alertActions";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { format, toZonedTime } from 'date-fns-tz';
-import { fr } from 'date-fns/locale';
+import { format, toZonedTime } from "date-fns-tz";
+import { fr } from "date-fns/locale";
+import { useSession } from "next-auth/react";
+import {
+  analysteAssign,
+  removeAnalysteAssignment,
+  saveConclusion,
+} from "@/actions/alertActions";
+import { AlertChat } from "@/components/alert-chat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
+import { CriticalityBadge } from "@/components/CritiqueBadg";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import DeleteConclusion from "./delete-conclusion";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -124,46 +156,57 @@ const categories = [
     ],
   },
 ];
+const predefinedJustifications = [
+  "Manque d'informations",
+  "Problème technique",
+  "Signalement sans preuve",
+  "Non concerné",
+  "Autre",
+];
+
 const AlertDetails = (alert: any) => {
   const al = alert.alert;
-  const [analysts, setAnalysts] = useState<any[]>([]);
+  const { data: session } = useSession();
   const [selectedAnalyst, setSelectedAnalyst] = useState<string>(
     al.assignedAnalyst?.id || ""
   );
-  const [responsable, setResponsable] = useState<any[]>([]);
-  const [selectedResponsable, setSelectedResponsable] = useState<string>(
-    al.assignedResponsable?.id || ""
-  );
-  const [isOpen, setIsOpen] = useState(false);
+  const [recevable, setRecevable] = useState<any>(al.recevable);
   const contentRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [justification, setJustification] = useState("");
+  const [urgenceLevel, setUrgenceLevel] = useState("1");
+  const unreadCount = useUnreadMessages(al.id);
+  const [isOpen, setIsOpen] = useState(false);
+ const [showDeleteDialog, setShowDeleteDialog] =
+    React.useState<boolean>(false);
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
   const status = admin_alert_status_options.find(
     (status) => status.value === al?.adminStatus
   );
-  // Fetch analysts from API
+
   useEffect(() => {
     console.log(al);
     const fetchAnalysts = async () => {
       try {
-        const response = await GetAnalyste(); // Adjust API route
-        const responses = await GetResponsable(); // Adjust API route
-        setAnalysts(response);
-        setResponsable(responses);
+        router.refresh();
+        setJustification("");
+        setRecevable(al.recevable);
       } catch (error) {
         console.error("Error fetching analysts:", error);
       }
     };
     fetchAnalysts();
-  }, [al]);
-  const formatFrenchDate = (isoString:any) => {
-    const parisTime = toZonedTime(isoString, 'Europe/Paris');
-    return format(parisTime, 'dd/MM/yyyy à HH:mm', {
-      timeZone: 'Europe/Paris',
-      locale: fr
+  }, [showDeleteDialog]);
+  const formatFrenchDate = (isoString: any) => {
+    const parisTime = toZonedTime(isoString, "Europe/Paris");
+    return format(parisTime, "dd/MM/yyyy à HH:mm", {
+      timeZone: "Europe/Paris",
+      locale: fr,
     });
   };
-  const getStatusStyles = (status:any) => {
+  
+  const getStatusStyles = (status: any) => {
     switch (status) {
       case "APPROVED":
         return {
@@ -191,23 +234,60 @@ const AlertDetails = (alert: any) => {
         };
     }
   };
-  // Handle assigning alert
-  const assignAlert = async () => {
-    if (!selectedAnalyst) return toast.error("Please select an analyst");
 
+  const handleOpenChat = async () => {
+    if (unreadCount > 0) {
+      await markMessagesAsRead(al.id);
+    }
+    setIsOpen(true);
+  };
+
+  // Handle assigning alert
+  const sendConclusion = async () => {
+    if (session) {
+      try {
+        setSelectedAnalyst(session.user.id)
+        const ocp = await saveConclusion(session.user.id, justification,al.id,recevable,urgenceLevel);
+        if (ocp) {
+          toast.success("Alert assigned successfully!");
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'attribution de l'alerte:", error);
+      }
+    } else {
+      toast.error("Erreur lors de l'attribution de l'alerte");
+    }
+  };
+  const removeAnalyste = async () => {
     try {
-      const ocp = await AssignAlert(
-        selectedAnalyst,
-        selectedResponsable,
-        al.id,
-      );
+      const ocp = await removeAnalysteAssignment(al.id);
       if (ocp) {
+        setSelectedAnalyst("");
         toast.success("Alert assigned successfully!");
-        setIsOpen(false);
         router.refresh();
       }
     } catch (error) {
       console.error("Error assigning alert:", error);
+    }
+  };
+  const assignAlert = async () => {
+    if (!selectedAnalyst && session) {
+      setSelectedAnalyst(session?.user.id);
+      try {
+        const ocp = await analysteAssign(session.user.id, al.id);
+        if (ocp) {
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+          });
+          toast.success("Alert assigned successfully!");
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'attribution de l'alerte:", error);
+      }
+    } else {
+      toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
   return (
@@ -215,79 +295,88 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-2">
         <div
           ref={contentRef}
-          className="bg-white border border-green-500 dark:bg-slate-800 p-6 rounded-lg shadow-md"
+          className="bg-white relative border border-blue-600 dark:bg-slate-800 p-6 rounded-lg shadow-md"
         >
-          <div className="flex items-center justify-between py-2">
+         
+          <div className="flex items-center justify-between py-2 flex-col lg:flex-row gap-2">
             {status && (
               <div
-                className={`flex w-auto items-center px-4 py-1 rounded-md ${status.color}`}
+                className={`flex w-full lg:w-auto items-center px-4 py-1 rounded-md ${status.color}`}
               >
                 {status.icon && <status.icon className="mr-2 h-4 w-4" />}
                 <span className="font-medium">{status.label}</span>
               </div>
             )}
-            <div>
-              <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                  <button className="Btn">
-                    Assign
-                    <svg viewBox="0 0 512 512" className="svg">
-                      <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z" />
-                    </svg>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Attribuer une alerte</DialogTitle>
-                    <DialogDescription>
-                      Sélectionnez un analyste et attribuez-lui cette alerte.
-                    </DialogDescription>
-                  </DialogHeader>
-                  {/* Dropdown for selecting analysts */}
-                  <div className="flex flex-col space-y-2">
-                    <label htmlFor="analyst">Choisissez un analyste :</label>
-                    <select
-                      id="analyst"
-                      value={selectedAnalyst}
-                      onChange={(e) => setSelectedAnalyst(e.target.value)}
-                      className="border p-2 rounded-md"
+            {selectedAnalyst === session?.user.id ? (
+              <div className="">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div
+                      className={`px-10 rounded-md w-full flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
+                                  bg-transparent  border-2 border-blue-600 text-blue-600 `}
                     >
-                      <option value="">Choisissez un analyste :</option>
-                      {analysts.map((analyst) => (
-                        <option key={analyst.id} value={analyst.id}>
-                          {analyst.name} {analyst.prenom}
-                        </option>
-                      ))}
-                    </select>
-                    <label htmlFor="analyst">Choisissez un responsable :</label>
-                    <select
-                      id="analyst"
-                      value={selectedResponsable}
-                      onChange={(e) => setSelectedResponsable(e.target.value)}
-                      className="border p-2 rounded-md"
+                      Attribuée
+                      <CheckCheck />
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Souhaitez-vous céder l&pos;alerte?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous absolument sûr ?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Non</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="cursor-pointer bg-blue-700 hover:bg-blue-900"
+                        onClick={removeAnalyste}
+                      >
+                        Oui
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            ) : selectedAnalyst === "" ? (
+              <div className="">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div
+                      className={`px-10 rounded-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
+                  bg-blue-600 text-white`}
                     >
-                      <option value="">Choisissez un responsable :</option>
-                      {responsable.map((responsable) => (
-                        <option key={responsable.id} value={responsable.id}>
-                          {responsable.name} {responsable.prenom}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <DialogFooter className="sm:justify-start">
-                    <Button type="button" onClick={assignAlert} className="">
-                      Assign Alert
-                    </Button>
-                    <DialogClose asChild>
-                      <Button type="button" variant="secondary">
-                        Close
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+                      Prendre en charge
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Souhaitez-vous prendre en charge l&apos;alerte?
+                      </AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Non</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="cursor-pointer bg-blue-700 hover:bg-blue-900"
+                        onClick={assignAlert}
+                      >
+                        Oui
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            ) : (
+              <div
+                className={`px-10 rounded-md flex gap-1 font-semibold py-2 cursor-no-drop transition-all duration-300 bg-transparent  border-2 border-blue-600 text-blue-600 `}
+              >
+                Attribuée à M.{al.assignedAnalyst.name}
+                <CheckCheck />
+              </div>
+            )}
           </div>
           {al.adminStatus !== "PANDING" && (
             <div>
@@ -311,7 +400,7 @@ const AlertDetails = (alert: any) => {
               </p>
             </div>
           )}
-          <div className="mt-4 space-y-4">
+          <div className="mt-4  space-y-4">
             {/* Title & Code */}
             <div className="flex lg:items-center lg:justify-between lg:flex-row flex-col">
               <div>
@@ -493,16 +582,241 @@ const AlertDetails = (alert: any) => {
                 </div>
               )}
             </div>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <div
+                  onClick={handleOpenChat}
+                  className={`px-10 absolute bottom-0 right-0 rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
+              bg-transparent border-t-2 border-l-2 border-blue-600 text-blue-600 items-center`}
+                >
+                  Chat Alerte
+                  <MessageCircleMore className="w-5 h-5" />
+                  {/* Notification badge - only show if unreadCount > 0 */}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -left-2">
+                      <span className="relative flex size-4">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full size-4 bg-red-500 items-center justify-center text-white text-xs">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Alerte chat</DialogTitle>
+                  <DialogDescription>
+                  Collaborer à la résolution de cette alerte.
+                  </DialogDescription>
+                </DialogHeader>
+                <div>
+                  <AlertChat alertId={al.id} />
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
+        {selectedAnalyst === session?.user.id && (
+          <div>
+           
+           {al.recevable === "NON_DECIDE" ?
+            <div>
+              <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
+              <div
+                className={`w-full py-2 border-green-500 font-semibold rounded-lg cursor-pointer border text-sm transition-all duration-300 ease-in-out transform ${
+                  recevable === "RECEVALBE"
+                    ? "bg-blue-600 text-white scale-105 shadow-md"
+                    : "bg-white text-gray-700 hover:bg-blue-50"
+                }`}
+                onClick={() => setRecevable("RECEVALBE")}
+              >
+                Recevable
+              </div>
+
+              <div
+                className={`w-full py-2 font-semibold border-red-600 rounded-lg cursor-pointer border text-sm transition-all duration-300 ease-in-out transform ${
+                  recevable === "NON_RECEVABLE"
+                    ? "bg-red-600 text-white scale-105 shadow-md"
+                    : "bg-white text-gray-700 hover:bg-red-50"
+                }`}
+                onClick={() => setRecevable("NON_RECEVABLE")}
+              >
+                Non Recevable
+              </div>
+            </div>
+            <div
+              className={`bg-white dark:bg-slate-800 p-6 rounded-xl   transition-shadow duration-300 ${
+                recevable === "RECEVALBE"
+                  ? "border-blue-500 border-2 border-l-4 shadow-lg hover:shadow-xl"
+                  : recevable === "NON_RECEVABLE"
+                  ? "border-red-500 border-2 border-l-4 shadow-lg hover:shadow-xl"
+                  : ""
+              }`}
+            >
+              {recevable === "NON_RECEVABLE" ? (
+                <div className="flex flex-col space-y-4">
+                  {/* Header: Analyste Info */}
+
+                  <div>
+                    <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                      Justification
+                    </label>
+                    <select
+                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                      value={justification}
+                      onChange={(e) => setJustification(e.target.value)}
+                    >
+                      <option value="" disabled>
+                        -- Choisissez une justification --
+                      </option>
+                      {predefinedJustifications.map((j, index) => (
+                        <option key={index} value={j}>
+                          {j}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Input for "Autre" */}
+                    {justification === "Autre" && (
+                      <textarea
+                        onChange={(e) => setJustification(e.target.value)}
+                        rows={3}
+                        className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                        placeholder="Expliquez la décision..."
+                      />
+                    )}
+                  </div>
+                  <div className="flex items-center justify-end">
+                    <button
+                      onClick={sendConclusion}
+                      className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
+                      title="Save"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20px"
+                        height="20px"
+                        viewBox="0 -0.5 25 25"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                      <span className="text-sm text-white font-bold pr-1">
+                        enregistrer la conclusion
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              ) : recevable === "RECEVALBE" ? (
+                <div className="flex flex-col space-y-4">
+                  {/* Analyst Info */}
+
+                  {/* Dropdown for Alertes Urgentes */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Niveau de criticité
+                    </label>
+                    <select
+                      required
+                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                      value={urgenceLevel}
+                      onChange={(e) => setUrgenceLevel(e.target.value)}
+                    >
+                      <option value="">Sélectionner un niveau</option>
+                      <option value="1">Faible</option>
+                      <option value="2">Modérée</option>
+                      <option value="3">Èlevée </option>
+                      <option value="4">Critique</option>
+                    </select>
+                  </div>
+
+                  {/* Justification Textarea */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Commentaire de justification
+                    </label>
+                    <textarea
+
+                    required
+                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                      rows={4}
+                      placeholder="Ajouter un commentaire..."
+                      value={justification}
+                      onChange={(e) => setJustification(e.target.value)}
+                    ></textarea>
+                  </div>
+                  <div className="flex items-center justify-end">
+                    <button
+                    onClick={sendConclusion}
+                      className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
+                      title="Save"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20px"
+                        height="20px"
+                        viewBox="0 -0.5 25 25"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                      <span className="text-sm text-white font-bold pr-1">
+                        enregistrer la conclusion
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>:
+           <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
+           <div
+             className={`w-full py-2 border-green-500 font-semibold rounded-lg border text-sm transition-all duration-300 ease-in-out transform ${
+               recevable === "RECEVALBE"
+                 ? "bg-blue-600 text-white scale-105 shadow-md"
+                 : "bg-white text-gray-700 "
+             }`}
+           >
+             Recevable
+           </div>
+
+           <div
+             className={`w-full py-2 font-semibold  border-red-600 rounded-lg  border text-sm transition-all duration-300 ease-in-out transform ${
+               recevable === "NON_RECEVABLE"
+                 ? "bg-red-600 text-white scale-105 shadow-md"
+                 : "bg-white text-gray-700 "
+             }`}           >
+             Non Recevable
+           </div>
+         </div>
+          }
+          </div>
+        )}{" "}
         {al.conlusions &&
           al.conlusions.map((con: any, index: any) => (
             <div key={index}>
               {" "}
               {con.createdBy.role === "ANALYSTE" ? (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-green-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-[1px] border-green-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <div className="flex flex-col space-y-4">
                     {/* Analyst Info */}
+                    <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-slate-700 flex items-center justify-center">
                         <svg
@@ -529,6 +843,46 @@ const AlertDetails = (alert: any) => {
                         </p>
                       </div>
                     </div>
+                    {
+                      con.createdBy.id === session?.user.id && 
+                      <Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant='ghost'
+            className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
+          >
+            <MoreHorizontal className='h-4 w-4' />
+            <span className='sr-only'>Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-[200px]'>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${con.id}`)}}>
+            <DropdownMenuItem>
+              {" "}
+              <FilePenLine className='mr-2 h-4 w-4' />
+              mettre à jour
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DropdownMenuItem
+            onSelect={() => setShowDeleteDialog(true)}
+            className='text-red-600'
+          >
+            <Trash2 className='mr-2 h-4 w-4' />
+            supprimer
+          </DropdownMenuItem>          
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DeleteConclusion
+        task={con}
+        isOpen={showDeleteDialog}
+        showActionToggle={setShowDeleteDialog}
+      />
+    </Dialog>
+                    }
+                    </div>
 
                     {/* Decision Status */}
                     <div className="flex items-center space-x-2">
@@ -550,12 +904,12 @@ const AlertDetails = (alert: any) => {
                         Commentaire
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">
-                         {con?.content}
+                        {con?.content}
                       </p>
                     </div>
                     <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Validé le: {formatFrenchDate(con.createdAt)}
+                        Validé le: {formatFrenchDate(con.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -617,7 +971,7 @@ const AlertDetails = (alert: any) => {
                     {/* Date de Validation */}
                     <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Validé le: {formatFrenchDate(con.createdAt)}
+                        Validé le: {formatFrenchDate(con.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -625,9 +979,8 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
-
         {/* Print Button */}
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button
             onClick={() => reactToPrintFn()}
             className="px-5 py-3 text-white bg-green-500 rounded-sm shadow cursor-pointer hover:bg-green-700 focus:ring-4 focus:ring-green-300"
@@ -637,6 +990,7 @@ const AlertDetails = (alert: any) => {
           </Button>
         </div>
       </div>
+      <div ref={messagesEndRef}></div>
     </div>
   );
 };

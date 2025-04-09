@@ -156,7 +156,6 @@ const AddUser = () => {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="ADMIN">Admin</SelectItem>
-                          <SelectItem value="USER">Utilisateur</SelectItem>
                           <SelectItem value="ANALYSTE">Analyste</SelectItem>
                           <SelectItem value="RESPONSABLE">Responsable</SelectItem>
                         </SelectContent>

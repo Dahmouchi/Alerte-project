@@ -24,7 +24,7 @@ const AccessDenied = (role:any) => {
           setUrl("/admin/dashboard");
           break;
         case Role.ANALYSTE:
-          setUrl("/analyst/dashboard");
+          setUrl("/analyste/dashboard");
           break;
         case Role.RESPONSABLE:
           setUrl("/responsable/dashboard");

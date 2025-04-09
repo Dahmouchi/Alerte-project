@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import {  Copy, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { alertSchema  } from "@/lib/validations/schema";
 import { Dialog,  DialogTrigger } from "@/components/ui/dialog";
 import DeleteDialog from "@/components/modals/delete-modal";
@@ -57,7 +57,7 @@ export function DataTableRowActions<TData>({
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
-              View Details
+              Voir Details
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem

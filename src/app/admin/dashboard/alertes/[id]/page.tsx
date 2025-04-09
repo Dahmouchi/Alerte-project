@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AlertDetails from "@/app/admin/_components/AlertDetails";
+import { CriticalityBadge } from "@/components/CritiqueBadg";
 import prisma from "@/lib/prisma";
 import React from "react";
 
@@ -31,8 +32,7 @@ const Alert = async (params: any) => {
         <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg py-1 tracking-tight">
           Les deitails d&apos;alerte
         </h2>
-        
-      </div>
+        <CriticalityBadge level={alert.criticite as 1 | 2 | 3 | 4} />      </div>
       <AlertDetails alert={alert} />
     </div>
   );

@@ -18,6 +18,8 @@ import { toast } from "react-toastify";
 import Header from "./_components/Header";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 // ✅ Zod Schema for Validation
 const formSchema = z
@@ -37,6 +39,8 @@ const formSchema = z
   });
 
 export default function RegisterForm() {
+  const [isView, setIsView] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -105,11 +109,27 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Mot de passe</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter password"
-                      {...field}
-                    />
+                  <div className="relative">
+                      <Input
+                        type={isView ? "text" : "password"}
+                        id="password"
+                        placeholder="entrer votre mot de pass"
+                        {...field}
+                      />
+                      {isView ? (
+                        <Eye
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => {
+                            setIsView(!isView)
+                          }}
+                        />
+                      ) : (
+                        <EyeOff
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => setIsView(!isView)}
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <div className="mt-1 text-xs text-gray-600">
                     <p
@@ -162,11 +182,27 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Confirmez le mot de passe</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Confirm password"
-                      {...field}
-                    />
+                  <div className="relative">
+                      <Input
+                        type={isView ? "text" : "password"}
+                        id="password"
+                        placeholder="confirmer votre mot de pass"
+                        {...field}
+                      />
+                      {isView ? (
+                        <Eye
+                          className="absolute right-4 top-3 z-10 cursor-pointer text-gray-500 w-4 h-4"
+                          onClick={() => {
+                            setIsView(!isView)
+                          }}
+                        />
+                      ) : (
+                        <EyeOff
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => setIsView(!isView)}
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
