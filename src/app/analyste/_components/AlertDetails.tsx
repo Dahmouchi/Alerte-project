@@ -321,14 +321,14 @@ const AlertDetails = (alert: any) => {
             Détails de l&apos;alerte
             </h3>
           </div>
-          <div className="flex items-center lg:justify-start gap-2 px-2 justify-between space-y-2">
+          <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
                   <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
                     Alerte criticité
                   </h2>
                           <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />    
                   
                 </div>
-          <div className="space-y-2 mt-4">
+          <div className="space-y-2">
             {/* Status and Action Bar */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-gray-100 dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
               {/* Status Badge */}
