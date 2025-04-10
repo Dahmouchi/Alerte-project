@@ -4,16 +4,19 @@ import { admin_alert_status_options } from "@/components/filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  AlertCircle,
   Calendar,
   Eye,
   FileAudio,
   FileVideo,
   MapPin,
   MessageCircle,
+  Paperclip,
   Printer,
-  ScanBarcode,
   User,
+  UserCheck,
   UserRound,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
@@ -32,8 +35,9 @@ import { GetAnalyste, GetResponsable } from "@/actions/user";
 import { AssignAlert } from "@/actions/alertActions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { format, toZonedTime } from 'date-fns-tz';
-import { fr } from 'date-fns/locale';
+import { format, toZonedTime } from "date-fns-tz";
+import { fr } from "date-fns/locale";
+import { CriticalityBadge } from "@/components/CritiqueBadg";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -156,14 +160,15 @@ const AlertDetails = (alert: any) => {
     };
     fetchAnalysts();
   }, [al]);
-  const formatFrenchDate = (isoString:any) => {
-    const parisTime = toZonedTime(isoString, 'Europe/Paris');
-    return format(parisTime, 'dd/MM/yyyy à HH:mm', {
-      timeZone: 'Europe/Paris',
-      locale: fr
+  const formatFrenchDate = (isoString: any) => {
+    const parisTime = toZonedTime(isoString, "Europe/Paris");
+    return format(parisTime, "dd/MM/yyyy à HH:mm", {
+      timeZone: "Europe/Paris",
+      locale: fr,
     });
   };
-  const getStatusStyles = (status:any) => {
+
+  const getStatusStyles = (status: any) => {
     switch (status) {
       case "APPROVED":
         return {
@@ -199,7 +204,7 @@ const AlertDetails = (alert: any) => {
       const ocp = await AssignAlert(
         selectedAnalyst,
         selectedResponsable,
-        al.id,
+        al.id
       );
       if (ocp) {
         toast.success("Alert assigned successfully!");
@@ -212,11 +217,22 @@ const AlertDetails = (alert: any) => {
   };
   return (
     <div>
-      <div className="space-y-3 mt-2">
+      <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
-          className="bg-white border border-green-500 dark:bg-slate-800 p-6 rounded-lg shadow-md"
+          className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md"
         >
+          <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
+            <h3 className="text-sm font-semibold text-white">
+              Détails de l&apos;alerte
+            </h3>
+          </div>
+          <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
+            <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
+              Alerte criticité
+            </h2>
+            <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
+          </div>
           <div className="flex items-center justify-between py-2">
             {status && (
               <div
@@ -290,148 +306,250 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
           {al.adminStatus !== "PANDING" && (
-            <div>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Attribuer à
-                </span>
-                :{" "}
-              </p>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">Analiste</span>:{" "}
-                {al.assignedAnalyst && al.assignedAnalyst.name}{" "}
-                {al.assignedAnalyst && al.assignedAnalyst.prenom}
-              </p>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Responsalbe
-                </span>
-                : {al.assignedResponsable && al.assignedResponsable.name}{" "}
-                {al.assignedResponsable && al.assignedResponsable.prenom}
-              </p>
-            </div>
+           <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+           <div className="space-y-2">
+             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+               Assignation
+             </h3>
+             <div className="flex items-center gap-3">
+               <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+               <div>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">
+                   Analyste
+                 </p>
+                 <p className="font-medium text-gray-900 dark:text-white">
+                   {al.assignedAnalyst?.name}{" "}
+                   {al.assignedAnalyst?.prenom || "Non assigné"}
+                 </p>
+               </div>
+             </div>
+           </div>
+
+           <div className="space-y-2">
+             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+               Responsable
+             </h3>
+             <div className="flex items-center gap-3">
+               <UserCheck className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+               <div>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">
+                   Superviseur
+                 </p>
+                 <p className="font-medium text-gray-900 dark:text-white">
+                   {al.assignedResponsable?.name}{" "}
+                   {al.assignedResponsable?.prenom || ""}
+                 </p>
+               </div>
+             </div>
+           </div>
+         </div>
           )}
           <div className="mt-4 space-y-4">
             {/* Title & Code */}
-            <div className="flex lg:items-center lg:justify-between lg:flex-row flex-col">
-              <div>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">Titre</span>:{" "}
-                  {al.title}
-                </p>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Catégorie
-                  </span>
-                  :{" "}
-                  {categories.find((cat) => cat.value === al.category)?.title ||
-                    "Unknown"}
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
-                  <Calendar size={20} />
-                  <span className="font-semibold text-slate-800">
-                    {" "}
-                    Date de création :{" "}
-                  </span>{" "}
-                  {new Date(al.createdAt!).toLocaleDateString()}
+              {/* Header Section */}
+              <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Titre
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {al.title}
+                  </p>
                 </div>
-                <div className=" flex items-center gap-2 text-gray-500 dark:text-gray-300">
-                  <ScanBarcode size={20} />
-                  <span className="font-semibold text-slate-800">
-                    Code d&apos;alerte :
-                  </span>
-                  <span>#{al.code}</span>
+
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Catégorie
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {categories.find((cat) => cat.value === al.category)
+                        ?.title || "Unknown"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Date de création
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {new Date(al.createdAt!).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Code d&apos;alerte
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    #{al.code}
+                  </p>
                 </div>
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                <MessageCircle size={20} />
-                Expéditeur :
-              </div>
-              {al.nom ? (
-                <div className="ml-8 space-y-1">
-                  <p>Nom : {al.nom}</p>
-                  <p>Prènom : {al.prenom}</p>
-                  <p>Fonction : {al.fonction}</p>
-                </div>
-              ) : (
-                <p>Inconnu</p>
-              )}
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <Calendar size={20} />
-                La date :
-                <span>{new Date(al.dateLieu!).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <MapPin size={20} />
-                Lieu :<span>{al.location}</span>
+
+            {/* Sender Information */}
+            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-3">
+                <MessageCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Expéditeur
+                </h3>
               </div>
 
-              {/* Involved Persons */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <User size={20} />
-                  <h3 className="font-semibold">Personnes impliquées:</h3>
+              {al.nom ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Nom
+                    </span>
+                    <p className="font-medium">{al.nom}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Prénom
+                    </span>
+                    <p className="font-medium">{al.prenom}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Fonction
+                    </span>
+                    <p className="font-medium">{al.fonction}</p>
+                  </div>
                 </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">Inconnu</p>
+              )}
+            </div>
+
+            {/* Date & Location */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Date
+                  </h3>
+                </div>
+                <p>
+                  {new Date(al.dateLieu!).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <MapPin className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Lieu
+                  </h3>
+                </div>
+                <p>{al.location}</p>
+              </div>
+            </div>
+
+            {/* Involved Persons */}
+            <div className="lg:p-4 p-2 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Personnes impliquées
+                </h3>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3">
                 {al.persons?.map((person: any, index: any) => (
                   <div
                     key={index}
-                    className="flex justify-between lg:flex-row flex-col shadow gap-1 items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2"
+                    className="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600"
                   >
-                    <div className="flex items-center lg:flex-row flex-col gap-2 lg:gap-4">
-                      <div className="p-4 border shadow-sm rounded-full bg-white dark:bg-slate-800">
-                        <UserRound />
-                      </div>
-                      <div className="text-gray-600 dark:text-slate-100 font-semibold text-sm">
-                        <h1>{person?.nom}</h1>
-                        <h1>{person?.prenom}</h1>
+                    {/* Avatar - Always visible */}
+                    <div className="flex-shrink-0 mt-1">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <UserRound className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                     </div>
-                    <Badge className="text-md lg:mr-6 bg-blue-500 text-white">
-                      {person?.fonction}
-                    </Badge>
+
+                    {/* Main content - Flex column on mobile */}
+                    <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      {/* Name and function - Column layout */}
+                      <div className="min-w-0">
+                        <h4 className="font-medium text-gray-900 dark:text-white break-words">
+                          {person?.prenom} {person?.nom}
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 break-words">
+                          {person?.fonction}
+                        </p>
+                      </div>
+
+                      {/* Badge - Right aligned on desktop, left aligned on mobile */}
+                      <div className="sm:self-center">
+                        <Badge
+                          variant="outline"
+                          className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 whitespace-normal text-left sm:text-center"
+                        >
+                          {person?.fonction}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Type d&apos;alerte
-                  </span>
-                  : {al.type === "text" ? "Text" : "Audio"}
-                </p>
+            </div>
+
+            {/* Alert Content */}
+            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <AlertCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  {al.type === "text"
+                    ? "Contenu d'alerte"
+                    : "Enregistrement audio"}
+                </h3>
               </div>
-              <div>
-                <div className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Contenu d&apos;alerte
-                  </span>
-                  :{" "}
-                  {al.type === "text" ? (
-                    al.description
-                  ) : (
-                    <audio controls className="mt-2">
-                      <source src={al.audioUrl} type="audio/webm" />
-                      Your browser does not support the audio element.
-                    </audio>
-                  )}
+
+              {al.type === "text" ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none bg-white dark:bg-slate-700 p-4 rounded-lg">
+                  {al.description}
                 </div>
-              </div>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Pièces jointes
-                </span>
-                :{" "}
-              </p>
-              {al.files && (
-                <div className="flex flex-wrap gap-2 py-2">
+              ) : (
+                <div className="bg-white dark:bg-slate-700 p-4 rounded-lg">
+                  <audio controls className="w-full">
+                    <source src={al.audioUrl} type="audio/webm" />
+                    Votre navigateur ne supporte pas l&Apos;élément audio.
+                  </audio>
+                </div>
+              )}
+            </div>
+
+            {/* Attachments */}
+            {al.files && al.files.length > 0 && (
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Pièces jointes
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {al.files.map((file: any, key: any) => {
-                    // Determine file type from its URL or MIME type
                     const isImage =
                       file?.mimeType?.startsWith("image") ||
                       /\.(jpg|jpeg|png|gif|webp)$/i.test(file?.url);
@@ -443,56 +561,59 @@ const AlertDetails = (alert: any) => {
                       /\.(mp3|wav|ogg)$/i.test(file?.url);
 
                     return (
-                      <div
-                        key={key}
-                        className="relative w-20 h-20 rounded-md border-[1px] overflow-hidden shadow-md"
-                      >
-                        <Link href={file?.url} target="_blank">
-                          {/* Render Image */}
-                          {isImage && (
-                            <div
-                              className="w-full h-full bg-cover bg-center "
-                              style={{ backgroundImage: `url(${file?.url})` }}
-                            />
-                          )}
-
-                          {/* Render Video */}
-                          {isVideo && (
-                            <video
-                              className="w-full h-full object-cover"
-                              controls
-                            >
-                              <source
-                                src={file?.url}
-                                type={file?.mimeType || "video/mp4"}
+                      <div key={key} className="relative group">
+                        <Link
+                          href={file?.url}
+                          target="_blank"
+                          className="block"
+                        >
+                          <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                            {/* Image Preview */}
+                            {isImage && (
+                              <div
+                                className="w-full h-full bg-cover bg-center"
+                                style={{
+                                  backgroundImage: `url(${
+                                    isImage ===
+                                      file?.mimeType?.startsWith("image") ||
+                                    /\.(png)$/i.test(file?.url)
+                                      ? "/document.jpg"
+                                      : file?.url
+                                  })`,
+                                }}
                               />
-                            </video>
-                          )}
-
-                          {/* Render Audio */}
-                          {isAudio && (
-                            <div className="flex items-center justify-center w-full h-full bg-gray-800">
-                              <FileAudio className="text-white w-8 h-8" />
-                            </div>
-                          )}
-
-                          {/* Overlay with Eye Icon */}
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                            {isImage ? (
-                              <Eye className="text-white w-6 h-6" />
-                            ) : isVideo ? (
-                              <FileVideo className="text-white w-6 h-6" />
-                            ) : (
-                              <FileAudio className="text-white w-6 h-6" />
                             )}
+
+                            {/* Video Preview */}
+                            {isVideo && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileVideo className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Audio Preview */}
+                            {isAudio && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileAudio className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Eye className="h-6 w-6 text-white" />
+                            </div>
+                          </div>
+
+                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {file?.name || "Fichier joint"}
                           </div>
                         </Link>
                       </div>
                     );
                   })}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
         {al.conlusions &&
@@ -550,12 +671,12 @@ const AlertDetails = (alert: any) => {
                         Commentaire
                       </p>
                       <p className="text-gray-700 dark:text-gray-300">
-                         {con?.content}
+                        {con?.content}
                       </p>
                     </div>
                     <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Validé le: {formatFrenchDate(con.createdAt)}
+                        Validé le: {formatFrenchDate(con.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -617,7 +738,7 @@ const AlertDetails = (alert: any) => {
                     {/* Date de Validation */}
                     <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
                       <p className="text-xs text-gray-400 dark:text-gray-500">
-                      Validé le: {formatFrenchDate(con.createdAt)}
+                        Validé le: {formatFrenchDate(con.createdAt)}
                       </p>
                     </div>
                   </div>

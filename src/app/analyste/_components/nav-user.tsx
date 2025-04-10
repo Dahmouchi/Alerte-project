@@ -72,7 +72,7 @@ export function NavUser() {
 
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => signOut({ callbackUrl: "/admin/login" })}
+                onClick={() => signOut({ callbackUrl: "/analyste/login" })}
                 className="cursor-pointer"
               >
                 <LogOut />
