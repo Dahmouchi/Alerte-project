@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { admin_alert_status_options, label_options } from "@/components/filters"
+import { admin_alert_status_options, criticity_options, label_options } from "@/components/filters"
 import {
   HoverCard,
   HoverCardContent,
@@ -95,7 +95,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "adminStatus",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = admin_alert_status_options.find(
@@ -119,7 +119,33 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
+  {
+    accessorKey: "criticite",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Criticité" />
+    ),
+    cell: ({ row }) => {
+      const criticity = criticity_options.find(
+        (option) => option.value === String(row.getValue("criticite"))
+      );
   
+      if (!criticity) {
+        return <div className="text-gray-400">Non défini</div>;
+      }
+  
+      return (
+        <div className="flex items-center">
+          <div className={`flex items-center px-3 py-1 rounded-full ${criticity.color}`}>
+            <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+            <span className="text-sm font-medium">{criticity.label}</span>
+          </div>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (

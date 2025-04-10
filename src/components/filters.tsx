@@ -11,6 +11,7 @@ import {
   Timer,
   UserCheck,
   XCircle,
+  Gauge, AlertCircle, Siren,
 } from "lucide-react";
 
 import { User, ShieldCheck, Briefcase, UserCog } from "lucide-react";
@@ -66,6 +67,40 @@ export const status_options = [
     label: "Traité",
     icon: CheckCircle2,
     color: "text-green-500 bg-green-100 dark:bg-green-900",
+  },
+];
+export const criticity_options = [
+  {
+    value: "1",
+    label: "Faible",
+    description: "Impact minimal, traitement standard",
+    icon: Gauge,
+    color: "text-green-500 bg-green-100 dark:bg-green-900",
+    badgeColor: "bg-green-500",
+  },
+  {
+    value: "2",
+    label: "Modérée",
+    description: "Impact modéré, nécessite attention",
+    icon: AlertCircle,
+    color: "text-blue-500 bg-blue-100 dark:bg-blue-900",
+    badgeColor: "bg-blue-500",
+  },
+  {
+    value: "3",
+    label: "Élevée",
+    description: "Impact important, traitement prioritaire",
+    icon: AlertTriangle,
+    color: "text-orange-500 bg-orange-100 dark:bg-orange-900",
+    badgeColor: "bg-orange-500",
+  },
+  {
+    value: "4",
+    label: "Critique",
+    description: "Impact critique, traitement immédiat",
+    icon: Siren,
+    color: "text-red-500 bg-red-100 dark:bg-red-900",
+    badgeColor: "bg-red-500",
   },
 ];
 export const admin_alert_status_options = [
