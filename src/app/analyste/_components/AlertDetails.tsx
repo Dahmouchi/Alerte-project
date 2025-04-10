@@ -11,6 +11,7 @@ import {
   Calendar,
   CheckCheck,
   CheckCircle2,
+  ChevronDown,
   Copy,
   EllipsisVertical,
   Eye,
@@ -21,11 +22,18 @@ import {
   MessageCircle,
   MessageCircleMore,
   MoreHorizontal,
+  Paperclip,
+  Pencil,
   Printer,
+  Save,
   ScanBarcode,
   Trash2,
   User,
+  UserCheck,
+  UserPlus,
   UserRound,
+  Users,
+  XCircle,
 } from "lucide-react";
 import {
   Dialog,
@@ -63,9 +71,10 @@ import {
 import { AlertChat } from "@/components/alert-chat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
+
+import UpdateConclusion from "./conclusion";
+import { UserAlertStatus } from "@prisma/client";
 import { CriticalityBadge } from "@/components/CritiqueBadg";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import DeleteConclusion from "./delete-conclusion";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -177,8 +186,7 @@ const AlertDetails = (alert: any) => {
   const [urgenceLevel, setUrgenceLevel] = useState("1");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
- const [showDeleteDialog, setShowDeleteDialog] =
-    React.useState<boolean>(false);
+  const [decision, setDecision] = useState<UserAlertStatus>("APPROVED");
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
   const status = admin_alert_status_options.find(
@@ -197,7 +205,7 @@ const AlertDetails = (alert: any) => {
       }
     };
     fetchAnalysts();
-  }, [showDeleteDialog]);
+  }, []);
   const formatFrenchDate = (isoString: any) => {
     const parisTime = toZonedTime(isoString, "Europe/Paris");
     return format(parisTime, "dd/MM/yyyy à HH:mm", {
@@ -205,7 +213,7 @@ const AlertDetails = (alert: any) => {
       locale: fr,
     });
   };
-  
+
   const getStatusStyles = (status: any) => {
     switch (status) {
       case "APPROVED":
@@ -213,24 +221,28 @@ const AlertDetails = (alert: any) => {
           className:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
           label: "Approuvé",
+          dotColor: "bg-green-500 ",
         };
       case "DECLINED":
         return {
           className:
             "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
           label: "Rejeté",
+          dotColor: "bg-red-500",
         };
       case "INFORMATIONS_MANQUANTES":
         return {
           className:
             "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
           label: "Infos manquantes",
+          dotColor: "bg-yellow-500 ",
         };
       default: // PENDING
         return {
           className:
             "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
           label: "En attente",
+          dotColor: "bg-gray-500",
         };
     }
   };
@@ -246,8 +258,15 @@ const AlertDetails = (alert: any) => {
   const sendConclusion = async () => {
     if (session) {
       try {
-        setSelectedAnalyst(session.user.id)
-        const ocp = await saveConclusion(session.user.id, justification,al.id,recevable,urgenceLevel);
+        setSelectedAnalyst(session.user.id);
+        const ocp = await saveConclusion(
+          session.user.id,
+          justification,
+          al.id,
+          recevable,
+          urgenceLevel,
+          decision
+        );
         if (ocp) {
           toast.success("Alert assigned successfully!");
           router.refresh();
@@ -292,235 +311,358 @@ const AlertDetails = (alert: any) => {
   };
   return (
     <div>
-      <div className="space-y-3 mt-2">
+      <div className="space-y-3 mt-4 p-2">
         <div
           ref={contentRef}
-          className="bg-white relative border border-blue-600 dark:bg-slate-800 p-6 rounded-lg shadow-md"
+          className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md"
         >
-         
-          <div className="flex items-center justify-between py-2 flex-col lg:flex-row gap-2">
-            {status && (
-              <div
-                className={`flex w-full lg:w-auto items-center px-4 py-1 rounded-md ${status.color}`}
-              >
-                {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-                <span className="font-medium">{status.label}</span>
-              </div>
-            )}
-            {selectedAnalyst === session?.user.id ? (
-              <div className="">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div
-                      className={`px-10 rounded-md w-full flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
-                                  bg-transparent  border-2 border-blue-600 text-blue-600 `}
-                    >
-                      Attribuée
-                      <CheckCheck />
-                    </div>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Souhaitez-vous céder l&pos;alerte?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Êtes-vous absolument sûr ?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Non</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="cursor-pointer bg-blue-700 hover:bg-blue-900"
-                        onClick={removeAnalyste}
+          <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
+            <h3 className="text-sm font-semibold text-white">
+            Détails de l&apos;alerte
+            </h3>
+          </div>
+          <div className="flex items-center lg:justify-start gap-2 px-2 justify-between space-y-2">
+                  <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
+                    Alerte criticité
+                  </h2>
+                          <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />    
+                  
+                </div>
+          <div className="space-y-2 mt-4">
+            {/* Status and Action Bar */}
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-gray-100 dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
+              {/* Status Badge */}
+              {status && (
+                <div
+                  className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
+                    status.color
+                  } ${status.color || "text-white"}`}
+                >
+                  {status.icon && <status.icon className="mr-2 h-4 w-4" />}
+                  {status.label}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                {selectedAnalyst === session?.user.id ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-800/20"
                       >
-                        Oui
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        <CheckCheck className="h-4 w-4" />
+                        <span>Attribuée à moi</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Souhaitez-vous céder l&apos;alerte?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Cette action transférera la responsabilité de cette
+                          alerte à un autre analyste.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={removeAnalyste}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          Confirmer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : selectedAnalyst === "" ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                        <UserPlus className="h-4 w-4" />
+                        <span>Prendre en charge</span>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Prendre en charge cette alerte?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Vous serez désigné comme responsable de cette alerte.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={assignAlert}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          Confirmer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                    <User className="h-4 w-4" />
+                    <span>
+                      Attribuée à {al.assignedAnalyst?.name}{" "}
+                      {al.assignedAnalyst?.prenom}
+                    </span>
+                  </div>
+                )}
               </div>
-            ) : selectedAnalyst === "" ? (
-              <div className="">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <div
-                      className={`px-10 rounded-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
-                  bg-blue-600 text-white`}
-                    >
-                      Prendre en charge
+            </div>
+
+            {/* Assignment Details */}
+            {al.adminStatus !== "PANDING" && (
+              <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Assignation
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Analyste
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {al.assignedAnalyst?.name}{" "}
+                        {al.assignedAnalyst?.prenom || "Non assigné"}
+                      </p>
                     </div>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Souhaitez-vous prendre en charge l&apos;alerte?
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Non</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="cursor-pointer bg-blue-700 hover:bg-blue-900"
-                        onClick={assignAlert}
-                      >
-                        Oui
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            ) : (
-              <div
-                className={`px-10 rounded-md flex gap-1 font-semibold py-2 cursor-no-drop transition-all duration-300 bg-transparent  border-2 border-blue-600 text-blue-600 `}
-              >
-                Attribuée à M.{al.assignedAnalyst.name}
-                <CheckCheck />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Responsable
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <UserCheck className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Superviseur
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {al.assignedResponsable?.name}{" "}
+                        {al.assignedResponsable?.prenom || ""}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
-          {al.adminStatus !== "PANDING" && (
-            <div>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Attribuer à
-                </span>
-                :{" "}
-              </p>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">Analiste</span>:{" "}
-                {al.assignedAnalyst && al.assignedAnalyst.name}{" "}
-                {al.assignedAnalyst && al.assignedAnalyst.prenom}
-              </p>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Responsalbe
-                </span>
-                : {al.assignedResponsable && al.assignedResponsable.name}{" "}
-                {al.assignedResponsable && al.assignedResponsable.prenom}
-              </p>
-            </div>
-          )}
-          <div className="mt-4  space-y-4">
-            {/* Title & Code */}
-            <div className="flex lg:items-center lg:justify-between lg:flex-row flex-col">
-              <div>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">Titre</span>:{" "}
-                  {al.title}
-                </p>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Catégorie
-                  </span>
-                  :{" "}
-                  {categories.find((cat) => cat.value === al.category)?.title ||
-                    "Unknown"}
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
-                  <Calendar size={20} />
-                  <span className="font-semibold text-slate-800">
-                    {" "}
-                    Date de création :{" "}
-                  </span>{" "}
-                  {new Date(al.createdAt!).toLocaleDateString()}
+          <div className="mt-6 space-y-4">
+            {/* Header Section */}
+            <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Titre
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {al.title}
+                  </p>
                 </div>
-                <div className=" flex items-center gap-2 text-gray-500 dark:text-gray-300">
-                  <ScanBarcode size={20} />
-                  <span className="font-semibold text-slate-800">
-                    Code d&apos;alerte :
-                  </span>
-                  <span>#{al.code}</span>
+
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Catégorie
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {categories.find((cat) => cat.value === al.category)
+                        ?.title || "Unknown"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Date de création
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {new Date(al.createdAt!).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-[120px]">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Code d&apos;alerte
+                    </span>
+                  </div>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    #{al.code}
+                  </p>
                 </div>
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2">
-                <MessageCircle size={20} />
-                Expéditeur :
-              </div>
-              {al.nom ? (
-                <div className="ml-8 space-y-1">
-                  <p>Nom : {al.nom}</p>
-                  <p>Prènom : {al.prenom}</p>
-                  <p>Fonction : {al.fonction}</p>
-                </div>
-              ) : (
-                <p>Inconnu</p>
-              )}
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <Calendar size={20} />
-                La date :
-                <span>{new Date(al.dateLieu!).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <MapPin size={20} />
-                Lieu :<span>{al.location}</span>
+
+            {/* Sender Information */}
+            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-3">
+                <MessageCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Expéditeur
+                </h3>
               </div>
 
-              {/* Involved Persons */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <User size={20} />
-                  <h3 className="font-semibold">Personnes impliquées:</h3>
+              {al.nom ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Nom
+                    </span>
+                    <p className="font-medium">{al.nom}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Prénom
+                    </span>
+                    <p className="font-medium">{al.prenom}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Fonction
+                    </span>
+                    <p className="font-medium">{al.fonction}</p>
+                  </div>
                 </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">Inconnu</p>
+              )}
+            </div>
+
+            {/* Date & Location */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Date
+                  </h3>
+                </div>
+                <p>
+                  {new Date(al.dateLieu!).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                  <MapPin className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Lieu
+                  </h3>
+                </div>
+                <p>{al.location}</p>
+              </div>
+            </div>
+
+            {/* Involved Persons */}
+            <div className="lg:p-4 p-2 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  Personnes impliquées
+                </h3>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3">
                 {al.persons?.map((person: any, index: any) => (
                   <div
                     key={index}
-                    className="flex justify-between lg:flex-row flex-col shadow gap-1 items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2"
+                    className="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600"
                   >
-                    <div className="flex items-center lg:flex-row flex-col gap-2 lg:gap-4">
-                      <div className="p-4 border shadow-sm rounded-full bg-white dark:bg-slate-800">
-                        <UserRound />
-                      </div>
-                      <div className="text-gray-600 dark:text-slate-100 font-semibold text-sm">
-                        <h1>{person?.nom}</h1>
-                        <h1>{person?.prenom}</h1>
+                    {/* Avatar - Always visible */}
+                    <div className="flex-shrink-0 mt-1">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <UserRound className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                     </div>
-                    <Badge className="text-md lg:mr-6 bg-blue-500 text-white">
-                      {person?.fonction}
-                    </Badge>
+
+                    {/* Main content - Flex column on mobile */}
+                    <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      {/* Name and function - Column layout */}
+                      <div className="min-w-0">
+                        <h4 className="font-medium text-gray-900 dark:text-white break-words">
+                          {person?.prenom} {person?.nom}
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 break-words">
+                          {person?.fonction}
+                        </p>
+                      </div>
+
+                      {/* Badge - Right aligned on desktop, left aligned on mobile */}
+                      <div className="sm:self-center">
+                        <Badge
+                          variant="outline"
+                          className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 whitespace-normal text-left sm:text-center"
+                        >
+                          {person?.fonction}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Type d&apos;alerte
-                  </span>
-                  : {al.type === "text" ? "Text" : "Audio"}
-                </p>
+            </div>
+
+            {/* Alert Content */}
+            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <AlertCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                <h3 className="font-medium text-gray-900 dark:text-white">
+                  {al.type === "text"
+                    ? "Contenu d'alerte"
+                    : "Enregistrement audio"}
+                </h3>
               </div>
-              <div>
-                <div className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">
-                    Contenu d&apos;alerte
-                  </span>
-                  :{" "}
-                  {al.type === "text" ? (
-                    al.description
-                  ) : (
-                    <audio controls className="mt-2">
-                      <source src={al.audioUrl} type="audio/webm" />
-                      Your browser does not support the audio element.
-                    </audio>
-                  )}
+
+              {al.type === "text" ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none bg-white dark:bg-slate-700 p-4 rounded-lg">
+                  {al.description}
                 </div>
-              </div>
-              <p className="text-gray-500 dark:text-gray-300">
-                <span className="font-semibold text-slate-800">
-                  Pièces jointes
-                </span>
-                :{" "}
-              </p>
-              {al.files && (
-                <div className="flex flex-wrap gap-2 py-2">
+              ) : (
+                <div className="bg-white dark:bg-slate-700 p-4 rounded-lg">
+                  <audio controls className="w-full">
+                    <source src={al.audioUrl} type="audio/webm" />
+                    Votre navigateur ne supporte pas l&Apos;élément audio.
+                  </audio>
+                </div>
+              )}
+            </div>
+
+            {/* Attachments */}
+            {al.files && al.files.length > 0 && (
+              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Pièces jointes
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {al.files.map((file: any, key: any) => {
-                    // Determine file type from its URL or MIME type
                     const isImage =
                       file?.mimeType?.startsWith("image") ||
                       /\.(jpg|jpeg|png|gif|webp)$/i.test(file?.url);
@@ -532,56 +674,59 @@ const AlertDetails = (alert: any) => {
                       /\.(mp3|wav|ogg)$/i.test(file?.url);
 
                     return (
-                      <div
-                        key={key}
-                        className="relative w-20 h-20 rounded-md border-[1px] overflow-hidden shadow-md"
-                      >
-                        <Link href={file?.url} target="_blank">
-                          {/* Render Image */}
-                          {isImage && (
-                            <div
-                              className="w-full h-full bg-cover bg-center "
-                              style={{ backgroundImage: `url(${file?.url})` }}
-                            />
-                          )}
-
-                          {/* Render Video */}
-                          {isVideo && (
-                            <video
-                              className="w-full h-full object-cover"
-                              controls
-                            >
-                              <source
-                                src={file?.url}
-                                type={file?.mimeType || "video/mp4"}
+                      <div key={key} className="relative group">
+                        <Link
+                          href={file?.url}
+                          target="_blank"
+                          className="block"
+                        >
+                          <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                            {/* Image Preview */}
+                            {isImage && (
+                              <div
+                                className="w-full h-full bg-cover bg-center"
+                                style={{
+                                  backgroundImage: `url(${
+                                    isImage ===
+                                      file?.mimeType?.startsWith("image") ||
+                                    /\.(png)$/i.test(file?.url)
+                                      ? "/document.jpg"
+                                      : file?.url
+                                  })`,
+                                }}
                               />
-                            </video>
-                          )}
-
-                          {/* Render Audio */}
-                          {isAudio && (
-                            <div className="flex items-center justify-center w-full h-full bg-gray-800">
-                              <FileAudio className="text-white w-8 h-8" />
-                            </div>
-                          )}
-
-                          {/* Overlay with Eye Icon */}
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                            {isImage ? (
-                              <Eye className="text-white w-6 h-6" />
-                            ) : isVideo ? (
-                              <FileVideo className="text-white w-6 h-6" />
-                            ) : (
-                              <FileAudio className="text-white w-6 h-6" />
                             )}
+
+                            {/* Video Preview */}
+                            {isVideo && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileVideo className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Audio Preview */}
+                            {isAudio && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileAudio className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Eye className="h-6 w-6 text-white" />
+                            </div>
+                          </div>
+
+                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {file?.name || "Fichier joint"}
                           </div>
                         </Link>
                       </div>
                     );
                   })}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <div
@@ -608,7 +753,7 @@ const AlertDetails = (alert: any) => {
                 <DialogHeader>
                   <DialogTitle>Alerte chat</DialogTitle>
                   <DialogDescription>
-                  Collaborer à la résolution de cette alerte.
+                    Collaborer à la résolution de cette alerte.
                   </DialogDescription>
                 </DialogHeader>
                 <div>
@@ -619,193 +764,310 @@ const AlertDetails = (alert: any) => {
           </div>
         </div>
         {selectedAnalyst === session?.user.id && (
-          <div>
-           
-           {al.recevable === "NON_DECIDE" ?
-            <div>
-              <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
-              <div
-                className={`w-full py-2 border-green-500 font-semibold rounded-lg cursor-pointer border text-sm transition-all duration-300 ease-in-out transform ${
-                  recevable === "RECEVALBE"
-                    ? "bg-blue-600 text-white scale-105 shadow-md"
-                    : "bg-white text-gray-700 hover:bg-blue-50"
-                }`}
-                onClick={() => setRecevable("RECEVALBE")}
-              >
-                Recevable
-              </div>
-
-              <div
-                className={`w-full py-2 font-semibold border-red-600 rounded-lg cursor-pointer border text-sm transition-all duration-300 ease-in-out transform ${
-                  recevable === "NON_RECEVABLE"
-                    ? "bg-red-600 text-white scale-105 shadow-md"
-                    : "bg-white text-gray-700 hover:bg-red-50"
-                }`}
-                onClick={() => setRecevable("NON_RECEVABLE")}
-              >
-                Non Recevable
-              </div>
+          <div className=" relative border  lg:p-6 p-2 rounded-lg shadow-md mt-6">
+            <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
+              <h3 className="text-sm font-semibold text-white">
+                Traitement d&apos;alertes
+              </h3>
             </div>
-            <div
-              className={`bg-white dark:bg-slate-800 p-6 rounded-xl   transition-shadow duration-300 ${
-                recevable === "RECEVALBE"
-                  ? "border-blue-500 border-2 border-l-4 shadow-lg hover:shadow-xl"
-                  : recevable === "NON_RECEVABLE"
-                  ? "border-red-500 border-2 border-l-4 shadow-lg hover:shadow-xl"
-                  : ""
-              }`}
-            >
-              {recevable === "NON_RECEVABLE" ? (
-                <div className="flex flex-col space-y-4">
-                  {/* Header: Analyste Info */}
-
-                  <div>
-                    <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                      Justification
-                    </label>
-                    <select
-                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                      value={justification}
-                      onChange={(e) => setJustification(e.target.value)}
-                    >
-                      <option value="" disabled>
-                        -- Choisissez une justification --
-                      </option>
-                      {predefinedJustifications.map((j, index) => (
-                        <option key={index} value={j}>
-                          {j}
-                        </option>
-                      ))}
-                    </select>
-
-                    {/* Input for "Autre" */}
-                    {justification === "Autre" && (
-                      <textarea
-                        onChange={(e) => setJustification(e.target.value)}
-                        rows={3}
-                        className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                        placeholder="Expliquez la décision..."
-                      />
+            {al.recevable === "NON_DECIDE" ? (
+              <div>
+                <div className="grid grid-cols-2 gap-3   dark:bg-slate-800 rounded-t-xl">
+                  {/* Recevable Button */}
+                  <button
+                    onClick={() => setRecevable("RECEVALBE")}
+                    className={`relative py-2 px-4 rounded-t-lg text-sm font-medium  transition-all duration-200 ${
+                      recevable === "RECEVALBE"
+                        ? "bg-blue-600 text-white shadow-sm  border-2  border-blue-600"
+                        : "bg-white dark:bg-slate-700 text-gray-700 border-2  dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    }`}
+                  >
+                    {recevable === "RECEVALBE" && (
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-400 border-2 border-white dark:border-slate-800"></span>
                     )}
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <button
-                      onClick={sendConclusion}
-                      className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
-                      title="Save"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20px"
-                        height="20px"
-                        viewBox="0 -0.5 25 25"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                      </svg>
-                      <span className="text-sm text-white font-bold pr-1">
-                        enregistrer la conclusion
-                      </span>
-                    </button>
-                  </div>
+                    <span className="flex items-center justify-center gap-1">
+                      <CheckCircle2
+                        className={`h-4 w-4 ${
+                          recevable === "RECEVALBE"
+                            ? "text-white"
+                            : "text-blue-600 dark:text-blue-400"
+                        }`}
+                      />
+                      Recevable
+                    </span>
+                  </button>
+
+                  {/* Non Recevable Button */}
+                  <button
+                    onClick={() => setRecevable("NON_RECEVABLE")}
+                    className={`relative py-2 px-4 rounded-t-lg    text-sm font-medium transition-all duration-200 ${
+                      recevable === "NON_RECEVABLE"
+                        ? "bg-red-600 text-white shadow-sm  border-2 border-red-600"
+                        : "bg-white  dark:bg-slate-700  border-2  text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    }`}
+                  >
+                    {recevable === "NON_RECEVABLE" && (
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-400 border-2 border-white dark:border-slate-800"></span>
+                    )}
+                    <span className="flex items-center justify-center gap-1">
+                      <XCircle
+                        className={`h-4 w-4 ${
+                          recevable === "NON_RECEVABLE"
+                            ? "text-white"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      />
+                      Non Recevable
+                    </span>
+                  </button>
                 </div>
-              ) : recevable === "RECEVALBE" ? (
-                <div className="flex flex-col space-y-4">
-                  {/* Analyst Info */}
+                <div
+                  className={`bg-white dark:bg-slate-800 p-6 rounded-b-xl   transition-shadow duration-300 ${
+                    recevable === "RECEVALBE"
+                      ? "border-blue-500 border-2  shadow-lg hover:shadow-xl"
+                      : recevable === "NON_RECEVABLE"
+                      ? "border-red-500 border-2 shadow-lg hover:shadow-xl"
+                      : ""
+                  }`}
+                >
+                  {recevable === "NON_RECEVABLE" ? (
+                    <div className="flex flex-col space-y-4">
+                      {/* Header: Analyste Info */}
 
-                  {/* Dropdown for Alertes Urgentes */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Niveau de criticité
-                    </label>
-                    <select
-                      required
-                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                      value={urgenceLevel}
-                      onChange={(e) => setUrgenceLevel(e.target.value)}
-                    >
-                      <option value="">Sélectionner un niveau</option>
-                      <option value="1">Faible</option>
-                      <option value="2">Modérée</option>
-                      <option value="3">Èlevée </option>
-                      <option value="4">Critique</option>
-                    </select>
-                  </div>
+                      <div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Niveau de criticité
+                          </label>
+                          <select
+                            required
+                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                            value={urgenceLevel}
+                            onChange={(e) => setUrgenceLevel(e.target.value)}
+                          >
+                            <option value="">Sélectionner un niveau</option>
+                            <option value="1">Faible</option>
+                            <option value="2">Modérée</option>
+                            <option value="3">Èlevée </option>
+                            <option value="4">Critique</option>
+                          </select>
+                        </div>
+                        <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                          Justification
+                        </label>
+                        <select
+                          className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                          value={justification}
+                          onChange={(e) => setJustification(e.target.value)}
+                        >
+                          <option value="" disabled>
+                            -- Choisissez une justification --
+                          </option>
+                          {predefinedJustifications.map((j, index) => (
+                            <option key={index} value={j}>
+                              {j}
+                            </option>
+                          ))}
+                        </select>
 
-                  {/* Justification Textarea */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Commentaire de justification
-                    </label>
-                    <textarea
+                        {/* Input for "Autre" */}
+                        {justification === "Autre" && (
+                          <textarea
+                            onChange={(e) => setJustification(e.target.value)}
+                            rows={3}
+                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
+                            placeholder="Expliquez la décision..."
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center justify-end">
+                        <button
+                          onClick={sendConclusion}
+                          className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
+                          title="Save"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20px"
+                            height="20px"
+                            viewBox="0 -0.5 25 25"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              clipRule="evenodd"
+                              d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                          </svg>
+                          <span className="text-sm text-white font-bold pr-1">
+                            enregistrer la conclusion
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : recevable === "RECEVALBE" ? (
+                    <div className="space-y-6  bg-white dark:bg-gray-800 rounded-b-lg ">
+                      {/* Decision Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Décision
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Approved */}
+                          <label className="relative">
+                            <input
+                              type="radio"
+                              name="decision"
+                              value="APPROVED"
+                              className="peer hidden"
+                              checked={decision === "APPROVED"}
+                              onChange={() => setDecision("APPROVED")}
+                            />
+                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20">
+                              <CheckCircle2 className="w-6 h-6 text-green-500 mb-2" />
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                Approuvé
+                              </span>
+                            </div>
+                          </label>
 
-                    required
-                      className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                      rows={4}
-                      placeholder="Ajouter un commentaire..."
-                      value={justification}
-                      onChange={(e) => setJustification(e.target.value)}
-                    ></textarea>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <button
-                    onClick={sendConclusion}
-                      className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
-                      title="Save"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20px"
-                        height="20px"
-                        viewBox="0 -0.5 25 25"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                      </svg>
-                      <span className="text-sm text-white font-bold pr-1">
-                        enregistrer la conclusion
-                      </span>
-                    </button>
-                  </div>
+                          {/* Declined */}
+                          <label className="relative">
+                            <input
+                              type="radio"
+                              name="decision"
+                              value="DECLINED"
+                              className="peer hidden"
+                              checked={decision === "DECLINED"}
+                              onChange={() => setDecision("DECLINED")}
+                            />
+                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20">
+                              <XCircle className="w-6 h-6 text-red-500 mb-2" />
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                Rejeté
+                              </span>
+                            </div>
+                          </label>
+
+                          {/* Missing Info */}
+                          <label className="relative">
+                            <input
+                              type="radio"
+                              name="decision"
+                              value="INFORMATIONS_MANQUANTES"
+                              className="peer hidden"
+                              checked={decision === "INFORMATIONS_MANQUANTES"}
+                              onChange={() =>
+                                setDecision("INFORMATIONS_MANQUANTES")
+                              }
+                            />
+                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20">
+                              <AlertCircle className="w-6 h-6 text-amber-500 mb-2" />
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                Infos manquantes
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Criticity Dropdown - Modern Version */}
+
+                      {/* Justification Textarea */}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Commentaire de justification
+                        </label>
+                        <textarea
+                          required
+                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          rows={4}
+                          placeholder="Ajouter un commentaire..."
+                          value={justification}
+                          onChange={(e) => setJustification(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Niveau de criticité
+                        </label>
+                        <div className="relative">
+                          <select
+                            required
+                            className="block w-full px-4 py-2.5 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            value={urgenceLevel}
+                            onChange={(e) => setUrgenceLevel(e.target.value)}
+                          >
+                            <option value="">Sélectionner un niveau</option>
+                            <option value="1">Faible</option>
+                            <option value="2">Modérée</option>
+                            <option value="3">Élevée</option>
+                            <option value="4">Critique</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <ChevronDown className="w-5 h-5 text-gray-400" />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Submit Button */}
+                      <div className="flex justify-end">
+                        <button
+                          onClick={sendConclusion}
+                          className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                          <Save className="w-5 h-5 mr-2" />
+                          Enregistrer la conclusion
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
-              ) : (
-                <div></div>
-              )}
-            </div>
-          </div>:
-           <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
-           <div
-             className={`w-full py-2 border-green-500 font-semibold rounded-lg border text-sm transition-all duration-300 ease-in-out transform ${
-               recevable === "RECEVALBE"
-                 ? "bg-blue-600 text-white scale-105 shadow-md"
-                 : "bg-white text-gray-700 "
-             }`}
-           >
-             Recevable
-           </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
+                <div
+                  className={`w-full py-2 border-green-500 font-semibold rounded-lg border text-sm transition-all duration-300 ease-in-out transform ${
+                    recevable === "RECEVALBE"
+                      ? "bg-blue-600 text-white scale-105 shadow-md"
+                      : "bg-white text-gray-700 "
+                  }`}
+                >
+                 <span className="flex items-center justify-center gap-1">
+                      <CheckCircle2
+                        className={`h-4 w-4 ${
+                          recevable === "RECEVALBE"
+                            ? "text-white"
+                            : "text-blue-600 dark:text-blue-400"
+                        }`}
+                      />
+                      Recevable
+                    </span>
+                </div>
 
-           <div
-             className={`w-full py-2 font-semibold  border-red-600 rounded-lg  border text-sm transition-all duration-300 ease-in-out transform ${
-               recevable === "NON_RECEVABLE"
-                 ? "bg-red-600 text-white scale-105 shadow-md"
-                 : "bg-white text-gray-700 "
-             }`}           >
-             Non Recevable
-           </div>
-         </div>
-          }
+                <div
+                  className={`w-full py-2 font-semibold  border-red-600 rounded-lg  border text-sm transition-all duration-300 ease-in-out transform ${
+                    recevable === "NON_RECEVABLE"
+                      ? "bg-red-600 text-white scale-105 shadow-md"
+                      : "bg-white text-gray-700 "
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-1">
+                      <XCircle
+                        className={`h-4 w-4 ${
+                          recevable === "NON_RECEVABLE"
+                            ? "text-white"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      />
+                      Non Recevable
+                    </span>
+                </div>
+              </div>
+            )}
           </div>
         )}{" "}
         {al.conlusions &&
@@ -813,104 +1075,87 @@ const AlertDetails = (alert: any) => {
             <div key={index}>
               {" "}
               {con.createdBy.role === "ANALYSTE" ? (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-[1px] border-green-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="flex flex-col space-y-4">
-                    {/* Analyst Info */}
-                    <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-slate-700 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-green-600 dark:text-green-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
+                <div className="bg-white dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                  {/* Header with analyst info and actions */}
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                          <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        </div>
+                        {con.createdBy.id === session?.user.id && (
+                          <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
+                            <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Analyste
                         </p>
-                        <p className="font-medium text-gray-900 dark:text-white">
+                        <p className="font-semibold text-gray-900 dark:text-white">
                           {con.createdBy.name} {con.createdBy.prenom}
                         </p>
                       </div>
                     </div>
-                    {
-                      con.createdBy.id === session?.user.id && 
-                      <Dialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
-          >
-            <MoreHorizontal className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='w-[200px]'>
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${con.id}`)}}>
-            <DropdownMenuItem>
-              {" "}
-              <FilePenLine className='mr-2 h-4 w-4' />
-              mettre à jour
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            className='text-red-600'
-          >
-            <Trash2 className='mr-2 h-4 w-4' />
-            supprimer
-          </DropdownMenuItem>          
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DeleteConclusion
-        task={con}
-        isOpen={showDeleteDialog}
-        showActionToggle={setShowDeleteDialog}
-      />
-    </Dialog>
-                    }
+
+                    {con.createdBy.id === session?.user.id && (
+                      <UpdateConclusion task={con} alerte={al} />
+                    )}
+                  </div>
+
+                  {/* Status badges */}
+                  <div className="flex flex-wrap items-center gap-3 mb-5">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          al.recevable === "RECEVALBE"
+                            ? "bg-green-500"
+                            : "bg-gray-400"
+                        }`}
+                      />
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                        {al.recevable === "RECEVALBE"
+                          ? "Recevable"
+                          : "Non Recevable"}
+                      </span>
                     </div>
 
-                    {/* Decision Status */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          getStatusStyles(al.analysteValidation).dotColor
+                        }`}
+                      />
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${
                           getStatusStyles(al.analysteValidation).className
                         }`}
                       >
                         {getStatusStyles(al.analysteValidation).label}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Statut
-                      </span>
                     </div>
+                  </div>
 
-                    {/* Conclusion */}
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                        Commentaire
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {con?.content}
+                  {/* Content */}
+                  <div className="mb-5">
+                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                      Commentaire
+                    </h3>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {con?.content || "Aucun commentaire fourni"}
                       </p>
                     </div>
-                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        Validé le: {formatFrenchDate(con.createdAt)}
-                      </p>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Validé le {formatFrenchDate(con.createdAt)}
+                      </span>
                     </div>
                   </div>
                 </div>

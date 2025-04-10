@@ -4,7 +4,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
-import { RecevalbeStatus } from "@prisma/client";
+import { RecevalbeStatus, UserAlertStatus } from "@prisma/client";
 
 export async function updateAlert(
   alertId: string,
@@ -214,6 +214,7 @@ export async function saveConclusion(
   alertId:string,
   recevable:RecevalbeStatus,
   criticite:string,
+  decision:UserAlertStatus,
 ) {
   try { 
     if(recevable === "RECEVALBE")
@@ -229,7 +230,7 @@ export async function saveConclusion(
       const res = await prisma.alert.update({
         where:{id:alertId},
         data:{
-          analysteValidation:"APPROVED",
+          analysteValidation:decision,
           recevable:recevable,
           criticite:parseInt(criticite),
         }

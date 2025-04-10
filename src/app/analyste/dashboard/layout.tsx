@@ -25,9 +25,9 @@ export default async function RootLayout({
     <div className="">
   <SidebarProvider>
     <AppSidebar />
-    <SidebarInset className="p-2 dark:bg-slate-800 bg-slate-100">
+    <SidebarInset className="lg:p-2 dark:bg-slate-800 bg-slate-100">
       <Header />
-      <div className="flex flex-1 flex-col gap-4 lg:p-4 pt-0 bg-white dark:bg-slate-900 rounded-b-lg">
+      <div className="flex flex-1 flex-col gap-4 lg:p-4 pt-0 bg-white dark:bg-slate-900 lg:rounded-b-lg">
         <div className="overflow-x-auto"> {/* ✅ Add this wrapper */}
           {children}
         </div>
