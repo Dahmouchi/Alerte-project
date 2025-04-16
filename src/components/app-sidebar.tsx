@@ -3,17 +3,17 @@
 import type * as React from "react";
 import {
   BookOpen,
-  Siren,
   House,
   BellElectric,
   Settings2,
+  File,
+  SendHorizonal,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
   
@@ -43,13 +43,18 @@ const datas = {
       
     },
     {
-      title: "Create Alert",
+      title: "Crée alerte",
       url: "/user/dashboard/alerte/create",
-      icon: Siren,
+      icon: SendHorizonal,
+    },
+    {
+      title: "Brouillons",
+      url: "/user/dashboard/alerte/draft",
+      icon: File,
     },
     {
       title: "Documentation",
-      url: "#",
+      url: "/user/dashboard/documentation",
       icon: BookOpen,
      
     },
@@ -66,18 +71,13 @@ const datas = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="dark:bg-slate-800 flex items-center justify-center p-4">
+    <Sidebar collapsible="icon" {...props} className="bg-slate-200 dark:bg-slate-800 p-2">
+      <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl shadow-lg">
         <Image src={"/logo.png"} alt="logo" width={300} height={200}/>
       </SidebarHeader>
-      <SidebarContent className="dark:bg-slate-800 pt-4">
+      <SidebarContent className="dark:bg-slate-900 pt-4 pl-0 bg-white rounded-b-xl">
         <NavMain items={datas.navMain} />
       </SidebarContent>
-
-      <SidebarFooter>
-      
-      </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   );

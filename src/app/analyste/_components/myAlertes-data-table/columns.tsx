@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { admin_alert_status_options, label_options } from "@/components/filters"
+import {  analyste_alert_status_options, criticity_options, label_options } from "@/components/filters"
 import {
   HoverCard,
   HoverCardContent,
@@ -52,7 +52,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Titre" />
     ),
     cell: ({ row }) => {
       const label = label_options.find(
@@ -93,13 +93,13 @@ export const columns: ColumnDef<AlertType>[] = [
     },
   },
   {
-    accessorKey: "adminStatus",
+    accessorKey: "analysteValidation",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Validation" />
     ),
     cell: ({ row }) => {
-      const status = admin_alert_status_options.find(
-        (status) => status.value === row.getValue("adminStatus")
+      const status = analyste_alert_status_options.find(
+        (status) => status.value === row.getValue("analysteValidation")
       );
 
       if (!status) {
@@ -108,7 +108,7 @@ export const columns: ColumnDef<AlertType>[] = [
 
       return (
         <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-md ${status.color}`}
+          className={`flex w-[170px] items-center px-2 py-1 rounded-md ${status.color}`}
         >
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium">{status.label}</span>
@@ -119,11 +119,37 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
+  {
+    accessorKey: "criticite",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Criticité" />
+    ),
+    cell: ({ row }) => {
+      const criticity = criticity_options.find(
+        (option) => option.value === Number(row.getValue("criticite"))
+      );
   
+      if (!criticity) {
+        return <div className="text-gray-400">Non défini</div>;
+      }
+  
+      return (
+        <div className="flex items-center">
+          <div className={`flex items-center px-3 py-1 rounded-full ${criticity.color}`}>
+            <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+            <span className="text-sm font-medium">{criticity.label}</span>
+          </div>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Creation Date" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => {
       const field = row.getValue("createdAt") as Date;

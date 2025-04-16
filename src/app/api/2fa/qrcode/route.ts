@@ -1,4 +1,4 @@
-import { UserInfo } from "@/actions/alertActions";
+import { UserInfo } from "@/actions/user";
 import { getServerSession } from "next-auth";
 import QRCode from "qrcode";
 import speakeasy from "speakeasy";

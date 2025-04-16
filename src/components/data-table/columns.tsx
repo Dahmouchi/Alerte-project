@@ -52,7 +52,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Titre" />
     ),
     cell: ({ row }) => {
       const label = label_options.find(
@@ -70,9 +70,29 @@ export const columns: ColumnDef<AlertType>[] = [
     },
   },
   {
+    accessorKey: "category",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Catégorie" />
+    ),
+    cell: ({ row }) => {
+      const label = label_options.find(
+        (label) => label.value === row.original.code
+      );
+
+      return (
+        <div className="flex space-x-2">
+          {label && <Badge variant="outline">{label.label}</Badge>}
+          <span className="max-w-[500px] truncate font-medium">
+            {row.getValue("category")}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = status_options.find(
@@ -122,7 +142,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Creation Date" />
+      <DataTableColumnHeader column={column} title="Date création" />
     ),
     cell: ({ row }) => {
       const field = row.getValue("createdAt") as Date;

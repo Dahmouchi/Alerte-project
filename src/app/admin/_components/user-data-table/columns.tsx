@@ -56,8 +56,8 @@ export const columns: ColumnDef<UserType>[] = [
       <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("statut") ? "Active" : "Inactive";
-      return <Badge variant="outline">{status}</Badge>;
+      const status = row.getValue("statut") ? "activé" : "Désactivé";
+      return <Badge variant={status === "activé" ? "default" : "destructive"}>{status}</Badge>;
     },
   },
   {

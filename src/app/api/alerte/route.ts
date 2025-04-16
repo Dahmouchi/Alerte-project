@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { nanoid } from "nanoid"; // Generate unique codes
+import { createHistoryRecord } from '@/actions/alertActions';
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +17,12 @@ export async function POST(req: Request) {
         step: 1, // Start at step 1
       },
     });
-
+    createHistoryRecord(
+      newAlert.id,
+      createdById,
+      'CREATE',
+     `L'alerte a été créée par l'utilisateur.`
+    )
     return NextResponse.json(newAlert, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: `Error creating alert ${error}`  }, { status: 500 });

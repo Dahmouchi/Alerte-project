@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
-import { admin_alert_status_options } from "@/components/filters"
+import { analyste_alert_status_options, criticity_options } from "@/components/filters"
+import { DataTableFacetedFilterNumber } from "@/components/data-table/data-table-faceted-filter-number"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -22,18 +23,25 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter tasks..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter Codes..."
+          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn("code")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("adminStatus") && (
+        {table.getColumn("analysteValidation") && (
           <DataTableFacetedFilter
-            column={table.getColumn("adminStatus")}
-            title="Status"
-            options={admin_alert_status_options}
+            column={table.getColumn("analysteValidation")}
+            title="Statut"
+            options={analyste_alert_status_options}
+          />
+        )}
+        {table.getColumn("criticite") && (
+          <DataTableFacetedFilterNumber
+            column={table.getColumn("criticite")}
+            title="Criticité"
+            options={criticity_options}
           />
         )}
         

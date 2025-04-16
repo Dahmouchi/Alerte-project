@@ -69,7 +69,7 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
           </CardContent>
         </Card>
       </div>
-      <Card className="w-full  shadow-none border-0 dark:bg-slate-700">
+      <Card className="w-full  dark:bg-slate-700">
         <CardHeader>       
           <h2 className="text-lg font-semibold mb-4">Question de sécurité</h2>
         </CardHeader>

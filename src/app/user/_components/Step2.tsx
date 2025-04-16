@@ -4,10 +4,13 @@
 
 import {
   AlertTriangle,
+  ArrowRight,
+  BriefcaseBusiness,
   Calendar,
   CheckCircle,
   CopyX,
   Dot,
+  Eye,
   FileText,
   FileType,
   FileVolume,
@@ -195,16 +198,19 @@ const LottiePlayer = dynamic(() => import("react-lottie-player"), {
 
 const Step2 = (alert: { alert: any }) => {
   const [al, setAl] = useState(alert.alert);
-  const [textAudio, setTextAudio] = useState(al.type);
+  const [textAudio, setTextAudio] = useState(al?.type);
   const [files, setFiles] = useState<File[] | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
-  const [anonyme, setAnonyme] = useState(al.involved);
-  const [steps, setSteps] = useState(al.step);
-  const [anonymeUser, setAnonymeUser] = useState(al.contactPreference);
+  const [anonyme, setAnonyme] = useState(al?.involved);
+  const [steps, setSteps] = useState(al?.step);
+  const [anonymeUser, setAnonymeUser] = useState(al?.contactPreference);
   const [success, setSuccess] = useState(false);
-  const defaultCategory = categories.find((cat) => cat.value === al.category); // Change to your default category
+  const [terms, setTerms] = useState(false);
+  const [error, setError] = useState("");
+
+  const defaultCategory = categories.find((cat) => cat.value === al?.category); // Change to your default category
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >(defaultCategory);
@@ -213,7 +219,7 @@ const Step2 = (alert: { alert: any }) => {
 
   const [persons, setPersons] = useState<
     { nom: string; prenom: string; fonction: string }[]
-  >(al.persons || []);
+  >(al?.persons || []);
   const [personData, setPersonData] = useState({
     nom: "",
     prenom: "",
@@ -222,13 +228,13 @@ const Step2 = (alert: { alert: any }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: al.title || "",
-      description: al.description || "",
-      location: al.location || "",
-      nom: al.nom || "",
-      prenom: al.prenom || "",
-      fonction: al.fonction || "",
-      dateLieu: al.dateLieu || new Date(),
+      title: al?.title || "",
+      description: al?.description || "",
+      location: al?.location || "",
+      nom: al?.nom || "",
+      prenom: al?.prenom || "",
+      fonction: al?.fonction || "",
+      dateLieu: al?.dateLieu || new Date(),
     },
   });
   // Handle input changes
@@ -255,12 +261,12 @@ const Step2 = (alert: { alert: any }) => {
   }, [audio]);
   const dropZoneConfig = {
     maxFiles: 5,
-    maxSize: 1024 * 1024 * 6,  // Now allows files up to 6MB
+    maxSize: 1024 * 1024 * 6, // Now allows files up to 6MB
     multiple: true,
-};
-
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+   if(terms){
     try {
       // Check if anonyme is true and persons array is empty
       if (anonyme && persons.length === 0) {
@@ -289,6 +295,7 @@ const Step2 = (alert: { alert: any }) => {
         if (res) {
           setAl(res);
           toast.success("Success");
+          setError("");
           setSteps(2);
           setLoading(false);
           setTimeout(() => setSuccess(false), 3000);
@@ -297,11 +304,14 @@ const Step2 = (alert: { alert: any }) => {
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
-      setLoading(false)
-
-    }finally{
-      setLoading(false)
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
+   }else{
+    setError("il doit accepter les termes et les condition!")
+    toast.error("il doit accepter les termes et les condition!");
+   }
   }
 
   const retour = () => {
@@ -387,22 +397,26 @@ const Step2 = (alert: { alert: any }) => {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-8  lg:py-10 py-3 "
+                className="space-y-4   py-3 "
               >
                 <div className="grid grid-cols-1 gap-4  ">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 border-[1px] p-4 rounded-xl shadow dark:bg-slate-700">
-                    <div className="space-y-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="space-y-3  border-[1px] p-4 rounded-xl shadow dark:bg-slate-700">
                       <FormField
                         control={form.control}
                         name="title"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Title</FormLabel>
+                            <FormLabel>Titre</FormLabel>
                             <FormControl>
-                              <Input placeholder="shadcn" type="" {...field} />
+                              <Input
+                                placeholder="Entrez un titre descriptif"
+                                type=""
+                                {...field}
+                              />
                             </FormControl>
                             <FormDescription>
-                              This is your public display name.
+                              Ceci est votre nom d&apos;affichage public.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -417,21 +431,22 @@ const Step2 = (alert: { alert: any }) => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>
-                                  Location
+                                  Emplacement
                                   <span className="text-sm text-slate-500 font-light dark:text-slate-300">
-                                    (optional)
+                                    (facultative)
                                   </span>
                                 </FormLabel>
                                 <FormControl>
                                   <Input
-                                    placeholder="shadcn"
+                                    placeholder="Entrez l'emplacement"
                                     type="text"
                                     {...field}
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  This is your public display name.
+                                  Où cela s&apos;est-il produit ?
                                 </FormDescription>
+
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -447,7 +462,7 @@ const Step2 = (alert: { alert: any }) => {
                                 <FormLabel>
                                   Date{" "}
                                   <span className="text-sm text-slate-500 font-light dark:text-slate-300">
-                                    (optional)
+                                    (facultative)
                                   </span>
                                 </FormLabel>
                                 <DatetimePicker
@@ -458,7 +473,7 @@ const Step2 = (alert: { alert: any }) => {
                                   ]}
                                 />
                                 <FormDescription>
-                                  Add the date of submission with detailly.
+                                  Ajoutez la date de soumission avec détails.
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -468,14 +483,22 @@ const Step2 = (alert: { alert: any }) => {
                       </div>
                       <div className="py-2 space-y-2 flex lg:items-center justify-between lg:flex-row flex-col">
                         <div>
-                          <h1
-                            className={`${
-                              anonyme && persons.length === 0 && "text-red-500"
-                            } font-semibold text-sm`}
+                          <h2
+                            className={`text-sm font-medium ${
+                              anonyme && persons.length === 0
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-slate-700 dark:text-slate-300"
+                            }`}
                           >
                             Personne(s) impliquée(s){" "}
-                          </h1>
+                          </h2>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            {anonyme && persons.length === 0
+                              ? "At least one person is required"
+                              : "Add all relevant individuals"}
+                          </p>
                         </div>
+
                         <div className="flex items-center gap-3">
                           <div className="radio-inputs">
                             <label className="radio">
@@ -507,28 +530,38 @@ const Step2 = (alert: { alert: any }) => {
                             {persons.map((person, index) => (
                               <div
                                 key={index}
-                                className="flex relative justify-between shadow items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2"
+                                className="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600"
                               >
-                                <div className="flex items-center gap-4 ">
-                                  <div className="p-4 border-[1px] shadow-sm rounded-full bg-white dark:bg-slate-800">
-                                    <UserRound />
+                                {/* Avatar - Always visible */}
+                                <div className="flex-shrink-0 mt-1">
+                                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                    <UserRound className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                   </div>
-                                  <div className=" w-full gap-3">
-                                    <div className=" text-gray-600 dark:text-slate-100 font-semibold text-sm flex items-center gap-1">
-                                      <h1>{person?.nom}</h1>
-                                      <h1>{person?.prenom} </h1>
-                                    </div>
-                                    <Badge className="text-sm mr-6 bg-blue-500 w-full  text-white">
+                                </div>
+
+                                {/* Main content - Flex column on mobile */}
+                                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                  {/* Name and function - Column layout */}
+                                  <div className="min-w-0">
+                                    <h4 className="font-medium text-gray-900 dark:text-white break-words">
+                                      {person?.prenom} {person?.nom}
+                                    </h4>
+                                    <Badge
+                                      variant="outline"
+                                      className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 whitespace-normal text-left sm:text-center"
+                                    >
                                       {person?.fonction}
                                     </Badge>
                                   </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div
-                                    className=" text-red-600 dark:text-red-400  border-red-300 dark:bg-slate-800 rounded-md cursor-pointer"
-                                    onClick={() => removePerson(index)}
-                                  >
-                                    <CopyX className="w-6 h-6" />
+
+                                  {/* Badge - Right aligned on desktop, left aligned on mobile */}
+                                  <div className="sm:self-center">
+                                    <div
+                                      className="p-2 rounded-sm bg-gray-100 text-red-600 cursor-pointer"
+                                      onClick={() => removePerson(index)}
+                                    >
+                                      <Trash className="w-4 h-4 " />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -536,71 +569,80 @@ const Step2 = (alert: { alert: any }) => {
                           </div>
                           <div>
                             <Dialog>
-                              <DialogTrigger asChild className="w-full ">
-                                <div className="w-12 h-12 rounded-full border-[1px] flex items-center justify-center hover:bg-blue-400 text-white cursor-pointer bg-blue-600">
-                                  <Plus />
-                                </div>
+                              <DialogTrigger asChild>
+                                <button className="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all">
+                                  <Plus className="h-4 w-4" />
+                                  Ajouter une personne
+                                </button>
                               </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
+                              <DialogContent className="sm:max-w-[425px] rounded-lg">
                                 <DialogHeader>
-                                  <DialogTitle>Edit profile</DialogTitle>
-                                  <DialogDescription>
-                                    Make changes to your profile here. Click
-                                    save when you&apos;re done.
+                                  <DialogTitle className="text-slate-800 dark:text-slate-200">
+                                    Ajouter une personne impliquée
+                                  </DialogTitle>
+                                  <DialogDescription className="text-slate-600 dark:text-slate-400">
+                                    Fournissez des détails sur la personne
+                                    concernée.
                                   </DialogDescription>
                                 </DialogHeader>
 
-                                <div className="grid gap-4 py-4">
-                                  <div className="grid grid-cols-4 items-center gap-4">
+                                <div className="space-y-4 py-4">
+                                  <div className="space-y-2">
                                     <Label
-                                      htmlFor="name"
-                                      className="text-right"
+                                      htmlFor="nom"
+                                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
                                     >
                                       Nom
                                     </Label>
                                     <Input
-                                      id="name"
+                                      id="nom"
                                       name="nom"
                                       value={personData.nom}
                                       onChange={handleChange}
-                                      className="col-span-3"
+                                      className="w-full"
+                                      placeholder="Entrez le nom"
                                     />
                                   </div>
-                                  <div className="grid grid-cols-4 items-center gap-4">
+                                  <div className="space-y-2">
                                     <Label
-                                      htmlFor="username"
-                                      className="text-right"
+                                      htmlFor="prenom"
+                                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
                                     >
                                       Prénom
                                     </Label>
                                     <Input
-                                      id="username"
+                                      id="prenom"
                                       name="prenom"
                                       value={personData.prenom}
                                       onChange={handleChange}
-                                      className="col-span-3"
+                                      className="w-full"
+                                      placeholder="Entrez le prénom"
                                     />
                                   </div>
-                                  <div className="grid grid-cols-4 items-center gap-4">
+                                  <div className="space-y-2">
                                     <Label
-                                      htmlFor="username"
-                                      className="text-right"
+                                      htmlFor="fonction"
+                                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
                                     >
-                                      Fonction
+                                      Rôle/Fonction
                                     </Label>
                                     <Input
-                                      id="username"
+                                      id="fonction"
                                       name="fonction"
-                                      className="col-span-3"
                                       value={personData.fonction}
                                       onChange={handleChange}
+                                      className="w-full"
+                                      placeholder="Entrez le rôle ou la fonction"
                                     />
                                   </div>
                                 </div>
                                 <DialogFooter>
                                   <DialogClose asChild>
-                                    <Button onClick={addPerson}>
-                                      Save changes
+                                    <Button
+                                      onClick={addPerson}
+                                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    >
+                                      Ajouter une personne
                                     </Button>
                                   </DialogClose>
                                 </DialogFooter>
@@ -613,11 +655,11 @@ const Step2 = (alert: { alert: any }) => {
                       <div className="w-full"></div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="py-2 space-y-2 flex lg:items-center justify-between lg:flex-row flex-col">
+                    <div className="space-y-4  border-[1px] p-4 rounded-xl shadow dark:bg-slate-700">
+                      <div className="space-y-2 flex lg:items-center justify-between lg:flex-row flex-col">
                         <div>
                           <h1 className="font-semibold text-sm">
-                            Personne(s) impliquée(s){" "}
+                            Mode de Signalement{" "}
                           </h1>
                         </div>
                         <div className="flex items-center gap-3">
@@ -665,7 +707,7 @@ const Step2 = (alert: { alert: any }) => {
                                 </FormLabel>
                                 <FormControl>
                                   <Textarea
-                                    placeholder="Placeholder"
+                                    placeholder="Entrez la description"
                                     className="h-full bg-transparent"
                                     {...field}
                                     maxLength={2000} // Empêche l'utilisateur de taper plus de 2000 caractères
@@ -707,9 +749,9 @@ const Step2 = (alert: { alert: any }) => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Attachments
+                              pièces jointes
                               <span className="text-sm text-slate-500 font-light dark:text-slate-300">
-                                (optional)
+                                (facultative)
                               </span>
                             </FormLabel>
                             <FormControl>
@@ -727,9 +769,9 @@ const Step2 = (alert: { alert: any }) => {
                                     <CloudUpload className="text-gray-500 dark:text-gray-200 w-10 h-10" />
                                     <p className="mb-1 text-sm text-gray-500 dark:text-gray-200 ">
                                       <span className="font-semibold">
-                                        Click to upload
+                                        Cliquez pour télécharger
                                       </span>
-                                      &nbsp; or drag and drop
+                                      &nbsp; ou glisser-déposer
                                     </p>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
                                       SVG, PNG, JPG or GIF
@@ -749,7 +791,7 @@ const Step2 = (alert: { alert: any }) => {
                               </FileUploader>
                             </FormControl>
                             <FormDescription>
-                              Select a file to upload.
+                              Sélectionnez un fichier à télécharger.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -758,237 +800,317 @@ const Step2 = (alert: { alert: any }) => {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-4  border-[1px] p-4 rounded-xl shadow dark:bg-slate-700">
-                  <div className="flex items-center gap-6 justify-between">
-                    <h1 className="font-semibold lg:text-lg text-md">
-                      Souhaitez vous révéler votre identité pour cette Alerte :
-                    </h1>
-                    <div className="radio-inputs">
-                      <label className="radio">
-                        <input
-                          type="radio"
-                          name="radios"
-                          value="asdf"
-                          checked={anonymeUser === "YES"}
-                          onChange={(e) => setAnonymeUser("YES")}
-                        />
-                        <span className={`name `}>Oui</span>
-                      </label>
-                      <label className="radio">
-                        <input
-                          type="radio"
-                          name="radios"
-                          value="asdf"
-                          checked={anonymeUser === "ANONYMOUS"}
-                          onChange={(e) => setAnonymeUser("ANONYMOUS")}
-                        />
-                        <span className="name">Anonyme</span>
-                      </label>
+                <div className="space-y-4 p-6 border-[1px] rounded-xl bg-white dark:bg-slate-700 shadow-lg   dark:border-slate-700">
+                  {/* Identity Section */}
+                  <div className="flex flex-col border-[1px] lg:flex-row lg:items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg">
+                    <div>
+                      <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                        Souhaitez-vous révéler votre identité pour cette alerte
+                        ?
+                      </h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Choisissez comment vous souhaitez vous identifier
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="inline-flex rounded-md shadow-sm"
+                        role="group"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setAnonymeUser("YES")}
+                          className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${
+                            anonymeUser === "YES"
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600"
+                          }`}
+                        >
+                          Oui
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAnonymeUser("ANONYMOUS")}
+                          className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${
+                            anonymeUser === "ANONYMOUS"
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600"
+                          }`}
+                        >
+                          Anonyme
+                        </button>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Identity Fields (shown when "Oui" is selected) */}
                   {anonymeUser === "YES" && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg">
                       <FormField
                         control={form.control}
                         name="nom"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nom</FormLabel>
+                            <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              Nom
+                              <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                                (requis)
+                              </span>
+                            </FormLabel>
                             <FormControl>
-                              <Input placeholder="shadcn" type="" {...field} />
+                              <div className="relative">
+                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input
+                                  placeholder="Entrez votre nom"
+                                  className="pl-10 pr-4 py-2 w-full rounded-lg border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                                  {...field}
+                                />
+                              </div>
                             </FormControl>
-
-                            <FormMessage />
+                            <FormMessage className="text-xs text-red-600 dark:text-red-400" />
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={form.control}
                         name="prenom"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Prenom</FormLabel>
+                            <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              Prénom
+                              <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                                (requis)
+                              </span>
+                            </FormLabel>
                             <FormControl>
-                              <Input placeholder="shadcn" type="" {...field} />
+                              <div className="relative">
+                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input
+                                  placeholder="Entrez votre prénom"
+                                  className="pl-10 pr-4 py-2 w-full rounded-lg border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                                  {...field}
+                                />
+                              </div>
                             </FormControl>
-
-                            <FormMessage />
+                            <FormMessage className="text-xs text-red-600 dark:text-red-400" />
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={form.control}
                         name="fonction"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Fonction</FormLabel>
+                          <FormItem className="lg:col-span-2">
+                            <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              Rôle/Fonction
+                              <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                                (optionnel)
+                              </span>
+                            </FormLabel>
                             <FormControl>
-                              <Input placeholder="shadcn" type="" {...field} />
+                              <div className="relative">
+                                <BriefcaseBusiness className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <Input
+                                  placeholder="Entrez votre rôle ou fonction"
+                                  className="pl-10 pr-4 py-2 w-full rounded-lg border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                                  {...field}
+                                />
+                              </div>
                             </FormControl>
-
-                            <FormMessage />
+                            <FormMessage className="text-xs text-red-600 dark:text-red-400" />
                           </FormItem>
                         )}
                       />
                     </div>
                   )}
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
+
+                  {/* Terms and Conditions */}
+                 <div className="space-y-2">
+                 <div className="flex items-center space-x-3 pt-6  bg-slate-50 dark:bg-slate-700/30 rounded-lg">
+                    <Checkbox
+                      onClick={()=>setTerms(true)}
+                      id="terms"
+                      className="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 mt-0.5"
+                    />
                     <label
                       htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-snug text-slate-700 dark:text-slate-300"
                     >
-                      Accept terms and conditions
+                      J&apos;accepte les termes et conditions d&apos;utilisation
+                      <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                        (requis)
+                      </span>
                     </label>
                   </div>
-                </div>
-                <div className="w-full flex items-center justify-end ">
-                  <button
-                    type="submit"
-                    className="bg-blue-700 px-8 py-2 rounded-full text-white hover:bg-blue-500 cursor-pointer"
-                  >
-                    Submit
-                  </button>
+                  {error && <div className="text-red-500 text-sm">il doit accepter les termes et les condition!</div>}
+
+                 </div>
+                  {/* Submit Button */}
+                  <div className="w-full flex items-center justify-end pt-2">
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full transition-colors duration-200"
+                    >
+                      Envoyer l&apos;alerte
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </form>
             </Form>
           </div>
         )}
         {steps === 2 && (
-          <div className="lg:p-4 space-y-3">
-            {/* Success Banner */}
-            <section className="bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl">
-              <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-8 lg:grid-cols-12">
-                <div className="mr-auto place-self-center lg:col-span-7">
-                  <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight text-white">
-                    Félicitations ! Alerte créée avec succès !
-                  </h1>
-                  <p className="max-w-2xl mb-6 font-light text-gray-100">
-                    Vous avez maintenant accès à votre contenu.
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={"/user/dashboard"}
-                      className="inline-flex items-center px-5 py-3 text-base font-medium text-green-900 bg-green-200 rounded-lg hover:text-white hover:bg-green-900"
-                    >
-                      retour à l&apos;accueil
-                      <svg
-                        className="w-5 h-5 ml-2 -mr-1"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        ></path>
-                      </svg>
-                    </Link>
-                    <LottiePlayer
-                      loop
-                      animationData={check}
-                      play
-                      className="h-32 w-auto lg:hidden"
-                    />
-                  </div>
-                </div>
-                <div className="hidden lg:mt-0 lg:col-span-5 lg:flex justify-center items-center">
-                  <LottiePlayer loop animationData={check} play />
-                </div>
-              </div>
-            </section>
-
-            {/* Printable Alert Information */}
-            <div
-              ref={contentRef}
-              className="bg-white border border-green-500 dark:bg-slate-800 p-6 rounded-lg shadow-md"
-            >
-              <div className="mt-4 space-y-4">
-                {/* Title & Code */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      Title : {al.title}
-                    </h3>
-                    <h3 className="text-lg font-semibold">
-                      Code d&apos;alerte : #{al.code}
-                    </h3>
-                  </div>
-                  <img src="/logo.png" alt="" className="max-w-sm h-auto" />
-                </div>
-
-                {/* Date & Category */}
-                <div className="text-lg font-semibold flex items-center gap-2">
-                  <Calendar size={20} />
-                  <span>
-                    Date de création :{" "}
-                    {new Date(al.createdAt!).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-gray-500 dark:text-gray-300">
-                  <span className="font-semibold text-slate-800">Category</span>
-                  :{" "}
-                  {categories.find((cat) => cat.value === al.category)?.title ||
-                    "Unknown"}
-                </p>
-
-                {/* Description */}
-                <p className="text-gray-500 dark:text-gray-300">
-                  {al.description}
-                </p>
-
-                {/* Additional Info */}
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                    <Calendar size={20} />
-                    <span>{new Date(al.dateLieu!).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                    <MapPin size={20} />
-                    <span>{al.location}</span>
-                  </div>
-
-                  {/* Involved Persons */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <User size={20} />
-                      <h3 className="font-semibold">Persons Involved:</h3>
+          <div className="lg:p-4 space-y-6">
+          {/* Success Banner - Improved Design */}
+          <section className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl shadow-lg overflow-hidden">
+            <div className="max-w-screen-xl px-6 py-8 mx-auto lg:py-12">
+              <div className="flex flex-col lg:flex-row items-center justify-between">
+                <div className="lg:w-1/2 mb-8 lg:mb-0">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 bg-white bg-opacity-20 rounded-full mr-4">
+                      <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
-                    {al.persons?.map((person: any, index: any) => (
-                      <div
-                        key={index}
-                        className="flex justify-between shadow items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-2"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-4 border shadow-sm rounded-full bg-white dark:bg-slate-800">
-                            <UserRound />
-                          </div>
-                          <div className="text-gray-600 dark:text-slate-100 font-semibold text-sm">
-                            <h1>{person?.nom}</h1>
-                            <h1>{person?.prenom}</h1>
-                          </div>
-                        </div>
-                        <Badge className="text-md mr-6 bg-blue-500 text-white">
-                          {person?.fonction}
-                        </Badge>
-                      </div>
-                    ))}
+                    <h1 className="text-3xl md:text-4xl font-bold text-white">
+                      Alerte envoyée avec succès !
+                    </h1>
                   </div>
+                  
+                  <p className="text-lg text-white text-opacity-90 mb-6">
+                    Votre alerte a été correctement enregistrée dans notre système. 
+                    Vous pouvez suivre son traitement dans votre tableau de bord.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4">
+                   
+                  </div>
+                </div>
+                
+                <div className="lg:w-1/6  justify-center lg:flex hidden">
+                  <LottiePlayer 
+                    loop={false}
+                    animationData={check}
+                    play
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>
-
-            {/* Print Button */}
-            <div className="flex justify-end mt-4">
-              <Button
-                onClick={() => reactToPrintFn()}
-                className="px-5 py-3 text-white bg-green-500 rounded-sm shadow cursor-pointer hover:bg-green-700 focus:ring-4 focus:ring-green-300"
-              >
-                <Printer />
-                Imprimer
-              </Button>
+          </section>
+        
+          {/* Alert Summary Card - Improved Layout */}
+          <div className="bg-white border border-emerald-100 rounded-xl shadow-sm overflow-hidden">
+            <div className="p-6 md:p-8" ref={contentRef}>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Récapitulatif de l&apos;alerte</h2>
+                  <p className="text-emerald-600 font-medium">Code: #{al.code}</p>
+                </div>
+                <img src="/logo.png" alt="Logo" className="h-12 mt-4 md:mt-0" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">Titre</h3>
+                    <p className="text-gray-700">{al.title}</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+                    <p className="text-gray-700">{al.description}</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">Catégorie</h3>
+                    <p className="text-gray-700">
+                      {categories.find((cat) => cat.value === al.category)?.title || "Non spécifiée"}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Right Column */}
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">Date de création</h3>
+                    <div className="flex items-center text-gray-700">
+                      <Calendar className="mr-2 w-5 h-5" />
+                      {new Date(al.createdAt!).toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">Date et lieu de l&apos;incident</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-gray-700">
+                        <Calendar className="mr-2 w-5 h-5" />
+                        {new Date(al.dateLieu!).toLocaleDateString('fr-FR')}
+                      </div>
+                      <div className="flex items-center text-gray-700">
+                        <MapPin className="mr-2 w-5 h-5" />
+                        {al.location || "Non spécifié"}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {al.persons?.length > 0 && (
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-900 mb-3">Personnes impliquées</h3>
+                      <div className="space-y-3">
+                        {al.persons?.map((person: any, index: any) => (
+                          <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-xs">
+                            <div className="flex-shrink-0 p-2 bg-emerald-100 text-emerald-600 rounded-full">
+                              <UserRound className="w-5 h-5" />
+                            </div>
+                            <div className="ml-3">
+                              <p className="font-medium text-gray-900">
+                                {person?.prenom} {person?.nom}
+                              </p>
+                              <p className="text-sm text-gray-500">{person?.fonction}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Actions Footer */}
+            <div className="bg-gray-50 px-6 py-4 border-t flex justify-between items-center lg:flex-row flex-col">
+              <div className="text-sm text-gray-500">
+                Vous pouvez modifier cette alerte depuis votre tableau de bord.
+              </div>
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={() => reactToPrintFn()}
+                  className="flex items-center gap-2"
+                >
+                  <Printer className="w-5 h-5" />
+                  Imprimer
+                </Button>
+                <Link href={`/user/dashboard/alerte/${al.code}`}>
+                  <Button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700">
+                    <Eye className="w-5 h-5" />
+                    Voir détails
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
+        </div>
         )}
       </div>
     </div>

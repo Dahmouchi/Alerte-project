@@ -178,7 +178,7 @@ const highlightMatch = (text: string, search: string) => {
                   onClick={() => setView("grid")}
                   className={`${
                     view === "grid" && "bg-blue-700 text-white"
-                  } cursor-pointer`}
+                  } cursor-pointer lg:block hidden`}
                 >
                   <GridIcon className="w-5 h-5" />
                 </Button>

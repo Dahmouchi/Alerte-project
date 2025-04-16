@@ -8,6 +8,7 @@ export async function GET() {
         select: {
           createdAt: true,
         },
+        where:{step:2},
         orderBy:{
             createdAt:"asc"
         }

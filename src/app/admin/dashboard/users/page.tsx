@@ -10,11 +10,6 @@ const Users = async () => {
   let users: Awaited<ReturnType<typeof prisma.user.findMany>> = []; // Infer type from Prisma
 
   users = await prisma.user.findMany({
-    where: {
-      role: {
-        not: "ADMIN",
-      },
-    },
     orderBy:{
       createdAt:"desc"
     }

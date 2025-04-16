@@ -13,10 +13,13 @@ const Login = async () => {
   }
 
   return (
-    <div className="w-full relative h-screen bg-contain dark:bg-slate-950" style={{backgroundImage:'url("/Element.png")'}}>
-      <div className="w-full absolute top-0">
-              <Header session={session}/>
-            </div>
+    <div
+      className="w-full relative h-screen bg-contain dark:bg-slate-900"
+      style={{ backgroundImage: 'url("/Element.png")' }}
+    >
+      <div className="w-full absolute top-0 z-40">
+        <Header session={session} />
+      </div>
       <div className="flex items-center justify-center w-full h-full">
         <UsernameLogin />
       </div>

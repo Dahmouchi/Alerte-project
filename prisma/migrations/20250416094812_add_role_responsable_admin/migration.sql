@@ -1,0 +1,5 @@
+-- AlterEnum
+ALTER TYPE "Role" ADD VALUE 'ADMIN_RESPONSABLE';
+
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "statut" SET DEFAULT true;

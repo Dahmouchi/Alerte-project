@@ -11,6 +11,7 @@ import {
   FileVideo,
   MapPin,
   MessageCircle,
+  MessageCircleMore,
   Paperclip,
   Printer,
   User,
@@ -32,12 +33,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { GetAnalyste, GetResponsable } from "@/actions/user";
-import { AssignAlert } from "@/actions/alertActions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { CriticalityBadge } from "@/components/CritiqueBadg";
+import { AlertChat } from "@/components/alert-chat";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
+import { AssignAlertAdmin } from "@/actions/alertActions";
+import { useSession } from "next-auth/react";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -142,6 +147,7 @@ const AlertDetails = (alert: any) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
+  const session = useSession();
   const status = admin_alert_status_options.find(
     (status) => status.value === al?.adminStatus
   );
@@ -167,7 +173,14 @@ const AlertDetails = (alert: any) => {
       locale: fr,
     });
   };
+  const unreadCount = useUnreadMessages(al.id);
 
+  const handleOpenChat = async () => {
+    if (unreadCount > 0) {
+      await markMessagesAsRead(al.id);
+    }
+    setIsOpen(true);
+  };
   const getStatusStyles = (status: any) => {
     switch (status) {
       case "APPROVED":
@@ -200,19 +213,24 @@ const AlertDetails = (alert: any) => {
   const assignAlert = async () => {
     if (!selectedAnalyst) return toast.error("Please select an analyst");
 
-    try {
-      const ocp = await AssignAlert(
-        selectedAnalyst,
-        selectedResponsable,
-        al.id
-      );
-      if (ocp) {
-        toast.success("Alert assigned successfully!");
-        setIsOpen(false);
-        router.refresh();
+    if(session.data){
+      try {
+        const ocp = await AssignAlertAdmin(
+          selectedAnalyst,
+          selectedResponsable,
+          al.id,
+          session.data.user.id,
+        );
+        if (ocp) {
+          toast.success("Alert assigned successfully!");
+          setIsOpen(false);
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Error assigning alert:", error);
       }
-    } catch (error) {
-      console.error("Error assigning alert:", error);
+    }else{
+      toast.error("Error assigning alert")
     }
   };
   return (
@@ -220,7 +238,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
-          className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md"
+          className="relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -611,9 +629,44 @@ const AlertDetails = (alert: any) => {
                       </div>
                     );
                   })}
+                 
                 </div>
               </div>
             )}
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <div
+                  onClick={handleOpenChat}
+                  className={`px-10 absolute bottom-0 right-0 rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
+              bg-transparent border-t-2 border-l-2 border-blue-600 text-blue-600 items-center`}
+                >
+                  Chat Alerte
+                  <MessageCircleMore className="w-5 h-5" />
+                  {/* Notification badge - only show if unreadCount > 0 */}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -left-2">
+                      <span className="relative flex size-4">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full size-4 bg-red-500 items-center justify-center text-white text-xs">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </DialogTrigger>
+              <DialogContent className="">
+                <DialogHeader>
+                  <DialogTitle>Alerte chat</DialogTitle>
+                  <DialogDescription>
+                    Collaborer à la résolution de cette alerte.
+                  </DialogDescription>
+                </DialogHeader>
+                <div>
+                  <AlertChat alertId={al.id} />
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         {al.conlusions &&

@@ -4,7 +4,8 @@ import QRCode from "qrcode";
 import speakeasy from "speakeasy";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { saveQr, UserInfo } from "@/actions/alertActions";
+import { saveQr } from "@/actions/alertActions";
+import { UserInfo } from "@/actions/user";
 
 export async function GET(
   req: NextRequest,

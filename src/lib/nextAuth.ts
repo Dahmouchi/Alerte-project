@@ -87,6 +87,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           twoFactorEnabled: user.twoFactorEnabled,
           twoFactorVerified, // Now it reflects the verification status
+          statut:user.statut,
         };
       },
     }),
@@ -112,6 +113,7 @@ export const authOptions: NextAuthOptions = {
         token.twoFactorEnabled = user.twoFactorEnabled ?? false;
         token.twoFactorVerified = user.twoFactorVerified || false;
         token.role = user.role;
+        token.statut = user.statut;
       }
       if(trigger === "update"){
           token.twoFactorVerified = true;
@@ -126,6 +128,7 @@ export const authOptions: NextAuthOptions = {
       session.user.twoFactorEnabled = token.twoFactorEnabled;
       session.user.twoFactorVerified = token.twoFactorVerified;
       session.user.role = token.role;
+      session.user.statut = token.statut;
       return session;
     },
   },

@@ -17,6 +17,7 @@ enum Role {
   ADMIN
   ANALYSTE
   RESPONSABLE
+  ADMIN_RESPONSABLE
 }
 
 enum AlertStatus {
@@ -63,7 +64,7 @@ model User {
   updatedAt       DateTime  @updatedAt
   username        String    @unique
   password        String?
-  statut          Boolean   @default(false)
+  statut          Boolean   @default(true)
   role            Role      @default(USER)
   verified_email  String?
   profile         Profile?

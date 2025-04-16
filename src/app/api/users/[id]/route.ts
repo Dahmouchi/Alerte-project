@@ -4,22 +4,22 @@ import  prisma  from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: any }>; }) {
-    try {
-      const id = (await params).id;
-      if (!id) return NextResponse.json({ error: "Alert ID is required" }, { status: 400 });
-  
-      const data = await req.json();
-      const updatedAlert = await prisma.user.update({
-        where: { id },
-        data,
-      });
-  
-      return NextResponse.json(updatedAlert);
-    } catch (error) {
-      return NextResponse.json({ error: "Error updating alert" }, { status: 500 });
-    }
-  }
+  try {
+    const id = (await params).id;
+    if (!id) return NextResponse.json({ error: "Alert ID is required" }, { status: 400 });
 
+    const data = await req.json();
+    const updatedAlert = await prisma.user.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(updatedAlert);
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json({ error: "Error updating alert" }, { status: 500 });
+  }
+}
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: any }>; }) {
   try {
     const id = (await params).id;

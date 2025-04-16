@@ -2,7 +2,6 @@
 
 import type * as React from "react";
 import {
-  BookOpen,
   House,
   BellElectric,
   Settings2,
@@ -14,7 +13,6 @@ import { NavMain } from "./nav-main";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
   
@@ -54,12 +52,6 @@ const datas = {
       icon: AlertCircle,
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-     
-    },
-    {
       title: "Settings",
       url: "/admin/dashboard/settings",
       icon: Settings2,
@@ -72,18 +64,13 @@ const datas = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className=" flex items-center justify-center p-4">
+    <Sidebar collapsible="icon" {...props} className="bg-slate-200 dark:bg-slate-800 p-2">
+      <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl shadow-lg">
         <Image src={"/logo.png"} alt="logo" width={300} height={200}/>
       </SidebarHeader>
-      <SidebarContent className="pt-4">
+      <SidebarContent className="dark:bg-slate-900 pt-4 pl-0 bg-white rounded-b-xl">
         <NavMain items={datas.navMain} />
       </SidebarContent>
-
-      <SidebarFooter>
-      
-      </SidebarFooter>
-
       <SidebarRail />
     </Sidebar>
   );

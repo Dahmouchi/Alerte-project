@@ -73,13 +73,13 @@ type DeleteProps = {
 };
 const conclusionSchema = z.object({
   id: z.string(),
-  recevableStatus: z.enum(["RECEVABLE", "NON_RECEVABLE", "NON_RECEVABLE_VALIDER", "NON_DECIDE"]),
+  recevableStatus: z.enum(["RECEVALBE", "NON_RECEVABLE", "NON_RECEVABLE_VALIDER", "NON_DECIDE"]),
   commentaire: z.string().optional(),
   decision: z
     .enum(["APPROVED", "DECLINED", "INFORMATIONS_MANQUANTES"])
     .optional(),
-  criticity: z.enum(["1", "2", "3", "4"]),
-});
+    criticity: z.number().min(1).max(4), // Changed to number with range
+  });
 
 type ConclusionSchemaType = z.infer<typeof conclusionSchema>;
 export default function UpdateConclusion({ task, alerte }: DeleteProps) {
@@ -87,9 +87,10 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
     resolver: zodResolver(conclusionSchema),
     defaultValues: {
       id: task.id,
+      decision:alerte.analysteValidation,
       recevableStatus: alerte.recevable || "NON_DECIDE",
       commentaire: task.content || "",
-      criticity: alerte.criticite || "",
+      criticity: alerte.criticite ? Number(alerte.criticite) : 1, 
     },
   });
   console.log("task", alerte.recevable);
@@ -173,7 +174,7 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
                         {/* Recevable Option */}
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
-                            <RadioGroupItem value="RECEVABLE" />
+                            <RadioGroupItem value="RECEVALBE" />
                           </FormControl>
                           <FormLabel className="font-normal flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -198,7 +199,7 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
               />
 
               {/* Decision Section - Only shows when RECEVABLE is selected */}
-              {form.watch("recevableStatus") === "RECEVABLE" && (
+              {form.watch("recevableStatus") === "RECEVALBE" && (
                 <FormField
                   control={form.control}
                   name="decision"
@@ -270,7 +271,9 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Niveau de criticité</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select   onValueChange={(value) => field.onChange(Number(value))}
+           value={field.value?.toString()} // Convert to number
+          >
             <FormControl>
               <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Sélectionnez un niveau" />

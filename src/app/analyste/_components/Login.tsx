@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -29,11 +30,17 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { saveQr, UserInfo } from "@/actions/alertActions";
 import Loading from "@/components/Loading";
 import { Card } from "@/components/ui/card";
-import { CloudLightningIcon, Eye, EyeOff, QrCodeIcon, SendHorizontal } from "lucide-react";
+import {
+  CloudLightningIcon,
+  Eye,
+  EyeOff,
+  QrCodeIcon,
+  SendHorizontal,
+} from "lucide-react";
 import Image from "next/image";
+import { UserInfo } from "@/actions/user";
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -301,35 +308,35 @@ export default function UsernameLogin() {
                         value={value}
                         onChange={(value) => setValue(value)}
                       >
-                       <InputOTPGroup>
-                    <InputOTPSlot
-                      index={0}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={1}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={2}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot
-                      index={3}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={4}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={5}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                  </InputOTPGroup>
+                        <InputOTPGroup>
+                          <InputOTPSlot
+                            index={0}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                          <InputOTPSlot
+                            index={1}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                          <InputOTPSlot
+                            index={2}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                          <InputOTPSlot
+                            index={3}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                          <InputOTPSlot
+                            index={4}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                          <InputOTPSlot
+                            index={5}
+                            className="bg-white dark:bg-slate-900"
+                          />
+                        </InputOTPGroup>
                       </InputOTP>
                       {/* OTP Input */}
                       <button
@@ -353,7 +360,7 @@ export default function UsernameLogin() {
               <div
                 className="w-full text-center h-full bg-cover"
                 style={{
-                  backgroundImage: 'url("/login.jpg")',
+                  backgroundImage: 'url("/loginE.jpg")',
                 }}
               >
                 {/* SVG Paths here */}
@@ -364,7 +371,7 @@ export default function UsernameLogin() {
             <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
               <div className="max-w-md w-full p-6">
                 {/* Sign Up Form */}
-                <div className="bg-white dark:bg-slate-900 p-10 rounded-lg shadow-lg">
+                <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
                   <div className="text-center pb-8">
                     <div className="mt-5">
                       <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
@@ -385,6 +392,7 @@ export default function UsernameLogin() {
                             <FormLabel>Username</FormLabel>
                             <FormControl>
                               <Input
+                                className="dark:bg-slate-900"
                                 placeholder="Entrer votre username"
                                 {...field}
                               />
@@ -393,34 +401,35 @@ export default function UsernameLogin() {
                           </FormItem>
                         )}
                       />
-                       <FormField
+                      <FormField
                         control={form.control}
                         name="password"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                            <div className="relative">
-                      <Input
-                        type={isView ? "text" : "password"}
-                        id="password"
-                        placeholder="entrer votre mot de pass"
-                        {...field}
-                      />
-                      {isView ? (
-                        <Eye
-                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                          onClick={() => {
-                            setIsView(!isView)
-                          }}
-                        />
-                      ) : (
-                        <EyeOff
-                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                          onClick={() => setIsView(!isView)}
-                        />
-                      )}
-                    </div>
+                              <div className="relative">
+                                <Input
+                                  className="dark:bg-slate-900"
+                                  type={isView ? "text" : "password"}
+                                  id="password"
+                                  placeholder="entrer votre mot de pass"
+                                  {...field}
+                                />
+                                {isView ? (
+                                  <Eye
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => {
+                                      setIsView(!isView);
+                                    }}
+                                  />
+                                ) : (
+                                  <EyeOff
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => setIsView(!isView)}
+                                  />
+                                )}
+                              </div>
                             </FormControl>
 
                             <FormMessage />

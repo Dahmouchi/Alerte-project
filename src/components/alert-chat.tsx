@@ -79,7 +79,7 @@ export function AlertChat({ alertId }: { alertId: string }) {
         </div>
       ) : messages.length === 0 ? (
         <div className="flex items-center justify-center h-full">
-          <div className="text-center py-4">No messages yet</div>
+          <div className="text-center py-4">Aucun message pour le moment</div>
         </div>
       ) : (
         <ScrollArea className="flex-1 max-h-[50vh] overflow-y-auto">
@@ -93,7 +93,7 @@ export function AlertChat({ alertId }: { alertId: string }) {
                 <div className="flex items-center gap-2 mb-1">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src={message.sender.image} />
-                    <AvatarFallback>{message.sender.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className='bg-white text-black uppercase border shadow-md'>{message.sender.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">{message.sender.name}</span>
                 </div>

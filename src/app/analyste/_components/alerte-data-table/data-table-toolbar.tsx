@@ -8,6 +8,7 @@ import { DataTableFacetedFilter } from "@/components/data-table/data-table-facet
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
 import { admin_alert_status_options, criticity_options } from "@/components/filters"
+import { DataTableFacetedFilterNumber } from "@/components/data-table/data-table-faceted-filter-number"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -37,7 +38,7 @@ export function DataTableToolbar<TData>({
           />
         )}
         {table.getColumn("criticite") && (
-          <DataTableFacetedFilter
+          <DataTableFacetedFilterNumber
             column={table.getColumn("criticite")}
             title="Criticité"
             options={criticity_options}

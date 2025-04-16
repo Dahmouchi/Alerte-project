@@ -4,7 +4,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
-import { RecevalbeStatus, UserAlertStatus } from "@prisma/client";
+import { AlertHistory, RecevalbeStatus, UserAlertStatus } from "@prisma/client";
 
 export async function updateAlert(
   alertId: string,
@@ -70,7 +70,12 @@ export async function updateAlert(
         where: { codeAlert: alertId },
       });
     }
-
+    createHistoryRecord(
+      alertId,
+      updatedAlert.createdById,
+      'SEND',
+     `L'alerte a été envoyée par l'utilisateur.`
+    )
     // Revalidate the cache for the alert page
     revalidatePath("/alerte");
     return updatedAlert;
@@ -89,34 +94,28 @@ async function uploadAudio(audioFile: File): Promise<string> {
   const uploadResponse = await uploadFile(fileContent, audioFile.name, audioFile.type);
   return getFileUrl(uploadResponse.Key); // Assuming Key contains the file name
 }
-
-
-export async function UserInfo(userId: string) {
+export async function createHistoryRecord(
+  alertId: string,
+  userId: string | null,
+  action: string,
+  details?: string
+): Promise<AlertHistory> {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        twoFactorEnabled: true,
-        twoFactorSecret: true,
-        createdAt: true,
-        qrSecret:true,
+    return await prisma.alertHistory.create({
+      data: {
+        alertId,
+        userId,
+        action,
+        details: details || null,
       },
     });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    return user;
   } catch (error) {
-    console.error("Error fetching user info:", error);
-    throw new Error("Failed to retrieve user info");
+    console.error('Error creating history record:', error);
+    throw new Error('Failed to create history record');
   }
 }
+
+
 
 export async function saveQr(
   userId: string,
@@ -135,10 +134,11 @@ export async function saveQr(
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function AssignAlert(
+export async function AssignAlertAdmin(
   analysteId: string,
   responsableId:string,
   alertId:string,
+  adminId:string,
 ) {
   try { 
       const updatedAlert = await prisma.alert.update({
@@ -149,65 +149,20 @@ export async function AssignAlert(
           adminStatus: "ASSIGNED",
         },
       });
+      createHistoryRecord(
+        alertId,
+        adminId,
+        'ASSIGN_ADMIN',
+       `L'admin s'est assigné cette alerte`
+      )
       return updatedAlert;
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function analysteAssign(
-  analysteId: string,
-  alertId:string,
-) {
-  try { 
-      const updatedAlert = await prisma.alert.update({
-        where: { id: alertId },
-        data: {
-          assignedAnalystId: analysteId,
-          adminStatus: "ASSIGNED",
-        },
-      });
-      return updatedAlert;
-  } catch (error) {
-    console.error("Error fetching user info:", error);
-    throw new Error("Failed to retrieve user info");
-  }
-}
-export async function ResponsableAssign(
-  responsableId: string,
-  alertId:string,
-) {
-  try { 
-      const updatedAlert = await prisma.alert.update({
-        where: { id: alertId },
-        data: {
-          assignedResponsableId: responsableId,
-          adminStatus: "ASSIGNED",
-        },
-      });
-      return updatedAlert;
-  } catch (error) {
-    console.error("Error fetching user info:", error);
-    throw new Error("Failed to retrieve user info");
-  }
-}
-export async function removeAnalysteAssignment(alertId: string) {
-  try {
-    const updatedAlert = await prisma.alert.update({
-      where: { id: alertId },
-      data: {
-        assignedAnalystId: null,
-        adminStatus: "PENDING", // or "UNASSIGNED" if that's your logic
-        recevable:"NON_DECIDE",
-      },
-    });
 
-    return updatedAlert;
-  } catch (error) {
-    console.error("Error removing analyst assignment:", error);
-    throw new Error("Failed to remove analyst assignment");
-  }
-}
+
 export async function saveConclusion(
   userId: string,
   content:string,
@@ -235,6 +190,12 @@ export async function saveConclusion(
           criticite:parseInt(criticite),
         }
       })
+      createHistoryRecord(
+        alertId,
+        userId,
+        'SET_STATUS',
+       `L'alerte a été rendue recevable par l'analyste et transmise au responsable pour décision.`
+      )
       return {updatedAlert,res}
     }else{
       const updatedAlert = await prisma.conclusion.create({
@@ -253,6 +214,12 @@ export async function saveConclusion(
           criticite:parseInt(criticite),
         }
       })
+      createHistoryRecord(
+        alertId,
+        userId,
+        'SET_STATUS',
+       `L'alerte a été jugée non recevable par l'analyste et transmise au responsable pour information.`
+      )
       return {updatedAlert,res}
     }
   } catch (error) {

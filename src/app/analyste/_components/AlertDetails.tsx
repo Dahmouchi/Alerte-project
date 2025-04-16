@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -64,8 +65,6 @@ import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useSession } from "next-auth/react";
 import {
-  analysteAssign,
-  removeAnalysteAssignment,
   saveConclusion,
 } from "@/actions/alertActions";
 import { AlertChat } from "@/components/alert-chat";
@@ -75,6 +74,7 @@ import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
 import UpdateConclusion from "./conclusion";
 import { UserAlertStatus } from "@prisma/client";
 import { CriticalityBadge } from "@/components/CritiqueBadg";
+import { analysteAssign, removeAnalysteAssignment } from "@/actions/analyste-function";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -279,8 +279,10 @@ const AlertDetails = (alert: any) => {
     }
   };
   const removeAnalyste = async () => {
+    if (session) {
+      setSelectedAnalyst(session?.user.id);
     try {
-      const ocp = await removeAnalysteAssignment(al.id);
+      const ocp = await removeAnalysteAssignment(al.id,session?.user.id);
       if (ocp) {
         setSelectedAnalyst("");
         toast.success("Alert assigned successfully!");
@@ -289,6 +291,9 @@ const AlertDetails = (alert: any) => {
     } catch (error) {
       console.error("Error assigning alert:", error);
     }
+  }  else {
+    toast.error("Erreur lors de l'attribution de l'alerte");
+  }
   };
   const assignAlert = async () => {
     if (!selectedAnalyst && session) {

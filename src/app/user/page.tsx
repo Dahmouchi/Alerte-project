@@ -73,7 +73,7 @@ export default function RegisterForm() {
 
   return (
     <div
-      className="w-full relative h-screen bg-contain dark:bg-slate-950"
+      className="w-full relative h-screen bg-contain dark:bg-slate-900"
       style={{ backgroundImage: 'url("/Element.png")' }}
     >
       <div className="w-full absolute top-0">
@@ -83,8 +83,15 @@ export default function RegisterForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 lg:w-1/3 w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-900 bg-white"
+            className="space-y-6 lg:w-1/3 w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-800 bg-white"
           >
+             <div className="text-center">
+                    <div className="">
+                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
+                        Créer un compte
+                      </h3>
+                    </div>
+                  </div>
             {/* Username Field */}
             <FormField
               control={form.control}
@@ -93,7 +100,7 @@ export default function RegisterForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input placeholder="Enter your username" {...field} className="dark:bg-slate-900"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,6 +118,7 @@ export default function RegisterForm() {
                   <FormControl>
                   <div className="relative">
                       <Input
+                      className="dark:bg-slate-900"
                         type={isView ? "text" : "password"}
                         id="password"
                         placeholder="entrer votre mot de pass"
@@ -131,7 +139,9 @@ export default function RegisterForm() {
                       )}
                     </div>
                   </FormControl>
-                  <div className="mt-1 text-xs text-gray-600">
+                  {
+                    form.getValues("password").length > 0 && 
+                    <div className="mt-1 text-xs text-gray-600">
                     <p
                       className={
                         form.watch("password")?.length >= 8
@@ -169,6 +179,7 @@ export default function RegisterForm() {
                       • Un caractère spécial (@$!%*?&)
                     </p>
                   </div>
+                  }
                   <FormMessage />
                 </FormItem>
               )}
@@ -184,6 +195,7 @@ export default function RegisterForm() {
                   <FormControl>
                   <div className="relative">
                       <Input
+                      className="dark:bg-slate-900"
                         type={isView ? "text" : "password"}
                         id="password"
                         placeholder="confirmer votre mot de pass"
@@ -220,7 +232,7 @@ export default function RegisterForm() {
               <p>
                 Vous avez déjà un compte ?{" "}
                 <Link
-                  href={"/user/dashboard"}
+                  href={"/user/login"}
                   className="text-black hover:underline font-semibold dark:text-slate-200"
                 >
                   Connectez-vous ici

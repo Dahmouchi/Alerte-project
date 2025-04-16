@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, Eye, History, MoreHorizontal, Trash2 } from "lucide-react";
 import { alertSchema  } from "@/lib/validations/schema";
 import { Dialog,  DialogTrigger } from "@/components/ui/dialog";
 import DeleteDialog from "@/components/modals/delete-modal";
@@ -41,7 +41,7 @@ export function DataTableRowActions<TData>({
             className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
           >
             <MoreHorizontal className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
+            <span className='sr-only'>Ouvrir le menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[200px]'>
@@ -50,14 +50,21 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.id)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Copy Task ID
+            Copier ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/${task.id}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
-              View Details
+              Voir détails
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/histoire/${task.id}`)}}>
+            <DropdownMenuItem>
+              {" "}
+              <History className='mr-2 h-4 w-4' />
+              Historie
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem
@@ -65,7 +72,7 @@ export function DataTableRowActions<TData>({
             className='text-red-600'
           >
             <Trash2 className='mr-2 h-4 w-4' />
-            Delete Details
+            Supprimer
           </DropdownMenuItem>          
         </DropdownMenuContent>
       </DropdownMenu>

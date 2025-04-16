@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
-import { priority_options, status_options } from "../filters"
+import { status_options } from "../filters"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -22,27 +22,21 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter tasks..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter code..."
+          value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn("code")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {table.getColumn("status") && (
           <DataTableFacetedFilter
             column={table.getColumn("status")}
-            title="Status"
+            title="Statut"
             options={status_options}
           />
         )}
-        {table.getColumn("conclusion") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("conclusion")}
-            title="Conclusion"
-            options={priority_options}
-          />
-        )}
+       
         {isFiltered && (
           <Button
             variant="ghost"

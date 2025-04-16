@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -29,11 +30,11 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { saveQr, UserInfo } from "@/actions/alertActions";
 import Loading from "@/components/Loading";
 import { Card } from "@/components/ui/card";
 import { CloudLightningIcon, Eye, EyeOff, QrCodeIcon, SendHorizontal } from "lucide-react";
 import Image from "next/image";
+import { UserInfo } from "@/actions/user";
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -330,8 +331,15 @@ export default function UsernameLogin() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 lg:w-1/3 bg-white w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-900"
+            className="space-y-8 lg:w-1/3 bg-white w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-800"
           >
+             <div className="text-center">
+                    <div className="">
+                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
+                        S&apos;identifier
+                      </h3>
+                    </div>
+                  </div>
             <FormField
               control={form.control}
               name="username"
@@ -339,7 +347,7 @@ export default function UsernameLogin() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrer votre username" {...field} />
+                    <Input placeholder="Entrer votre username" {...field} className="dark:bg-slate-900"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -354,6 +362,7 @@ export default function UsernameLogin() {
                   <FormControl>
                   <div className="relative">
                       <Input
+                      className="dark:bg-slate-900"
                         type={isView ? "text" : "password"}
                         id="password"
                         placeholder="entrer votre mot de pass"

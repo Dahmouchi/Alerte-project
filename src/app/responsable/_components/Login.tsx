@@ -1,4 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,126 +18,442 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signIn } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "react-toastify";
-
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import Loading from "@/components/Loading";
+import { Card } from "@/components/ui/card";
+import {  Eye, EyeOff, QrCodeIcon, SendHorizontal } from "lucide-react";
+import Image from "next/image";
+import { UserInfo } from "@/actions/user";
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "password must be at least 6 characters.",
+  }),
 });
+export default function UsernameLogin() {
+  const [isTwoFactor, setIsTwoFactor] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [invalidOtp, setInvalidOtp] = useState(false);
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [qrImage, setQrImage] = useState();
+  const [secret, setSecret] = useState<any>();
+  const { data: session, update } = useSession(); // Use session and update function
+  const router = useRouter();
+  const [isView, setIsView] = useState(false);
 
-export default function EmailPasswordLogin() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
       password: "",
+      username: "",
     },
   });
 
+  /* Fetch User Info */
+  async function fetchUserInfo() {
+    if (!session?.user) return;
+
+    setLoading(true);
+    try {
+      const userData = await UserInfo(session.user.id);
+      console.log(userData);
+      if (!userData.twoFactorSecret && !userData.qrSecret) {
+        await get2faQrCode();
+      } else if (!userData.twoFactorSecret && userData.qrSecret) {
+        setIsTwoFactor(true);
+        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+        if (response.status === 200) {
+          setQrImage(response.data.data);
+          setSecret(response.data.secret);
+        }
+      } else {
+        setSecret(userData.twoFactorSecret);
+        setIsTwoFactor(true);
+      }
+      setUser(userData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /* useEffect to Fetch User Data */
+  useEffect(() => {
+    if (session) {
+      console.log(session);
+      fetchUserInfo();
+    }
+  }, [session]); // Add session as a dependency
+
+  /* Generate a QR Code */
+  const get2faQrCode = async () => {
+    try {
+      if (session) {
+        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+        if (response.status === 200) {
+          setQrImage(response.data.data);
+          setSecret(response.data.secret);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating QR Code:", error);
+    }
+  };
+
+  /* Validate OTP Code */
+  const handleOtpChange = async () => {
+    if (value.length === 6) {
+      try {
+        const token = value;
+        const userId = session?.user?.id;
+        console.log("sec", secret);
+        console.log("sec", token);
+        console.log("sec", userId);
+        if (!userId) return;
+
+        const response = await axios.post(`/api/2fa/verify`, {
+          secret,
+          token,
+          userId,
+        });
+
+        if (response.data.success) {
+          toast.success("Code vérifié");
+
+          // Update session after verification
+          await update({
+            twoFactorVerified: true,
+          }); // Refresh session data
+
+          setIsTwoFactor(true);
+          console.log(session);
+          router.push("/responsable/dashboard");
+        } else {
+          console.log(response.data);
+          toast.error("Code non vérifié");
+          setInvalidOtp(true);
+        }
+      } catch (error) {
+        console.error("Verification error:", error);
+        toast.error("Une erreur est survenue");
+      }
+    }
+  };
+
+  /* Handle Login */
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await signIn("email-password", {
-      email: values.email,
+    setLoading(true);
+    const res = await signIn("username-only", {
+      username: values.username,
       password: values.password,
       redirect: false,
     });
 
     if (res?.error) {
       toast.error(res.error);
+      setLoading(false);
     } else {
-      toast.success("Connexion réussie");
+      await update(); // Refresh session after login
+      const session = await getSession();
+
+      if (session?.user.twoFactorEnabled) {
+        setIsTwoFactor(true); // Show 2FA modal
+        setUser(session.user);
+      } else {
+        toast.success("Connexion réussie");
+        redirect("/responsable/dashboard");
+      }
+      setLoading(false);
     }
   }
-  const login = async () => {
-    try {
-      const res = await signIn("google");
-      console.log(res);
-    } catch (error) {}
-  };
-  return (
-    <div className="w-full h-full flex items-center lg:pt-16 justify-center p-2">
-      <div className="lg:w-1/2 w-full border shadow-lg p-8 rounded-2xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Entrer votre email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Entrer votre mot de passe"
-                      {...field}
+  if (loading) {
+    return <Loading />;
+  }
+  return (
+    <div className="w-full ">
+      {isTwoFactor ? (
+        <div className="flex justify-center w-full">
+          {user.twoFactorSecret ? (
+            <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">
+              <div className="flex items-center justify-center ">
+                <div className="flex items-center gap-4">
+                  <Image src={"/logo.png"} alt="logo" width={300} height={50} />
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-4">
+                <QrCodeIcon className="w-8 h-8 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  Enter the code below from your app.
+                </p>
+
+                <InputOTP
+                  maxLength={6}
+                  value={value}
+                  onChange={(value) => setValue(value)}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="bg-white dark:bg-slate-900"
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full cursor-pointer">
-              Se connecter
-            </Button>
-          </form>
-        </Form>
-        <button
-          onClick={login}
-          className="w-full cursor-pointer shadow-sm dark:bg-slate-800 dark:hover:bg-slate-950 my-4 flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium hover:bg-gray-50 duration-150 active:bg-gray-100"
-        >
-          <svg
-            className="w-5 h-5"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clipPath="url(#clip0_17_40)">
-              <path
-                d="M47.532 24.5528C47.532 22.9214 47.3997 21.2811 47.1175 19.6761H24.48V28.9181H37.4434C36.9055 31.8988 35.177 34.5356 32.6461 36.2111V42.2078H40.3801C44.9217 38.0278 47.532 31.8547 47.532 24.5528Z"
-                fill="#4285F4"
-              />
-              <path
-                d="M24.48 48.0016C30.9529 48.0016 36.4116 45.8764 40.3888 42.2078L32.6549 36.2111C30.5031 37.675 27.7252 38.5039 24.4888 38.5039C18.2275 38.5039 12.9187 34.2798 11.0139 28.6006H3.03296V34.7825C7.10718 42.8868 15.4056 48.0016 24.48 48.0016Z"
-                fill="#34A853"
-              />
-              <path
-                d="M11.0051 28.6006C9.99973 25.6199 9.99973 22.3922 11.0051 19.4115V13.2296H3.03298C-0.371021 20.0112 -0.371021 28.0009 3.03298 34.7825L11.0051 28.6006Z"
-                fill="#FBBC04"
-              />
-              <path
-                d="M24.48 9.49932C27.9016 9.44641 31.2086 10.7339 33.6866 13.0973L40.5387 6.24523C36.2 2.17101 30.4414 -0.068932 24.48 0.00161733C15.4055 0.00161733 7.10718 5.11644 3.03296 13.2296L11.005 19.4115C12.901 13.7235 18.2187 9.49932 24.48 9.49932Z"
-                fill="#EA4335"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_17_40">
-                <rect width="48" height="48" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-          Continue with Google
-        </button>
-      </div>
+                    <InputOTPSlot
+                      index={1}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
+                </InputOTP>
+                {/* OTP Input */}
+                <button
+                  onClick={handleOtpChange}
+                  className="relative bottom-0 mt-4 flex justify-center items-center gap-2 border border-[#000] rounded-xl text-[#FFF] font-bold cursor-pointer bg-[#000] uppercase px-8 py-2 z-10 overflow-hidden ease-in-out duration-700 group hover:text-[#000] hover:bg-[#FFF] active:scale-95 active:duration-0 focus:bg-[#FFF] focus:text-[#000] isolation-auto before:absolute before:w-full before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-full before:bg-[#FFF] before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700"
+                >
+                  <span className="truncate eaes-in-out duration-300 group-active:-translate-x-96 group-focus:translate-x-96">
+                    validate Code
+                  </span>
+                  <div className="absolute flex flex-row justify-center items-center gap-2 -translate-x-96 eaes-in-out duration-300 group-active:translate-x-0 group-focus:translate-x-0">
+                    <div className="animate-spin size-4 border-2 border-[#000] border-t-transparent rounded-full" />
+                    Processing...
+                  </div>
+                  <svg
+                    className="fill-[#FFF] group-hover:fill-[#000] group-hover:-translate-x-0 group-active:translate-x-96 group-active:duration-0 group-focus:translate-x-96 group-focus:fill-[#000] ease-in-out duration-700"
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth={0}
+                    viewBox="0 0 512 512"
+                    height={16}
+                    width={16}
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="m476.59 227.05-.16-.07L49.35 49.84A23.56 23.56 0 0 0 27.14 52 24.65 24.65 0 0 0 16 72.59v113.29a24 24 0 0 0 19.52 23.57l232.93 43.07a4 4 0 0 1 0 7.86L35.53 303.45A24 24 0 0 0 16 327v113.31A23.57 23.57 0 0 0 26.59 460a23.94 23.94 0 0 0 13.22 4 24.55 24.55 0 0 0 9.52-1.93L476.4 285.94l.19-.09a32 32 0 0 0 0-58.8z" />
+                  </svg>
+                </button>
+              </div>
+            </Card>
+          ) : (
+            <div className="container mx-auto  flex justify-center w-full">
+              <Card className=" bg-white p-8 shadow-lg dark:bg-slate-800 rounded-lg ">
+                <div className="flex items-center justify-center ">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src={"/logo.png"}
+                      alt="logo"
+                      width={300}
+                      height={50}
+                    />
+                  </div>
+                </div>
+                <div className="flex lg:flex-row flex-col items-center gap-4">
+                  {qrImage && (
+                    <img
+                      src={qrImage}
+                      alt="2FA QR Code"
+                      className="rounded-lg border-2"
+                    />
+                  )}
+                  <div>
+                    <ul className="list-none list-inside mb-4 text-gray-700 dark:text-slate-100">
+                      <li className="mb-2">
+                        <span className="font-bold">Step 1:</span> Scan the QR
+                        Code with your Authenticator app.
+                      </li>
+                      <li className="mb-2">
+                        <span className="font-bold">Step 2:</span> Enter the
+                        code below from your app.
+                      </li>
+                    </ul>
+                    <div className="flex items-center justify-center flex-col lg:items-start">
+                      <InputOTP
+                        maxLength={6}
+                        value={value}
+                        onChange={(value) => setValue(value)}
+                      >
+                       <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                  </InputOTPGroup>
+                      </InputOTP>
+                      {/* OTP Input */}
+                      <button
+                        onClick={handleOtpChange}
+                        className="bg-blue-700 cursor-pointer text-white font-semibold py-2 px-10 rounded-sm my-3"
+                      >
+                        validate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="h-screen overflow-hidden flex items-center justify-center ">
+          <div className="flex h-screen w-full">
+            {/* Left Pane */}
+            <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
+              <div
+                className="w-full text-center h-full bg-cover"
+                style={{
+                  backgroundImage: 'url("/second.jpg")',
+                }}
+              >
+                {/* SVG Paths here */}
+              </div>
+            </div>
+
+            {/* Right Pane */}
+            <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
+              <div className="max-w-md w-full p-6">
+                {/* Sign Up Form */}
+                <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
+                  <div className="text-center pb-8">
+                    <div className="mt-5">
+                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
+                        S&apos;identifier
+                      </h3>
+                    </div>
+                  </div>
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-8  w-full "
+                    >
+                      <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                              <Input
+                              className="dark:bg-slate-900"
+                                placeholder="Entrer votre username"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                            <div className="relative">
+                      <Input
+                      className="dark:bg-slate-900"
+                        type={isView ? "text" : "password"}
+                        id="password"
+                        placeholder="entrer votre mot de pass"
+                        {...field}
+                      />
+                      {isView ? (
+                        <Eye
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => {
+                            setIsView(!isView)
+                          }}
+                        />
+                      ) : (
+                        <EyeOff
+                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                          onClick={() => setIsView(!isView)}
+                        />
+                      )}
+                    </div>
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="w-full flex items-center justify-start">
+                        <Button
+                          type="submit"
+                          className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                  <div className="w-full flex items-center justify-center mt-4">
+                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                    <div className="text-xs text-gray-500 text-center w-full">
+                      Espace Responsable{" "}
+                    </div>
+
+                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -24,7 +24,7 @@ export async function RecentSales(alerts: any) {
     },
   });
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-white dark:bg-slate-950">
       <CardHeader>
         <CardTitle>Alertes récentes</CardTitle>
         <CardDescription>
@@ -36,7 +36,7 @@ export async function RecentSales(alerts: any) {
           {alerts.alerts.map((sale: any, index: any) => (
             <div
               key={index}
-              className="flex items-center hover:bg-slate-100 py-3 px-3 rounded-md"
+              className="flex items-center hover:bg-slate-100 dark:hover:bg-slate-900 py-3 px-3 rounded-md"
             >
               <div className=" space-y-1">
                 <p className="text-sm leading-none font-medium">{sale.title}</p>
@@ -64,7 +64,7 @@ export async function RecentSales(alerts: any) {
                 {sale.adminStatus}
               </div>
               <Link href={`/admin/dashboard/alertes/${sale.id}`}>
-                <div className="ml-2 bg-slate-200 rounded-sm p-1 cursor-pointer">
+                <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
                   <Eye className=" h-4 w-4" />
                 </div>
               </Link>
