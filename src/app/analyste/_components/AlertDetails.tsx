@@ -173,7 +173,33 @@ const predefinedJustifications = [
   "Non concerné",
   "Autre",
 ];
-
+const JUSTIFICATIONS = [
+  {
+    label: "Alerte manifestement infondée",
+    description:
+      "L’alerte repose sur des faits manifestement faux, incohérents ou intentionnellement mensongers.",
+  },
+  {
+    label: "Hors du périmètre du dispositif",
+    description:
+      "L’alerte concerne un sujet non couvert par le dispositif d’alerte (ex. : demande RH individuelle, réclamation client...).",
+  },
+  {
+    label: "Absence totale de faits précis",
+    description:
+      "L’alerte ne fournit aucun élément factuel exploitable (ni faits, ni dates, ni personnes impliquées).",
+  },
+  {
+    label: "Alerte diffamatoire ou calomnieuse",
+    description:
+      "L’alerte contient des accusations sans fondement avec une intention manifeste de nuire.",
+  },
+  {
+    label: "Faits déjà traités ou prescrits",
+    description:
+      "L’alerte concerne une situation ayant déjà fait l'objet d'une enquête ou de mesures correctives, ou trop ancienne pour être instruite.",
+  },
+];
 const AlertDetails = (alert: any) => {
   const al = alert.alert;
   const { data: session } = useSession();
@@ -195,6 +221,18 @@ const AlertDetails = (alert: any) => {
   const status = admin_alert_status_options.find(
     (status) => status.value === al?.adminStatus
   );
+  const handleJustificationChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedLabel = e.target.value;
+    setJustification(selectedLabel);
+
+    // Find the matching description
+    const selectedJustification = JUSTIFICATIONS.find(
+      (j) => j.label === selectedLabel
+    );
+    setJustification1(selectedJustification?.description || "");
+  };
 
   useEffect(() => {
     console.log(al);
@@ -272,8 +310,8 @@ const AlertDetails = (alert: any) => {
           decision
         );
         if (ocp) {
-          setJustification("")
-          setJustification1("")
+          setJustification("");
+          setJustification1("");
           toast.success("Alert assigned successfully!");
           router.refresh();
         }
@@ -332,16 +370,14 @@ const AlertDetails = (alert: any) => {
               Détails de l&apos;alerte
             </h3>
           </div>
-          {
-            al.criticite > 0
-            && 
+          {al.criticite > 0 && (
             <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
-            <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
-              Alerte criticité
-            </h2>
-            <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
-          </div>
-          }
+              <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
+                Alerte criticité
+              </h2>
+              <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
+            </div>
+          )}
           <div className="space-y-2">
             {/* Status and Action Bar */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-gray-100 dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
@@ -789,7 +825,11 @@ const AlertDetails = (alert: any) => {
                 <div className="grid grid-cols-2 gap-3   dark:bg-slate-800 rounded-t-xl">
                   {/* Recevable Button */}
                   <button
-                    onClick={() => setRecevable("RECEVALBE")}
+                    onClick={() => {
+                      setRecevable("RECEVALBE");
+                      setJustification("");
+                      setJustification1("");
+                    }}
                     className={`relative py-2 px-4 rounded-t-lg text-sm font-medium  transition-all duration-200 ${
                       recevable === "RECEVALBE"
                         ? "bg-blue-600 text-white shadow-sm  border-2  border-blue-600"
@@ -813,7 +853,11 @@ const AlertDetails = (alert: any) => {
 
                   {/* Non Recevable Button */}
                   <button
-                    onClick={() => setRecevable("NON_RECEVABLE")}
+                    onClick={() => {
+                      setRecevable("NON_RECEVABLE");
+                      setJustification("");
+                      setJustification1("");
+                    }}
                     className={`relative py-2 px-4 rounded-t-lg    text-sm font-medium transition-all duration-200 ${
                       recevable === "NON_RECEVABLE"
                         ? "bg-red-600 text-white shadow-sm  border-2 border-red-600"
@@ -849,48 +893,42 @@ const AlertDetails = (alert: any) => {
                       {/* Header: Analyste Info */}
 
                       <div>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Commentaire : 
-                        </label>
-                        <textarea
-                          required
-                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          rows={4}
-                          placeholder="Ajouter un commentaire..."
-                          value={justification1}
-                          onChange={(e) => setJustification1(e.target.value)}
-                        />
-                      </div>
+                       
                         <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                          Justification  <span className="ml-1 text-xs text-red-500 dark:text-red-400">
-                                (requis)
-                              </span>:
+                          Justification{" "}
+                          <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                            (requis)
+                          </span>
+                          :
                         </label>
                         <select
                           className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
                           value={justification}
-                          onChange={(e) => setJustification(e.target.value)}
+                          onChange={handleJustificationChange}
                         >
                           <option value="" disabled>
                             -- Choisissez une justification --
                           </option>
-                          {predefinedJustifications.map((j, index) => (
-                            <option key={index} value={j}>
-                              {j}
+                          {JUSTIFICATIONS.map((j, index) => (
+                            <option key={index} value={j.label}>
+                              {j.label}
                             </option>
                           ))}
                         </select>
-
-                        {/* Input for "Autre" */}
-                        {justification === "Autre" && (
+                        <div className="space-y-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Commentaire :
+                          </label>
                           <textarea
-                            onChange={(e) => setJustification(e.target.value)}
-                            rows={3}
-                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                            placeholder="Expliquez la décision..."
+                            required
+                            className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={4}
+                            placeholder="Ajouter un commentaire..."
+                            value={justification1}
+                            onChange={(e) => setJustification1(e.target.value)}
                           />
-                        )}
+                        </div>
+                        {/* Input for "Autre" */}
                       </div>
                       <div className="flex items-center justify-end">
                         <button
@@ -922,14 +960,13 @@ const AlertDetails = (alert: any) => {
                   ) : recevable === "RECEVALBE" ? (
                     <div className="space-y-6  bg-white dark:bg-gray-800 rounded-b-lg ">
                       {/* Decision Section */}
-                      
 
                       {/* Criticity Dropdown - Modern Version */}
 
                       {/* Justification Textarea */}
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Commentaire de justification
+                        Réponse
                         </label>
                         <textarea
                           required
@@ -984,7 +1021,7 @@ const AlertDetails = (alert: any) => {
                               </span>
                             </div>
                           </label>
-                          
+
                           {/* Missing Info */}
                           <label className="relative">
                             <input

@@ -13,10 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {  Copy, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import {  Copy, Eye, MoreHorizontal } from "lucide-react";
 import { alertSchema  } from "@/lib/validations/schema";
 import { Dialog,  DialogTrigger } from "@/components/ui/dialog";
-import DeleteDialog from "@/components/modals/delete-modal";
 import { useRouter } from "next/navigation";
 
 interface DataTableRowActionsProps<TData> {
@@ -26,8 +25,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const [showDeleteDialog, setShowDeleteDialog] =
-    React.useState<boolean>(false);
+ 
   const task = alertSchema.parse(row.original);
   const router = useRouter();
   
@@ -47,33 +45,23 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align='end' className='w-[200px]'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(task.id)}
+            onClick={() => navigator.clipboard.writeText(task.code)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Copy Task ID
+            Copier ID Alerte
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${task.id}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
-              Voir Details
+              Afficher Details
             </DropdownMenuItem>
           </DialogTrigger>
-          <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            className='text-red-600'
-          >
-            <Trash2 className='mr-2 h-4 w-4' />
-            Delete Details
-          </DropdownMenuItem>          
+                 
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeleteDialog
-        task={task}
-        isOpen={showDeleteDialog}
-        showActionToggle={setShowDeleteDialog}
-      />
+     
     </Dialog>
   );
 }

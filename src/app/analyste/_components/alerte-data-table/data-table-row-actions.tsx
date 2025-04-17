@@ -45,17 +45,17 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align='end' className='w-[200px]'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(task.id)}
+            onClick={() => navigator.clipboard.writeText(task.code)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            copier ID d&apos;alerte
+            Copier ID Alerte
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${task.id}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
-              Voir Details
+              Afficher Details
             </DropdownMenuItem>
           </DialogTrigger>
                   
