@@ -9,18 +9,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {  userSchema  } from "@/lib/validations/schema";
-import { label_options } from "@/components/filters";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import DeleteDialog from "@/app/admin/_components/modals/delete-modal";
 import EditDialog from "@/app/admin/_components/modals/edit-modal";
@@ -81,20 +75,7 @@ export function DataTableRowActions<TData>({
             <Trash2 className='mr-2 h-4 w-4' />
             Delete Details
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup value={task.username}>
-                {label_options.map((label) => (
-                  <DropdownMenuRadioItem key={label.value} value={label.value}>
-                    <label.icon className="w-4 h-4 mr-2" />
-                    {label.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+          
         </DropdownMenuContent>
       </DropdownMenu>
       {dialogContent && <DialogContent>{dialogContent}</DialogContent>}

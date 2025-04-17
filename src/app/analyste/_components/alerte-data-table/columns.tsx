@@ -108,7 +108,7 @@ export const columns: ColumnDef<AlertType>[] = [
 
       return (
         <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-md ${status.color}`}
+          className={`flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
         >
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium text-xs">{status.label}</span>
@@ -164,7 +164,7 @@ export const columns: ColumnDef<AlertType>[] = [
       return (
         <div className="flex items-center w-[100px]">
           <div className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}>
-            <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+            {criticity.icon && <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />}
             <span className="text-xs font-medium">{criticity.label}</span>
           </div>
         </div>

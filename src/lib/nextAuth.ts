@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user,trigger }) {
+    async jwt({ token, user,trigger,session }) {
       if (user) {
         token.id = user.id;
         token.username = user.username;
@@ -116,8 +116,7 @@ export const authOptions: NextAuthOptions = {
         token.statut = user.statut;
       }
       if(trigger === "update"){
-          token.twoFactorVerified = true;
-      
+          token.twoFactorVerified = session.twoFactorVerified;
       }
       return token;
     },

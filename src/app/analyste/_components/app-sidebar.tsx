@@ -6,7 +6,9 @@ import {
   House,
   BellElectric,
   Settings2,
-  AlertCircle,
+  SwatchBook,
+  BookMarked,
+  FolderLock,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -35,16 +37,28 @@ const datas = {
     },
   ],
   navMain: [
+   
     {
       title: "Accueil",
-      url: "/analyste/dashboard/alertes",
+      url: "/analyste/dashboard/overview",
       icon: House,
+      
+    },
+    {
+      title: "Alertes",
+      url: "/analyste/dashboard/alertes",
+      icon: SwatchBook,
       
     },
     {
       title: "Votre Alertes",
       url: "/analyste/dashboard/myAlertes",
-      icon: AlertCircle,
+      icon: BookMarked,
+    },
+    {
+      title: "Alertes clôturées",
+      url: "/analyste/dashboard/cloture",
+      icon: FolderLock,
     },
     {
       title: "Documentation",

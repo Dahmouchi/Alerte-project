@@ -36,8 +36,9 @@ export async function removeAnalysteAssignment(alertId: string,analysteId:string
       where: { id: alertId },
       data: {
         assignedAnalystId: null,
-        adminStatus: "PENDING", // or "UNASSIGNED" if that's your logic
+        adminStatus: "PENDING", 
         recevable:"NON_DECIDE",
+        criticite:0,
       },
     });
     createHistoryRecord(

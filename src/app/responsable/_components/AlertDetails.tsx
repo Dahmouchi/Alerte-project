@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { admin_alert_status_options, analyste_alert_status_options } from "@/components/filters";
+import {
+  admin_alert_status_options,
+  analyste_alert_status_options,
+} from "@/components/filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,9 +67,7 @@ import { useRouter } from "next/navigation";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useSession } from "next-auth/react";
-import {
-  saveConclusion,
-} from "@/actions/alertActions";
+import { saveConclusion } from "@/actions/alertActions";
 import { AlertChat } from "@/components/alert-chat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
@@ -74,7 +75,10 @@ import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
 import UpdateConclusion from "./conclusion";
 import { UserAlertStatus } from "@prisma/client";
 import { CriticalityBadge } from "@/components/CritiqueBadg";
-import { removeResponsableAssignment, ResponsableAssign } from "@/actions/responsable-function";
+import {
+  removeResponsableAssignment,
+  ResponsableAssign,
+} from "@/actions/responsable-function";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -183,6 +187,7 @@ const AlertDetails = (alert: any) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [justification, setJustification] = useState("");
+  const [justification1, setJustification1] = useState("");
   const [urgenceLevel, setUrgenceLevel] = useState("1");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
@@ -262,6 +267,7 @@ const AlertDetails = (alert: any) => {
         const ocp = await saveConclusion(
           session.user.id,
           justification,
+          justification1,
           al.id,
           recevable,
           urgenceLevel,
@@ -279,10 +285,10 @@ const AlertDetails = (alert: any) => {
     }
   };
   const removeAnalyste = async () => {
-  if (session) {
-        setSelectedAnalyst(session?.user.id);
+    if (session) {
+      setSelectedAnalyst(session?.user.id);
       try {
-        const ocp = await removeResponsableAssignment(al.id,session?.user.id);
+        const ocp = await removeResponsableAssignment(al.id, session?.user.id);
         if (ocp) {
           setSelectedAnalyst("");
           toast.success("Alert assigned successfully!");
@@ -291,7 +297,7 @@ const AlertDetails = (alert: any) => {
       } catch (error) {
         console.error("Error assigning alert:", error);
       }
-    }  else {
+    } else {
       toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
@@ -323,15 +329,17 @@ const AlertDetails = (alert: any) => {
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
-            Détails de l&apos;alerte
+              Détails de l&apos;alerte
             </h3>
           </div>
-          <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
-                  <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
-                    Alerte criticité
-                  </h2>
-                    <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />     
-                </div>
+          {al.criticite > 0 && (
+            <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
+              <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
+                Alerte criticité
+              </h2>
+              <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
+            </div>
+          )}
           <div className="space-y-2">
             {/* Status and Action Bar */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-gray-100 dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
@@ -774,304 +782,7 @@ const AlertDetails = (alert: any) => {
                 Traitement d&apos;alertes
               </h3>
             </div>
-            {al.recevable === "NON_DECIDE" ? (
-              <div>
-                <div className="grid grid-cols-2 gap-3   dark:bg-slate-800 rounded-t-xl">
-                  {/* Recevable Button */}
-                  <button
-                    onClick={() => setRecevable("RECEVALBE")}
-                    className={`relative py-2 px-4 rounded-t-lg text-sm font-medium  transition-all duration-200 ${
-                      recevable === "RECEVALBE"
-                        ? "bg-blue-600 text-white shadow-sm  border-2  border-blue-600"
-                        : "bg-white dark:bg-slate-700 text-gray-700 border-2  dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    }`}
-                  >
-                    {recevable === "RECEVALBE" && (
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-green-400 border-2 border-white dark:border-slate-800"></span>
-                    )}
-                    <span className="flex items-center justify-center gap-1">
-                      <CheckCircle2
-                        className={`h-4 w-4 ${
-                          recevable === "RECEVALBE"
-                            ? "text-white"
-                            : "text-blue-600 dark:text-blue-400"
-                        }`}
-                      />
-                      Recevable
-                    </span>
-                  </button>
-
-                  {/* Non Recevable Button */}
-                  <button
-                    onClick={() => setRecevable("NON_RECEVABLE")}
-                    className={`relative py-2 px-4 rounded-t-lg    text-sm font-medium transition-all duration-200 ${
-                      recevable === "NON_RECEVABLE"
-                        ? "bg-red-600 text-white shadow-sm  border-2 border-red-600"
-                        : "bg-white  dark:bg-slate-700  border-2  text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    }`}
-                  >
-                    {recevable === "NON_RECEVABLE" && (
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-400 border-2 border-white dark:border-slate-800"></span>
-                    )}
-                    <span className="flex items-center justify-center gap-1">
-                      <XCircle
-                        className={`h-4 w-4 ${
-                          recevable === "NON_RECEVABLE"
-                            ? "text-white"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      />
-                      Non Recevable
-                    </span>
-                  </button>
-                </div>
-                <div
-                  className={`bg-white dark:bg-slate-800 p-6 rounded-b-xl   transition-shadow duration-300 ${
-                    recevable === "RECEVALBE"
-                      ? "border-blue-500 border-2  shadow-lg hover:shadow-xl"
-                      : recevable === "NON_RECEVABLE"
-                      ? "border-red-500 border-2 shadow-lg hover:shadow-xl"
-                      : ""
-                  }`}
-                >
-                  {recevable === "NON_RECEVABLE" ? (
-                    <div className="flex flex-col space-y-4">
-                      {/* Header: Analyste Info */}
-
-                      <div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Niveau de criticité
-                          </label>
-                          <select
-                            required
-                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                            value={urgenceLevel}
-                            onChange={(e) => setUrgenceLevel(e.target.value)}
-                          >
-                            <option value="">Sélectionner un niveau</option>
-                            <option value="1">Faible</option>
-                            <option value="2">Modérée</option>
-                            <option value="3">Èlevée </option>
-                            <option value="4">Critique</option>
-                          </select>
-                        </div>
-                        <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                          Justification
-                        </label>
-                        <select
-                          className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                          value={justification}
-                          onChange={(e) => setJustification(e.target.value)}
-                        >
-                          <option value="" disabled>
-                            -- Choisissez une justification --
-                          </option>
-                          {predefinedJustifications.map((j, index) => (
-                            <option key={index} value={j}>
-                              {j}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* Input for "Autre" */}
-                        {justification === "Autre" && (
-                          <textarea
-                            onChange={(e) => setJustification(e.target.value)}
-                            rows={3}
-                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                            placeholder="Expliquez la décision..."
-                          />
-                        )}
-                      </div>
-                      <div className="flex items-center justify-end">
-                        <button
-                          onClick={sendConclusion}
-                          className="cursor-pointer flex items-center fill-white bg-blue-600 hover:bg-lime-900 active:border active:border-lime-400 rounded-md duration-100 p-2"
-                          title="Save"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20px"
-                            height="20px"
-                            viewBox="0 -0.5 25 25"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M18.507 19.853V6.034C18.5116 5.49905 18.3034 4.98422 17.9283 4.60277C17.5532 4.22131 17.042 4.00449 16.507 4H8.50705C7.9721 4.00449 7.46085 4.22131 7.08577 4.60277C6.7107 4.98422 6.50252 5.49905 6.50705 6.034V19.853C6.45951 20.252 6.65541 20.6407 7.00441 20.8399C7.35342 21.039 7.78773 21.0099 8.10705 20.766L11.907 17.485C12.2496 17.1758 12.7705 17.1758 13.113 17.485L16.9071 20.767C17.2265 21.0111 17.6611 21.0402 18.0102 20.8407C18.3593 20.6413 18.5551 20.2522 18.507 19.853Z"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            ></path>
-                          </svg>
-                          <span className="text-sm text-white font-bold pr-1">
-                            enregistrer la conclusion
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                  ) : recevable === "RECEVALBE" ? (
-                    <div className="space-y-6  bg-white dark:bg-gray-800 rounded-b-lg ">
-                      {/* Decision Section */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Décision
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          {/* Approved */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="APPROVED"
-                              className="peer hidden"
-                              checked={decision === "APPROVED"}
-                              onChange={() => setDecision("APPROVED")}
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20">
-                              <CheckCircle2 className="w-6 h-6 text-green-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Approuvé
-                              </span>
-                            </div>
-                          </label>
-
-                          {/* Declined */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="DECLINED"
-                              className="peer hidden"
-                              checked={decision === "DECLINED"}
-                              onChange={() => setDecision("DECLINED")}
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20">
-                              <XCircle className="w-6 h-6 text-red-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Rejeté
-                              </span>
-                            </div>
-                          </label>
-
-                          {/* Missing Info */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="INFORMATIONS_MANQUANTES"
-                              className="peer hidden"
-                              checked={decision === "INFORMATIONS_MANQUANTES"}
-                              onChange={() =>
-                                setDecision("INFORMATIONS_MANQUANTES")
-                              }
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20">
-                              <AlertCircle className="w-6 h-6 text-amber-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Infos manquantes
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Criticity Dropdown - Modern Version */}
-
-                      {/* Justification Textarea */}
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Commentaire de justification
-                        </label>
-                        <textarea
-                          required
-                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          rows={4}
-                          placeholder="Ajouter un commentaire..."
-                          value={justification}
-                          onChange={(e) => setJustification(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Niveau de criticité
-                        </label>
-                        <div className="relative">
-                          <select
-                            required
-                            className="block w-full px-4 py-2.5 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            value={urgenceLevel}
-                            onChange={(e) => setUrgenceLevel(e.target.value)}
-                          >
-                            <option value="">Sélectionner un niveau</option>
-                            <option value="1">Faible</option>
-                            <option value="2">Modérée</option>
-                            <option value="3">Élevée</option>
-                            <option value="4">Critique</option>
-                          </select>
-                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <ChevronDown className="w-5 h-5 text-gray-400" />
-                          </div>
-                        </div>
-                      </div>
-                      {/* Submit Button */}
-                      <div className="flex justify-end">
-                        <button
-                          onClick={sendConclusion}
-                          className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                          <Save className="w-5 h-5 mr-2" />
-                          Enregistrer la conclusion
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
-                <div
-                  className={`w-full py-2 border-green-500 font-semibold rounded-lg border text-sm transition-all duration-300 ease-in-out transform ${
-                    recevable === "RECEVALBE"
-                      ? "bg-blue-600 text-white scale-105 shadow-md"
-                      : "bg-white text-gray-700 "
-                  }`}
-                >
-                 <span className="flex items-center justify-center gap-1">
-                      <CheckCircle2
-                        className={`h-4 w-4 ${
-                          recevable === "RECEVALBE"
-                            ? "text-white"
-                            : "text-blue-600 dark:text-blue-400"
-                        }`}
-                      />
-                      Recevable
-                    </span>
-                </div>
-
-                <div
-                  className={`w-full py-2 font-semibold  border-red-600 rounded-lg  border text-sm transition-all duration-300 ease-in-out transform ${
-                    recevable === "NON_RECEVABLE"
-                      ? "bg-red-600 text-white scale-105 shadow-md"
-                      : "bg-white text-gray-700 "
-                  }`}
-                >
-                  <span className="flex items-center justify-center gap-1">
-                      <XCircle
-                        className={`h-4 w-4 ${
-                          recevable === "NON_RECEVABLE"
-                            ? "text-white"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      />
-                      Non Recevable
-                    </span>
-                </div>
-              </div>
-            )}
+            
           </div>
         )}{" "}
         {al.conlusions &&

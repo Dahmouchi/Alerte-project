@@ -64,9 +64,7 @@ import { useRouter } from "next/navigation";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useSession } from "next-auth/react";
-import {
-  saveConclusion,
-} from "@/actions/alertActions";
+import { saveConclusion } from "@/actions/alertActions";
 import { AlertChat } from "@/components/alert-chat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
@@ -74,7 +72,10 @@ import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
 import UpdateConclusion from "./conclusion";
 import { UserAlertStatus } from "@prisma/client";
 import { CriticalityBadge } from "@/components/CritiqueBadg";
-import { analysteAssign, removeAnalysteAssignment } from "@/actions/analyste-function";
+import {
+  analysteAssign,
+  removeAnalysteAssignment,
+} from "@/actions/analyste-function";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -183,6 +184,8 @@ const AlertDetails = (alert: any) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [justification, setJustification] = useState("");
+  const [justification1, setJustification1] = useState("");
+
   const [urgenceLevel, setUrgenceLevel] = useState("1");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
@@ -262,12 +265,15 @@ const AlertDetails = (alert: any) => {
         const ocp = await saveConclusion(
           session.user.id,
           justification,
+          justification1,
           al.id,
           recevable,
           urgenceLevel,
           decision
         );
         if (ocp) {
+          setJustification("")
+          setJustification1("")
           toast.success("Alert assigned successfully!");
           router.refresh();
         }
@@ -281,19 +287,19 @@ const AlertDetails = (alert: any) => {
   const removeAnalyste = async () => {
     if (session) {
       setSelectedAnalyst(session?.user.id);
-    try {
-      const ocp = await removeAnalysteAssignment(al.id,session?.user.id);
-      if (ocp) {
-        setSelectedAnalyst("");
-        toast.success("Alert assigned successfully!");
-        router.refresh();
+      try {
+        const ocp = await removeAnalysteAssignment(al.id, session?.user.id);
+        if (ocp) {
+          setSelectedAnalyst("");
+          toast.success("Alert assigned successfully!");
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Error assigning alert:", error);
       }
-    } catch (error) {
-      console.error("Error assigning alert:", error);
+    } else {
+      toast.error("Erreur lors de l'attribution de l'alerte");
     }
-  }  else {
-    toast.error("Erreur lors de l'attribution de l'alerte");
-  }
   };
   const assignAlert = async () => {
     if (!selectedAnalyst && session) {
@@ -323,16 +329,19 @@ const AlertDetails = (alert: any) => {
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
-            Détails de l&apos;alerte
+              Détails de l&apos;alerte
             </h3>
           </div>
-          <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
-                  <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
-                    Alerte criticité
-                  </h2>
-                          <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />    
-                  
-                </div>
+          {
+            al.criticite > 0
+            && 
+            <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
+            <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
+              Alerte criticité
+            </h2>
+            <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
+          </div>
+          }
           <div className="space-y-2">
             {/* Status and Action Bar */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-gray-100 dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
@@ -840,25 +849,23 @@ const AlertDetails = (alert: any) => {
                       {/* Header: Analyste Info */}
 
                       <div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Niveau de criticité
-                          </label>
-                          <select
-                            required
-                            className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
-                            value={urgenceLevel}
-                            onChange={(e) => setUrgenceLevel(e.target.value)}
-                          >
-                            <option value="">Sélectionner un niveau</option>
-                            <option value="1">Faible</option>
-                            <option value="2">Modérée</option>
-                            <option value="3">Èlevée </option>
-                            <option value="4">Critique</option>
-                          </select>
-                        </div>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Commentaire : 
+                        </label>
+                        <textarea
+                          required
+                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          rows={4}
+                          placeholder="Ajouter un commentaire..."
+                          value={justification1}
+                          onChange={(e) => setJustification1(e.target.value)}
+                        />
+                      </div>
                         <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                          Justification
+                          Justification  <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                                (requis)
+                              </span>:
                         </label>
                         <select
                           className="w-full mt-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-white px-3 py-2 text-sm"
@@ -915,68 +922,7 @@ const AlertDetails = (alert: any) => {
                   ) : recevable === "RECEVALBE" ? (
                     <div className="space-y-6  bg-white dark:bg-gray-800 rounded-b-lg ">
                       {/* Decision Section */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Décision
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          {/* Approved */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="APPROVED"
-                              className="peer hidden"
-                              checked={decision === "APPROVED"}
-                              onChange={() => setDecision("APPROVED")}
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20">
-                              <CheckCircle2 className="w-6 h-6 text-green-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Approuvé
-                              </span>
-                            </div>
-                          </label>
-
-                          {/* Declined */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="DECLINED"
-                              className="peer hidden"
-                              checked={decision === "DECLINED"}
-                              onChange={() => setDecision("DECLINED")}
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20">
-                              <XCircle className="w-6 h-6 text-red-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Rejeté
-                              </span>
-                            </div>
-                          </label>
-
-                          {/* Missing Info */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="INFORMATIONS_MANQUANTES"
-                              className="peer hidden"
-                              checked={decision === "INFORMATIONS_MANQUANTES"}
-                              onChange={() =>
-                                setDecision("INFORMATIONS_MANQUANTES")
-                              }
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20">
-                              <AlertCircle className="w-6 h-6 text-amber-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Infos manquantes
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
+                      
 
                       {/* Criticity Dropdown - Modern Version */}
 
@@ -1016,6 +962,50 @@ const AlertDetails = (alert: any) => {
                           </div>
                         </div>
                       </div>
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Décision
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Approved */}
+                          <label className="relative">
+                            <input
+                              type="radio"
+                              name="decision"
+                              value="APPROVED"
+                              className="peer hidden"
+                              checked={decision === "APPROVED"}
+                              onChange={() => setDecision("APPROVED")}
+                            />
+                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20">
+                              <CheckCircle2 className="w-6 h-6 text-green-500 mb-2" />
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                Approuvé
+                              </span>
+                            </div>
+                          </label>
+                          
+                          {/* Missing Info */}
+                          <label className="relative">
+                            <input
+                              type="radio"
+                              name="decision"
+                              value="INFORMATIONS_MANQUANTES"
+                              className="peer hidden"
+                              checked={decision === "INFORMATIONS_MANQUANTES"}
+                              onChange={() =>
+                                setDecision("INFORMATIONS_MANQUANTES")
+                              }
+                            />
+                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20">
+                              <AlertCircle className="w-6 h-6 text-amber-500 mb-2" />
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                Infos manquantes
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
                       {/* Submit Button */}
                       <div className="flex justify-end">
                         <button
@@ -1041,16 +1031,16 @@ const AlertDetails = (alert: any) => {
                       : "bg-white text-gray-700 "
                   }`}
                 >
-                 <span className="flex items-center justify-center gap-1">
-                      <CheckCircle2
-                        className={`h-4 w-4 ${
-                          recevable === "RECEVALBE"
-                            ? "text-white"
-                            : "text-blue-600 dark:text-blue-400"
-                        }`}
-                      />
-                      Recevable
-                    </span>
+                  <span className="flex items-center justify-center gap-1">
+                    <CheckCircle2
+                      className={`h-4 w-4 ${
+                        recevable === "RECEVALBE"
+                          ? "text-white"
+                          : "text-blue-600 dark:text-blue-400"
+                      }`}
+                    />
+                    Recevable
+                  </span>
                 </div>
 
                 <div
@@ -1061,15 +1051,15 @@ const AlertDetails = (alert: any) => {
                   }`}
                 >
                   <span className="flex items-center justify-center gap-1">
-                      <XCircle
-                        className={`h-4 w-4 ${
-                          recevable === "NON_RECEVABLE"
-                            ? "text-white"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      />
-                      Non Recevable
-                    </span>
+                    <XCircle
+                      className={`h-4 w-4 ${
+                        recevable === "NON_RECEVABLE"
+                          ? "text-white"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    />
+                    Non Recevable
+                  </span>
                 </div>
               </div>
             )}
@@ -1150,6 +1140,11 @@ const AlertDetails = (alert: any) => {
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                         {con?.content || "Aucun commentaire fourni"}
+                      </p>
+                    </div>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {con?.content1}
                       </p>
                     </div>
                   </div>

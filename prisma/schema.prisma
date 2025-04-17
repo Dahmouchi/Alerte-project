@@ -159,7 +159,7 @@ model Alert {
   dateLieu      DateTime?    // Date of the incident
   location      String?      // Location description
   involvedPersons String?    // Names of involved persons (can be "Inconnu")
-  criticite     Int    @default(1)
+  criticite     Int    @default(0)
   step          Int            @default(1)  // Track progress step
   status        AlertStatus  @default(EN_COURS_TRAITEMENT)
   adminStatus   AdminAlertStatus @default(PENDING)
@@ -210,6 +210,7 @@ model ChatMessage {
 }
 model Conclusion {
   id        String    @id @default(uuid())
+  content1  String?
   content   String    @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

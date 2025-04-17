@@ -20,7 +20,7 @@ export default async function RootLayout({
   ) {
     redirect("/responsable/login");
   }
-  if (session.user.role !== "RESPONSABLE") {
+  if (session.user.role !== "RESPONSABLE"  && session.user.role !== "ADMIN_RESPONSABLE") {
     return <AccessDenied role={session.user.role} />;
   }
   if (!session.user.statut) {

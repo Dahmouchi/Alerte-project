@@ -57,7 +57,7 @@ export default function UsernameLogin() {
   const [loading, setLoading] = useState(false);
   const [qrImage, setQrImage] = useState();
   const [secret, setSecret] = useState<any>();
-  const { data: session, update } = useSession(); // Use session and update function
+  const { data: session, update } = useSession();
   const router = useRouter();
   const [isView, setIsView] = useState(false);
 
@@ -174,7 +174,7 @@ export default function UsernameLogin() {
       toast.error(res.error);
       setLoading(false);
     } else {
-      await update(); // Refresh session after login
+      await update();
       const session = await getSession();
 
       if (session?.user.twoFactorEnabled) {

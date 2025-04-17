@@ -10,6 +10,7 @@ import { Eye } from "lucide-react";
 import { startOfMonth, endOfMonth } from "date-fns";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export async function RecentSales(alerts: any) {
   const startDate = startOfMonth(new Date()); // First day of the month
@@ -24,21 +25,22 @@ export async function RecentSales(alerts: any) {
     },
   });
   return (
-    <Card className="h-full bg-white dark:bg-slate-950">
-      <CardHeader>
-        <CardTitle>Alertes récentes</CardTitle>
-        <CardDescription>
-          Vous recevez {alertsThisMonth} alertes ce mois-ci.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
+    <Card className="bg-white dark:bg-slate-950">
+    <CardHeader>
+      <CardTitle>Alertes récentes</CardTitle>
+      <CardDescription>
+        Vous recevez {alertsThisMonth} alertes ce mois-ci.
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <ScrollArea className="h-[300px] w-full rounded-md border">
+        <div className="space-y-1 p-1">
           {alerts.alerts.map((sale: any, index: any) => (
             <div
               key={index}
               className="flex items-center hover:bg-slate-100 dark:hover:bg-slate-900 py-3 px-3 rounded-md"
             >
-              <div className=" space-y-1">
+              <div className="space-y-1">
                 <p className="text-sm leading-none font-medium">{sale.title}</p>
                 <p className="text-muted-foreground text-sm">
                   {sale.createdAt.toDateString()}
@@ -65,13 +67,14 @@ export async function RecentSales(alerts: any) {
               </div>
               <Link href={`/admin/dashboard/alertes/${sale.id}`}>
                 <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
-                  <Eye className=" h-4 w-4" />
+                  <Eye className="h-4 w-4" />
                 </div>
               </Link>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </ScrollArea>
+    </CardContent>
+  </Card>
   );
 }

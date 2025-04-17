@@ -74,6 +74,13 @@ export const status_options = [
 ];
 export const criticity_options = [
   {
+    value: 0,
+    label: "—",
+    description: "Impact minimal, traitement standard",
+    color: "",
+    badgeColor: "",
+  },
+  {
     value: 1,
     label: "Faible",
     description: "Impact minimal, traitement standard",

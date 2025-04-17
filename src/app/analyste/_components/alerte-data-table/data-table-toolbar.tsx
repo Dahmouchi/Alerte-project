@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
-import { admin_alert_status_options, criticity_options } from "@/components/filters"
+import { admin_alert_status_options, analyste_alert_status_options, criticity_options } from "@/components/filters"
 import { DataTableFacetedFilterNumber } from "@/components/data-table/data-table-faceted-filter-number"
 
 interface DataTableToolbarProps<TData> {
@@ -35,6 +35,13 @@ export function DataTableToolbar<TData>({
             column={table.getColumn("adminStatus")}
             title="Statut"
             options={admin_alert_status_options}
+          />
+        )}
+         {table.getColumn("analysteValidation") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("analysteValidation")}
+            title="Analyste"
+            options={analyste_alert_status_options}
           />
         )}
         {table.getColumn("criticite") && (

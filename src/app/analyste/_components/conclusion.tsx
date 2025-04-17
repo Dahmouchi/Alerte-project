@@ -221,15 +221,7 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
                               Approvée
                             </FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="DECLINED" />
-                            </FormControl>
-                            <FormLabel className="font-normal flex items-center gap-2">
-                              <XCircle className="h-4 w-4 text-red-500" />
-                              Rejetée
-                            </FormLabel>
-                          </FormItem>
+                          
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="INFORMATIONS_MANQUANTES" />

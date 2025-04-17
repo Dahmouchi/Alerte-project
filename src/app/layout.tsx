@@ -23,7 +23,7 @@ export default async function RootLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <NextAuthProvider>
+        <NextAuthProvider >
           <div className="dark:bg-slate-800 bg-slate-100">{children}</div>
         </NextAuthProvider>
       </ThemeProvider>

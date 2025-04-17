@@ -12,8 +12,8 @@ export const userStatus = [
   "USER",
   "ANALYSTE",
   "RESPONSABLE",
+  "ADMIN_RESPONSABLE",
 ] as const; // Adjust based on actual statuses
-
 
 // Define Zod Schema for Alert
 export const alertSchema = z.object({

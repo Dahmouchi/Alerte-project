@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import * as React from 'react';
@@ -34,26 +33,34 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
+interface ChartDataItem {
+  date: string;
+  alertes: number;
+}
+
 export function BarGraph() {
   const { data: alerts } = useAlerts();
+  console.log("char", alerts);
 
   // Process data to group alerts by date
-  const chartData = React.useMemo(() => {
+  const chartData = React.useMemo<ChartDataItem[]>(() => {
     if (!alerts) return [];
 
-    const groupedData = alerts.reduce((acc: Record<string, number>, alert: any) => {
-      const date = new Date(alert.createdAt).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+    const groupedData = alerts.reduce((acc: Record<string, number>, alert: { createdAt: string }) => {
+      const date = new Date(alert.createdAt).toISOString().split('T')[0];
       acc[date] = (acc[date] || 0) + 1;
       return acc;
     }, {});
 
-    return Object.entries(groupedData).map(([date, alertes]) => ({
+    return Object.entries(groupedData).map(([date, alertes]): ChartDataItem => ({
       date,
-      alertes,
+      alertes: Number(alertes) // Explicitly ensure this is a number
     }));
   }, [alerts]);
 
-
+  // Get total number of alerts
+  const totalAlerts = chartData.reduce((sum, day) => sum + day.alertes, 0);
+  
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('alertes');
 
@@ -83,7 +90,7 @@ export function BarGraph() {
             <span className='hidden @[540px]/card:block'>
               Nombre Total d&apos;Alerte
             </span>
-            <span className='@[540px]/card:hidden'>{chartData.length} Alertes</span>
+            <span className='@[540px]/card:hidden'>{totalAlerts} Alertes</span>
           </CardDescription>
         </div>
         <div className='flex'>

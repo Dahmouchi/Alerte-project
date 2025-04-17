@@ -182,7 +182,7 @@ const AddUser = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectItem value="ADMIN_RESPONSABLE">Admin/Responsable</SelectItem>
                             <SelectItem value="ANALYSTE">Analyste</SelectItem>
                             <SelectItem value="RESPONSABLE">Responsable</SelectItem>
                           </SelectContent>

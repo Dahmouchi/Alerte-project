@@ -10,6 +10,6 @@ export default async function Admin() {
   if (!session?.user) {
     return redirect('/');
   } else {
-    redirect('/analyste/dashboard/alertes');
+    redirect('/analyste/dashboard/overview');
   }
 }

@@ -166,6 +166,7 @@ export async function AssignAlertAdmin(
 export async function saveConclusion(
   userId: string,
   content:string,
+  content1:string,
   alertId:string,
   recevable:RecevalbeStatus,
   criticite:string,
@@ -179,7 +180,7 @@ export async function saveConclusion(
           content,
           alertId,
           createdById:userId,
-          
+          content1,
         }
       })
       const res = await prisma.alert.update({
@@ -203,7 +204,7 @@ export async function saveConclusion(
           content,
           alertId,
           createdById:userId,
-          
+          content1,
         }
       })
       const res = await prisma.alert.update({
@@ -211,7 +212,7 @@ export async function saveConclusion(
         data:{
           analysteValidation:"DECLINED",
           recevable:recevable,
-          criticite:parseInt(criticite),
+          criticite:0,
         }
       })
       createHistoryRecord(

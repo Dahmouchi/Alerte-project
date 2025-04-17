@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { analyste_alert_status_options, criticity_options, label_options } from "@/components/filters"
+import { analyste_alert_status_options, criticity_options, label_options, responsable_alert_status_options } from "@/components/filters"
 import {
   HoverCard,
   HoverCardContent,
@@ -120,25 +120,53 @@ export const columns: ColumnDef<AlertType>[] = [
     },
   },
   {
-    accessorKey: "criticite",
+     accessorKey: "criticite",
+     header: ({ column }) => (
+       <DataTableColumnHeader column={column} title="Criticité" />
+     ),
+     cell: ({ row }) => {
+       const criticity = criticity_options.find(
+         (option) => option.value === Number(row.getValue("criticite"))
+       );
+       const status = row.getValue("analysteValidation");
+       
+       if (!criticity || status === "PENDING") {
+         return <div className="text-gray-400">Non défini</div>;
+       }
+   
+       return (
+         <div className="flex items-center w-[100px]">
+           <div className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}>
+             {criticity.icon && <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />}
+             <span className="text-xs font-medium">{criticity.label}</span>
+           </div>
+         </div>
+       );
+     },
+     filterFn: (row, id, value) => {
+       return value.includes(row.getValue(id));
+     },
+   },
+   {
+    accessorKey: "responsableValidation",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Criticité" />
+      <DataTableColumnHeader column={column} title="Responsable" />
     ),
     cell: ({ row }) => {
-      const criticity = criticity_options.find(
-        (option) => option.value === Number(row.getValue("criticite"))
+      const criticity = responsable_alert_status_options.find(
+        (option) => option.value === row.getValue("responsableValidation")
       );
       const status = row.getValue("analysteValidation");
       
       if (!criticity || status === "PENDING") {
-        return <div className="text-gray-400 text-xs">Non défini</div>;
+        return <div className="text-gray-400">Non défini</div>;
       }
   
       return (
         <div className="flex items-center w-[100px]">
-          <div className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}>
-            <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
-            <span className="font-medium text-xs">{criticity.label}</span>
+          <div className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.className}`}>
+            {criticity.icon && <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />}
+            <span className="text-xs font-medium">{criticity.label}</span>
           </div>
         </div>
       );
