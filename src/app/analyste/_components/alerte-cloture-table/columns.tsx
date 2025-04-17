@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { admin_alert_status_options, analyste_alert_status_options, label_options,responsable_alert } from "@/components/filters"
+import {analyste_alert_status_options, label_options,responsable_alert } from "@/components/filters"
 
 export const columns: ColumnDef<AlertType>[] = [
  
@@ -113,58 +113,27 @@ export const columns: ColumnDef<AlertType>[] = [
       },
     },
  
-   {
-         accessorKey: "createdAt",
-         header: ({ column }) => (
-           <DataTableColumnHeader column={column} title="Date de création" />
-         ),
-         cell: ({ row }) => {
-           const field = row.getValue("createdAt") as string;
-           const date = new Date(field);
-           return (
-             <div>
-               {date.toLocaleString("fr-FR", {
-                 day: "2-digit",
-                 month: "2-digit",
-                 year: "numeric",
-                 hour: "2-digit",
-                 minute: "2-digit",
-               })}
-             </div>
-           );
-         },
-       },
-    
-    
-  {
-    accessorKey: "adminStatus",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Statut" />
-    ),
-    cell: ({ row }) => {
-      const status = admin_alert_status_options.find(
-        (status) => status.value === row.getValue("adminStatus")
-      );
-
-      if (!status) {
-        return null;
-      }
-      const analysteStatu =  row.getValue("analysteValidation");
-     if(analysteStatu === "PENDING"){
-      return (
-        <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
-        >
-          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium text-xs">{status.label}</span>
-        </div>
-      );
-     }
+    {
+      accessorKey: "createdAt",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Date de création" />
+      ),
+      cell: ({ row }) => {
+        const field = row.getValue("createdAt") as string;
+        const date = new Date(field);
+        return (
+          <div>
+            {date.toLocaleString("fr-FR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </div>
+        );
+      },
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,

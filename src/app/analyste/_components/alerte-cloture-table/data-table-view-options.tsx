@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { type Table } from "@tanstack/react-table";
-import exportToCsv from "tanstack-table-export-to-csv";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {  Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -21,31 +20,8 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const handleExportToCsv = (): void => {
-    const headers = table
-      .getHeaderGroups()
-      .map((x) => x.headers)
-      .flat();
-
-    const rows = table.getFilteredRowModel().rows;    
-    exportToCsv("persons_data", headers, rows);
-  };
   return (
-   <div className="flex items-center gap-2">
-    <div>
-    {/*
-    <Button
-  type="button"
-  variant="outline"
-  className="ml-4 border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary hover:text-primary/90 shadow-sm transition-colors"
-  onClick={handleExportToCsv}
->
-  <Download className="mr-1 h-3 w-3" />
-  <span className="font-semibold text-xs">Exporter les filtres</span>
-</Button>
- */}
-    </div>
-     <DropdownMenu>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant='outline'
@@ -53,7 +29,7 @@ export function DataTableViewOptions<TData>({
           className='ml-auto hidden h-8 lg:flex'
         >
           <Settings2 className='mr-2 h-4 w-4' />
-          Voir
+          View
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[150px]'>
@@ -79,6 +55,5 @@ export function DataTableViewOptions<TData>({
           })}
       </DropdownMenuContent>
     </DropdownMenu>
-   </div>
   );
 }

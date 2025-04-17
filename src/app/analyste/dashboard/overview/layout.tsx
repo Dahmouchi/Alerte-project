@@ -18,10 +18,9 @@ export default async function OverViewLayout({
 }: {
   sales: React.ReactNode;
   bar_stats: React.ReactNode;
-}) {  
-  
-    const session = await getServerSession(authOptions);
-  
+}) {
+  const session = await getServerSession(authOptions);
+
   const pendingAlerts = await prisma.alert.count({
     where: {
       step: 2,
@@ -32,22 +31,24 @@ export default async function OverViewLayout({
   const totalAlerts = await prisma.alert.count({
     where: {
       step: 2,
-      adminStatus: "DECLINED",
+      assignedAnalystId: session?.user.id,
+      analysteValidation: "DECLINED",
     },
   });
   const analysteAlertes = await prisma.alert.count({
     where: {
       step: 2,
-      assignedAnalystId:session?.user.id,
+      assignedAnalystId: session?.user.id,
     },
   });
   const aprovedAlert = await prisma.alert.count({
     where: {
       step: 2,
-      adminStatus: "APPROVED",
+      assignedAnalystId: session?.user.id,
+      analysteValidation: "APPROVED",
     },
   });
- 
+
   return (
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-2">
@@ -58,20 +59,21 @@ export default async function OverViewLayout({
         </div>
 
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card] grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
-        <Card className="@container/card bg-white dark:bg-slate-950">
-  <CardHeader>
-    <CardDescription>Alertes de l&apos;analyste</CardDescription>
-    <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-      {analysteAlertes || 0}
-    </CardTitle>
-  </CardHeader>
-  <CardFooter className="flex-col items-start gap-1.5 text-sm">
-    <div className="line-clamp-1 flex gap-2 font-medium">
-      Nombre total des alertes assignées à vous{" "}
-      <AlertCircle className="size-4" /> {/* Changed from Users to AlertCircle */}
-    </div>
-  </CardFooter>
-</Card>
+          <Card className="@container/card bg-white dark:bg-slate-950">
+            <CardHeader>
+              <CardDescription>Alertes de l&apos;analyste</CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                {analysteAlertes || 0}
+              </CardTitle>
+            </CardHeader>
+            <CardFooter className="flex-col items-start gap-1.5 text-sm">
+              <div className="line-clamp-1 flex gap-2 font-medium">
+                Nombre total des alertes assignées à vous{" "}
+                <AlertCircle className="size-4" />{" "}
+                {/* Changed from Users to AlertCircle */}
+              </div>
+            </CardFooter>
+          </Card>
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>

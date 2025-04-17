@@ -45,13 +45,13 @@ const datas = {
       
     },
     {
-      title: "Alertes",
+      title: "Toutes les Alertes",
       url: "/analyste/dashboard/alertes",
       icon: SwatchBook,
       
     },
     {
-      title: "Votre Alertes",
+      title: "Mes Alertes",
       url: "/analyste/dashboard/myAlertes",
       icon: BookMarked,
     },
@@ -68,7 +68,7 @@ const datas = {
     },
     {
       title: "Settings",
-      url: "/admin/dashboard/settings",
+      url: "/analyste/dashboard/settings",
       icon: Settings2,
       
     },

@@ -78,6 +78,7 @@ import { CriticalityBadge } from "@/components/CritiqueBadg";
 import {
   removeResponsableAssignment,
   ResponsableAssign,
+  responsableValidation,
 } from "@/actions/responsable-function";
 const categories = [
   {
@@ -191,6 +192,8 @@ const AlertDetails = (alert: any) => {
   const [urgenceLevel, setUrgenceLevel] = useState("1");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const [decision, setDecision] = useState<UserAlertStatus>("APPROVED");
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
@@ -264,14 +267,10 @@ const AlertDetails = (alert: any) => {
     if (session) {
       try {
         setSelectedAnalyst(session.user.id);
-        const ocp = await saveConclusion(
+        const ocp = await responsableValidation(
           session.user.id,
-          justification,
-          justification1,
           al.id,
-          recevable,
-          urgenceLevel,
-          decision
+          al.analysteValidation
         );
         if (ocp) {
           toast.success("Alert assigned successfully!");
@@ -775,16 +774,6 @@ const AlertDetails = (alert: any) => {
             </Dialog>
           </div>
         </div>
-        {selectedAnalyst === session?.user.id && (
-          <div className=" relative border  lg:p-6 p-2 rounded-lg shadow-md mt-6">
-            <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
-              <h3 className="text-sm font-semibold text-white">
-                Traitement d&apos;alertes
-              </h3>
-            </div>
-            
-          </div>
-        )}{" "}
         {al.conlusions &&
           al.conlusions.map((con: any, index: any) => (
             <div key={index}>
@@ -940,6 +929,89 @@ const AlertDetails = (alert: any) => {
             </div>
           ))}
         {/* Print Button */}
+        {selectedAnalyst === session?.user.id && (
+          <div className="relative border lg:p-6 p-4 rounded-lg shadow-md mt-6 bg-card">
+            {/* Title Badge */}
+            <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
+              <h3 className="text-sm font-semibold text-white">
+                Traitement d&apos;alertes
+              </h3>
+            </div>
+
+            {/* Status Sticker */}
+            {al.responsableValidation === "PENDING" ? (
+              <Badge
+                variant="outline"
+                className="absolute -top-3 right-4 gap-1 bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300"
+              >
+                <AlertCircle className="h-3 w-3" />
+                <span>En attente de validation</span>
+              </Badge>
+            ) : (
+              <Badge
+                variant="outline"
+                className="absolute -top-3 right-4 gap-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300"
+              >
+                <CheckCircle2 className="h-3 w-3" />
+                <span>Validée</span>
+              </Badge>
+            )}
+
+            {/* Content */}
+            <div className="mt-4 space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Cette section vous permet de valider les alertes après analyse.
+                Veuillez vérifier toutes les informations avant confirmation.
+              </p>
+
+              <div className="flex justify-end">
+                {al.responsableValidation !== "PENDING" ? (
+                  <Button variant="default" className="gap-2 bg-emerald-600 hover:bg-emerald-600">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Validée
+                  </Button>
+                ) : (
+                  <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="default" className="gap-2 bg-blue-600 hover:bg-blue-800">
+                        <CheckCircle2 className="h-4 w-4 " />
+                        Valider
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Confirmer la validation</DialogTitle>
+                        <DialogDescription>
+                          Êtes-vous sûr de vouloir valider ces alertes? Cette
+                          action enverra les alertes au responsable final.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <Button
+                          variant="outline"
+                          onClick={() => setOpen(false)}
+                        >
+                          Annuler
+                        </Button>
+                        <Button
+                          variant="default"
+                          className="bg-blue-600 hover:bg-blue-800"
+                          onClick={() => {
+                            // Add your validation logic here
+                            sendConclusion();
+                            setOpen(false);
+                          }}
+                        >
+                          Confirmer
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+            </div>
+          </div>
+        )}{" "}
         <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button
             onClick={() => reactToPrintFn()}

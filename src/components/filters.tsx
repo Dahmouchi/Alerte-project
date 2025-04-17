@@ -15,6 +15,7 @@ import {
   Clock,
   CheckCircle,
   X,
+  Check,
 } from "lucide-react";
 
 import { User, ShieldCheck, Briefcase, UserCog } from "lucide-react";
@@ -75,7 +76,7 @@ export const status_options = [
 export const criticity_options = [
   {
     value: 0,
-    label: "—",
+    label: "",
     description: "Impact minimal, traitement standard",
     color: "",
     badgeColor: "",
@@ -116,13 +117,13 @@ export const criticity_options = [
 export const admin_alert_status_options = [
   {
     value: "PENDING",
-    label: "En Attente",
+    label: "Non Assignée",
     icon: Timer,
     color: "text-yellow-500 bg-yellow-100 dark:bg-yellow-900",
   },
   {
     value: "ASSIGNED",
-    label: "Assigné",
+    label: "Assignée",
     icon: UserCheck,
     color: "text-blue-500 bg-blue-100 dark:bg-blue-900",
   },
@@ -155,13 +156,13 @@ export const analyste_alert_status_options = [
     },
     {
       value: "APPROVED",
-      label: "Approuvé",
+      label: "Clôturée",
       icon: CheckCircle2,
       color: "text-green-500 bg-green-100 dark:bg-green-900",
     },
     {
       value: "DECLINED",
-      label: "Refusé",
+      label: "Rejetée",
       icon: XCircle,
       color: "text-red-500 bg-red-100 dark:bg-red-900",
     },
@@ -184,7 +185,7 @@ export const analyste_alert_status_options = [
     },
     {
       value: "APPROVED",
-      label: "Validé",
+      label: "Validée",
       icon: CheckCircle,
       variant: "success",
       className: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400",
@@ -192,7 +193,7 @@ export const analyste_alert_status_options = [
     },
     {
       value: "DECLINED",
-      label: "Rejeté",
+      label: "Rejetée",
       icon: X,
       variant: "destructive",
       className: "border-rose-200 bg-rose-50 text-rose-800 dark:bg-rose-900/30 dark:border-rose-800/50 dark:text-rose-400",
@@ -205,6 +206,32 @@ export const analyste_alert_status_options = [
       variant: "secondary",
       className: "border-blue-200 bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400",
       badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-900/80 dark:text-blue-200",
+    }
+  ];
+  export const responsable_alert = [
+    {
+      value: "APPROVED",
+      label: "Validée",
+      icon: Check,
+      variant: "success",
+      className: "border-emerald-200 bg-emerald-600 text-white ",
+      badgeClass: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/80 dark:text-emerald-200",
+    },
+    {
+      value: "PENDING",
+      label: "Non Validée",
+      icon: X,
+      variant: "destructive",
+      className: "border-rose-200 bg-red-600 text-white ",
+      badgeClass: "bg-rose-100 text-rose-800 dark:bg-rose-900/80 dark:text-rose-200",
+    },
+    {
+      value: "REQUIRES_REVIEW",
+      label: "À Réviser",
+      icon: AlertCircle,
+      variant: "secondary",
+      className: "border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400",
+      badgeClass: "bg-amber-100 text-amber-800 dark:bg-amber-900/80 dark:text-amber-200",
     }
   ];
 

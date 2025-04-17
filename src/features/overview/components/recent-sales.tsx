@@ -65,7 +65,7 @@ export async function RecentSales(alerts: any) {
               >
                 {sale.adminStatus}
               </div>
-              <Link href={`/admin/dashboard/alertes/${sale.id}`}>
+              <Link href={`/analyste/dashboard/alertes/${sale.id}`}>
                 <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
                   <Eye className="h-4 w-4" />
                 </div>
