@@ -57,6 +57,60 @@ export async function saveQr(
   }
 }
 
+export async function ArchiverUser(
+  id: string,
+): Promise<string> {
+  // Validate that new password matches the confirmation
+
+  // Fetch the user from the database
+  const admin = await prisma.user.findUnique({ where: { id } });
+  if (!admin) {
+    throw new Error("User not found or password is missing.");
+  }
+  if(admin.statut === true){
+    throw new Error("User not found or password is missing.");
+  }
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { archive: true },
+    });
+
+    return "Utilisateur archivé";
+  } catch (error: any) {
+    throw new Error(
+      error.message ||
+        "An unexpected error occurred while updating the password."
+    );
+  }
+}
+
+export async function DesarchiverUser(
+  id: string,
+): Promise<string> {
+  // Validate that new password matches the confirmation
+
+  // Fetch the user from the database
+  const admin = await prisma.user.findUnique({ where: { id } });
+  if (!admin) {
+    throw new Error("User not found or password is missing.");
+  }
+ 
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { archive: false },
+    });
+
+    return "Utilisateur désarchivé";
+  } catch (error: any) {
+    throw new Error(
+      error.message ||
+        "An unexpected error occurred while updating the password."
+    );
+  }
+}
+
 export async function changeAdminPassword(
   id: string,
   oldPassword: string,

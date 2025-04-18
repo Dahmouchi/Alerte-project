@@ -59,7 +59,9 @@ export function NavMain({
                     </SidebarMenuButton>
                   </Link>
                 </CollapsibleTrigger>
+                
               </SidebarMenuItem>
+              
             </Collapsible>
           );
         })}

@@ -45,6 +45,12 @@ export const role_options = [
     icon: UserCog,
     color: "text-orange-500 bg-orange-100 dark:bg-orange-900",
   },
+  {
+    value: "ADMIN_RESPONSABLE",
+    label: "AD/RE",
+    icon: UserCog,
+    color: "text-orange-500 bg-orange-100 dark:bg-orange-900",
+  },
 ];
 
 export const status_options = [

@@ -35,7 +35,7 @@ const Dashboard = async () => {
        </div>
         <Link href={"/user/dashboard/alerte/create"}>
           <div className="relative bg-red-600 text-white text-[14px] px-4 font-semibold pl-5 h-[2.8em] rounded-md flex items-center overflow-hidden cursor-pointer shadow-[inset_0_0_1.6em_-0.6em_#1F7D53] group">
-            <span className="mr-10">Crée une alerte</span>
+            <span className="mr-10">Créer une alerte</span>
             <div className="absolute right-[0.3em] bg-white h-[2.2em] w-[2.2em] rounded-sm flex items-center justify-center transition-all duration-300 group-hover:w-[calc(100%-0.6em)] shadow-[0.1em_0.1em_0.6em_0.2em_#1F7D53] active:scale-95">
               <FilePlus className="text-red-700" />
             </div>

@@ -7,6 +7,7 @@ import {
   Settings2,
   Users,
   AlertCircle,
+  Archive,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -47,6 +48,11 @@ const datas = {
       icon: Users,
     },
     {
+      title: "Users Archive",
+      url: "/admin/dashboard/archive",
+      icon: Archive,
+    },
+    {
       title: "Alertes",
       url: "/admin/dashboard/alertes",
       icon: AlertCircle,
@@ -57,6 +63,7 @@ const datas = {
       icon: Settings2,
       
     },
+    
   ],
 
 };

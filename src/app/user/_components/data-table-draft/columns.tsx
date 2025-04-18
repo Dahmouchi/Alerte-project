@@ -86,11 +86,22 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Creation Date" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => {
-      const field = row.getValue("createdAt") as Date;
-      return <div>{field.toDateString()}</div>;
+      const field = row.getValue("createdAt") as string;
+      const date = new Date(field);
+      return (
+        <div>
+          {date.toLocaleString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      );
     },
   },
   {

@@ -120,35 +120,6 @@ export default function SettingsPage(user: any) {
             </CardContent>
           </Card>
 
-          <Card className="dark:bg-slate-950">
-            <CardHeader>
-              <CardTitle>Sécurité</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="twoFactorEnabled"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel>Authentification à Deux Facteurs</FormLabel>
-                      <FormDescription>
-                        Ajoutez une couche de sécurité supplémentaire à votre
-                        compte
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
           <div className="flex justify-end">
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (

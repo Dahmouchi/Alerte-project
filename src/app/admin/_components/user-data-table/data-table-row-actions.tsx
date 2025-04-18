@@ -13,11 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Archive, Copy, Eye, MoreHorizontal, Pencil } from "lucide-react";
 import {  userSchema  } from "@/lib/validations/schema";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import DeleteDialog from "@/app/admin/_components/modals/delete-modal";
 import EditDialog from "@/app/admin/_components/modals/edit-modal";
+import ArchiveModal from "../modals/archive-modal";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -70,16 +70,16 @@ export function DataTableRowActions<TData>({
           </DialogTrigger>
           <DropdownMenuItem
             onSelect={() => setShowDeleteDialog(true)}
-            className='text-red-600'
+            
           >
-            <Trash2 className='mr-2 h-4 w-4' />
-            Delete Details
+            <Archive className='mr-2 h-4 w-4' />
+            Archiver
           </DropdownMenuItem>
           
         </DropdownMenuContent>
       </DropdownMenu>
       {dialogContent && <DialogContent>{dialogContent}</DialogContent>}
-      <DeleteDialog
+      <ArchiveModal
         task={task}
         isOpen={showDeleteDialog}
         showActionToggle={setShowDeleteDialog}

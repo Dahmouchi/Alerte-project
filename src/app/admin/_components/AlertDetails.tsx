@@ -145,6 +145,8 @@ const AlertDetails = (alert: any) => {
     al.assignedResponsable?.id || ""
   );
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenChat, setIsOpenChat] = useState(false);
+
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
@@ -180,7 +182,7 @@ const AlertDetails = (alert: any) => {
     if (unreadCount > 0) {
       await markMessagesAsRead(al.id);
     }
-    setIsOpen(true);
+    setIsOpenChat(true);
   };
   const getStatusStyles = (status: any) => {
     switch (status) {
@@ -642,7 +644,7 @@ const AlertDetails = (alert: any) => {
                 </div>
               </div>
             )}
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpenChat} onOpenChange={setIsOpenChat}>
               <DialogTrigger asChild>
                 <div
                   onClick={handleOpenChat}

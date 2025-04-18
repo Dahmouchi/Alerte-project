@@ -468,7 +468,7 @@ const Step2 = (alert: { alert: any }) => {
                                 <DatetimePicker
                                   {...field}
                                   format={[
-                                    ["months", "days", "years"],
+                                    ["days", "months", "years"],
                                     ["hours", "minutes", "am/pm"],
                                   ]}
                                 />

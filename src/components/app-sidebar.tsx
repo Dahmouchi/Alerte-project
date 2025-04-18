@@ -43,7 +43,7 @@ const datas = {
       
     },
     {
-      title: "Crée alerte",
+      title: "Créer alerte",
       url: "/user/dashboard/alerte/create",
       icon: SendHorizonal,
     },

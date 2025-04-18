@@ -1,8 +1,8 @@
 import { Shell } from "@/components/shells/shell";
 import prisma from "@/lib/prisma";
 import React from "react";
-import { DataTable } from "../../_components/user-data-table/data-table";
-import { columns } from "../../_components/user-data-table/columns";
+import { DataTable } from "../../_components/user-data-table-archive/data-table";
+import { columns } from "../../_components/user-data-table-archive/columns";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import AddUser from "../../_components/AddUser";
 
@@ -11,7 +11,7 @@ const Users = async () => {
 
   users = await prisma.user.findMany({
     where:{
-      archive:false,
+      archive:true,
     },
     orderBy:{
       createdAt:"desc"
