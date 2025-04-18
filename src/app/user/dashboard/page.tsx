@@ -25,8 +25,14 @@ const Dashboard = async () => {
   return (
     <div className="overflow-scroll lg:overflow-hidden max-w-full">
       <div className="w-full flex itce justify-between mt-2">
-        <h2 className="text-2xl font-bold tracking-tight">List des Alertes</h2>
-
+       <div>
+       <h2 className="text-2xl font-bold tracking-tight">List des Alertes</h2>
+        <div className="flex lg:items-center items-start gap-2 flex-col lg:flex-row">
+          <p className="text-sm text-muted-foreground">
+          Cette section regroupe toutes les alertes que vous avez envoyées.
+          </p>
+        </div>
+       </div>
         <Link href={"/user/dashboard/alerte/create"}>
           <div className="relative bg-red-600 text-white text-[14px] px-4 font-semibold pl-5 h-[2.8em] rounded-md flex items-center overflow-hidden cursor-pointer shadow-[inset_0_0_1.6em_-0.6em_#1F7D53] group">
             <span className="mr-10">Crée une alerte</span>

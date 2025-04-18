@@ -124,22 +124,10 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
               mettre à jour
             </DropdownMenuItem>
           </DialogTrigger>
-          <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            className="text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            supprimer
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Delete Dialog */}
-      <DeleteConclusion
-        task={task}
-        isOpen={showDeleteDialog}
-        showActionToggle={setShowDeleteDialog}
-      />
 
       {/* Update Dialog Content */}
       <DialogContent>

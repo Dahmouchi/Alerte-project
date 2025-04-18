@@ -8,6 +8,16 @@ export default async function Update(params:any) {
         include:{
           persons:true,
           files:true,
+          justif:{
+            include:{
+              files:true,
+            }
+          },
+          conlusions:{
+            include:{
+              createdBy:true,
+            }
+          },
         }
       });
   return (

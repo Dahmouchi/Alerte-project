@@ -50,9 +50,10 @@ export const role_options = [
 export const status_options = [
   {
     value: "INFORMATIONS_MANQUANTES",
-    label: "Information Manquantes",
+    label: "Informations Supplémentaires",
     icon: HelpCircle,
-    color: "text-orange-500 bg-orange-100 dark:bg-yellow-900",
+    color: "text-blue-500 bg-blue-100 dark:bg-blue-900",
+
   },
   {
     value: "EN_COURS_TRAITEMENT",

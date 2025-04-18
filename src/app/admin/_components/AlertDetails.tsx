@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
   Calendar,
+  ChevronLeft,
   Eye,
   FileAudio,
   FileVideo,
@@ -213,13 +214,13 @@ const AlertDetails = (alert: any) => {
   const assignAlert = async () => {
     if (!selectedAnalyst) return toast.error("Please select an analyst");
 
-    if(session.data){
+    if (session.data) {
       try {
         const ocp = await AssignAlertAdmin(
           selectedAnalyst,
           selectedResponsable,
           al.id,
-          session.data.user.id,
+          session.data.user.id
         );
         if (ocp) {
           toast.success("Alert assigned successfully!");
@@ -229,12 +230,21 @@ const AlertDetails = (alert: any) => {
       } catch (error) {
         console.error("Error assigning alert:", error);
       }
-    }else{
-      toast.error("Error assigning alert")
+    } else {
+      toast.error("Error assigning alert");
     }
   };
   return (
     <div>
+      <div className="flex items-center gap-4 mb-2 group">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center cursor-pointer gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+        >
+          <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+          Retour
+        </button>
+      </div>
       <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
@@ -324,48 +334,48 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
           {al.adminStatus !== "PANDING" && (
-           <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
-           <div className="space-y-2">
-             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-               Assignation
-             </h3>
-             <div className="flex items-center gap-3">
-               <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-               <div>
-                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                   Analyste
-                 </p>
-                 <p className="font-medium text-gray-900 dark:text-white">
-                   {al.assignedAnalyst?.name}{" "}
-                   {al.assignedAnalyst?.prenom || "Non assigné"}
-                 </p>
-               </div>
-             </div>
-           </div>
+            <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Assignation
+                </h3>
+                <div className="flex items-center gap-3">
+                  <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Analyste
+                    </p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {al.assignedAnalyst?.name}{" "}
+                      {al.assignedAnalyst?.prenom || "Non assigné"}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-           <div className="space-y-2">
-             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-               Responsable
-             </h3>
-             <div className="flex items-center gap-3">
-               <UserCheck className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-               <div>
-                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                   Superviseur
-                 </p>
-                 <p className="font-medium text-gray-900 dark:text-white">
-                   {al.assignedResponsable?.name}{" "}
-                   {al.assignedResponsable?.prenom || ""}
-                 </p>
-               </div>
-             </div>
-           </div>
-         </div>
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Responsable
+                </h3>
+                <div className="flex items-center gap-3">
+                  <UserCheck className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Superviseur
+                    </p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {al.assignedResponsable?.name}{" "}
+                      {al.assignedResponsable?.prenom || ""}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           <div className="mt-4 space-y-4">
             {/* Title & Code */}
-              {/* Header Section */}
-              <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            {/* Header Section */}
+            <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="min-w-[120px]">
@@ -629,11 +639,10 @@ const AlertDetails = (alert: any) => {
                       </div>
                     );
                   })}
-                 
                 </div>
               </div>
             )}
-              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <div
                   onClick={handleOpenChat}

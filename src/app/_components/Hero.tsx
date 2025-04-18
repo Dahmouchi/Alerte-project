@@ -85,7 +85,20 @@ const Hero1 = ({
               )}
             </div>
           </div>
-         <VideoPlayer />
+          <div className="flex-1 w-full relative">
+            <div className=" rounded-2xl overflow-hidden shadow-xl border-8 border-white transform hover:scale-[1.02] transition-all duration-300">
+              <VideoPlayer />
+              {/* Notification badge effect */}
+              <div className="absolute -top-3 -right-3 ">
+                <div className="relative">
+                  <div className="absolute animate-ping z-50 inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></div>
+                  <div className="relative inline-flex items-center justify-center rounded-full h-8 w-8 bg-red-500 text-white text-xs font-bold">
+                    !
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

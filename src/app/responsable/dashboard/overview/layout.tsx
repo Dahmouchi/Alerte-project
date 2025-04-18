@@ -31,7 +31,6 @@ export default async function OverViewLayout({
       }
     },
   });
-
   const totalAlerts = await prisma.alert.count({
     where: {
       step: 2,

@@ -56,7 +56,8 @@ export async function removeResponsableAssignment(
 export async function responsableValidation(
   userId: string,
   alertId: string,
-  validationStatus: UserAlertStatus // Assuming this is your enum type
+  validationStatus: UserAlertStatus, // Assuming this is your enum type
+  content: string
 ) {
   let statusToSet: AlertStatus;
 
@@ -76,6 +77,7 @@ export async function responsableValidation(
       data: {
         responsableValidation: "APPROVED",
         status: statusToSet,
+        conclusion:content,
         updatedAt: new Date(),
       },
     });

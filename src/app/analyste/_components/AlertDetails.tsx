@@ -13,12 +13,14 @@ import {
   CheckCheck,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
   Copy,
   EllipsisVertical,
   Eye,
   FileAudio,
   FilePenLine,
   FileVideo,
+  Lock,
   MapPin,
   MessageCircle,
   MessageCircleMore,
@@ -76,6 +78,7 @@ import {
   analysteAssign,
   removeAnalysteAssignment,
 } from "@/actions/analyste-function";
+import JustifCard from "@/app/user/_components/justifCard";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -360,6 +363,15 @@ const AlertDetails = (alert: any) => {
   };
   return (
     <div>
+      <div className="flex items-center gap-4 mb-2 group">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center cursor-pointer gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+        >
+          <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+          Retour
+        </button>
+      </div>
       <div className="space-y-3 mt-4 p-2">
         <div
           ref={contentRef}
@@ -396,65 +408,95 @@ const AlertDetails = (alert: any) => {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 {selectedAnalyst === session?.user.id ? (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-800/20"
-                      >
-                        <CheckCheck className="h-4 w-4" />
-                        <span>Attribuée à moi</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Souhaitez-vous céder l&apos;alerte?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Cette action transférera la responsabilité de cette
-                          alerte à un autre analyste.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={removeAnalyste}
-                          className="bg-blue-600 hover:bg-blue-700"
+                  // Check if the user has created any conclusion
+                  al.conlusions.some(
+                    (conclusion: { createdById: string }) =>
+                      conclusion.createdById === session?.user.id
+                  ) ? (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                      <Lock className="h-4 w-4" />
+                      <span className="text-xs">
+                        Vous ne pouvez pas céder cette alerte après avoir ajouté
+                        une conclusion
+                      </span>
+                    </div>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-800/20"
                         >
-                          Confirmer
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                          <CheckCheck className="h-4 w-4" />
+                          <span>Attribuée à moi</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Souhaitez-vous céder l&apos;alerte?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Cette action transférera la responsabilité de cette
+                            alerte à un autre analyste.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={removeAnalyste}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Confirmer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )
                 ) : selectedAnalyst === "" ? (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
-                        <UserPlus className="h-4 w-4" />
-                        <span>Prendre en charge</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Prendre en charge cette alerte?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Vous serez désigné comme responsable de cette alerte.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={assignAlert}
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          Confirmer
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  // Only show "Take charge" button if no conclusions exist OR if user created a conclusion
+                  !al.conlusions.length ||
+                  al.conlusions.some(
+                    (conclusion: { createdById: string | undefined }) =>
+                      conclusion.createdById === session?.user.id
+                  ) ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                          <UserPlus className="h-4 w-4" />
+                          <span>Prendre en charge</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Prendre en charge cette alerte?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Vous serez désigné comme responsable de cette
+                            alerte.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={assignAlert}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Confirmer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                      <Lock className="h-4 w-4" />
+                      <span>
+                        Cette alerte ne peut pas être reprise car elle a déjà
+                        une conclusion
+                      </span>
+                    </div>
+                  )
                 ) : (
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
                     <User className="h-4 w-4" />
@@ -466,47 +508,6 @@ const AlertDetails = (alert: any) => {
                 )}
               </div>
             </div>
-
-            {/* Assignment Details */}
-            {al.adminStatus !== "PANDING" && (
-              <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Assignation
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Analyste
-                      </p>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {al.assignedAnalyst?.name}{" "}
-                        {al.assignedAnalyst?.prenom || "Non assigné"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Responsable
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <UserCheck className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Superviseur
-                      </p>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {al.assignedResponsable?.name}{" "}
-                        {al.assignedResponsable?.prenom || ""}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
           <div className="mt-6 space-y-4">
             {/* Header Section */}
@@ -893,7 +894,6 @@ const AlertDetails = (alert: any) => {
                       {/* Header: Analyste Info */}
 
                       <div>
-                       
                         <label className="text-sm text-gray-600 dark:text-gray-300 font-medium">
                           Justification{" "}
                           <span className="ml-1 text-xs text-red-500 dark:text-red-400">
@@ -966,7 +966,7 @@ const AlertDetails = (alert: any) => {
                       {/* Justification Textarea */}
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Réponse
+                          Réponse
                         </label>
                         <textarea
                           required
@@ -1261,6 +1261,13 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
+        {al.justif && (
+          <div className="my-4">
+            {al.justif.map((justif: any) => (
+              <JustifCard key={justif.id} justif={justif} />
+            ))}
+          </div>
+        )}
         {/* Print Button */}
         <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button

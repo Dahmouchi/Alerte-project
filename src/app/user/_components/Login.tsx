@@ -186,7 +186,7 @@ export default function UsernameLogin() {
   }
   return (
     <div className="w-full h-full flex items-center justify-center p-2">
-      {isTwoFactor ? (
+      {isTwoFactor && !loading ? (
         <div className="flex justify-center w-full">
           {user.twoFactorSecret ? (
             <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">

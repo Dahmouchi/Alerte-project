@@ -44,13 +44,13 @@ const datas = {
       
     },
     {
-      title: "Alertes",
+      title: "Toutes les Alertes",
       url: "/responsable/dashboard/alertes",
       icon: SwatchBook,
       
     },
     {
-      title: "Votre Alertes",
+      title: "Mes Alertes",
       url: "/responsable/dashboard/myAlertes",
       icon: BookMarked,
     },

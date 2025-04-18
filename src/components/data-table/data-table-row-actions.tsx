@@ -45,14 +45,14 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.code)}
           >
             <Copy className="mr-2 h-4 w-4" />
-            Copy Task ID
+            Copier Alerte ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <Link href={`/user/dashboard/alerte/${task.code}`}>
             <DropdownMenuItem>
               {" "}
               <Eye className="mr-2 h-4 w-4" />
-              Voir details
+              Afficher details
             </DropdownMenuItem>
           </Link>
         </DropdownMenuContent>

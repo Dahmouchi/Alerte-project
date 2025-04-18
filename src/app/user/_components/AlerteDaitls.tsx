@@ -5,19 +5,26 @@ import { Badge } from "@/components/ui/badge";
 import {
   AlertCircle,
   Calendar,
+  ChevronLeft,
   Eye,
   FileAudio,
   FileVideo,
   MapPin,
   MessageCircle,
   Paperclip,
+  Pencil,
   User,
-  UserCheck,
   UserRound,
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { format, toZonedTime } from "date-fns-tz";
+import { fr } from "date-fns/locale";
+import { useSession } from "next-auth/react";
+import MissingInformationSection from "./messing-info";
+import JustifCard from "./justifCard";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -109,17 +116,68 @@ const categories = [
   },
 ];
 const AlerteDaitls = (alert: { alert: any }) => {
+  const session = useSession();
   const [al, setAl] = useState(alert.alert);
+  const router = useRouter();
+  const formatFrenchDate = (isoString: any) => {
+    const parisTime = toZonedTime(isoString, "Europe/Paris");
+    return format(parisTime, "dd/MM/yyyy à HH:mm", {
+      timeZone: "Europe/Paris",
+      locale: fr,
+    });
+  };
+
+  const getStatusStyles = (status: any) => {
+    switch (status) {
+      case "APPROVED":
+        return {
+          className:
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+          label: "Approuvé",
+          dotColor: "bg-green-500 ",
+        };
+      case "DECLINED":
+        return {
+          className:
+            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+          label: "Rejeté",
+          dotColor: "bg-red-500",
+        };
+      case "INFORMATIONS_MANQUANTES":
+        return {
+          className:
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+          label: "Infos manquantes",
+          dotColor: "bg-yellow-500 ",
+        };
+      default: // PENDING
+        return {
+          className:
+            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+          label: "En attente",
+          dotColor: "bg-gray-500",
+        };
+    }
+  };
   return (
     <div>
-      <div className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md">
+      <div className="flex items-center gap-4 mb-8 group">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center cursor-pointer gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+        >
+          <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+          Retour
+        </button>
+      </div>
+
+      <div className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md mb-4">
         <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
           <h3 className="text-sm font-semibold text-white">
             Détails de l&apos;alerte
           </h3>
         </div>
 
-        
         <div className="mt-4 space-y-4">
           {/* Title & Code */}
           {/* Header Section */}
@@ -388,6 +446,100 @@ const AlerteDaitls = (alert: { alert: any }) => {
           )}
         </div>
       </div>
+      {al.conlusions &&
+        al.responsableValidation !== "PENDING" &&
+        al.conlusions.map((con: any, index: any) => (
+          <div key={index}>
+            {" "}
+            {con.createdBy.role === "ANALYSTE" && (
+              <div className="bg-white dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                {/* Header with analyst info and actions */}
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                        <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Analyste
+                      </p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {con.createdBy.name} {con.createdBy.prenom}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status badges */}
+                <div className="flex flex-wrap items-center gap-3 mb-5">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        al.recevable === "RECEVALBE"
+                          ? "bg-green-500"
+                          : "bg-gray-400"
+                      }`}
+                    />
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                      {al.recevable === "RECEVALBE"
+                        ? "Recevable"
+                        : "Non Recevable"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        getStatusStyles(al.analysteValidation).dotColor
+                      }`}
+                    />
+                    <span
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                        getStatusStyles(al.analysteValidation).className
+                      }`}
+                    >
+                      {getStatusStyles(al.analysteValidation).label}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="mb-5">
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    Commentaire
+                  </h3>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {con?.content || "Aucun commentaire fourni"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Validé le {formatFrenchDate(con.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      {al.justif && (
+        <div className="my-4">
+          {al.justif.map((justif: any) => (
+            <JustifCard key={justif.id} justif={justif} />
+          ))}
+        </div>
+      )}
+      {al.status === "INFORMATIONS_MANQUANTES" && (
+        <MissingInformationSection al={al} />
+      )}
     </div>
   );
 };

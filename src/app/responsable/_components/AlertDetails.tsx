@@ -264,23 +264,43 @@ const AlertDetails = (alert: any) => {
 
   // Handle assigning alert
   const sendConclusion = async () => {
-    if (session) {
-      try {
-        setSelectedAnalyst(session.user.id);
-        const ocp = await responsableValidation(
-          session.user.id,
-          al.id,
-          al.analysteValidation
-        );
-        if (ocp) {
-          toast.success("Alert assigned successfully!");
-          router.refresh();
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'attribution de l'alerte:", error);
+    if (!session) {
+      toast.error("Vous devez être connecté pour cette action");
+      return;
+    }
+  
+    if (!al.conlusions || al.conlusions.length === 0) {
+      toast.error("Aucune conclusion trouvée");
+      return;
+    }
+  
+    try {
+      // Get the most recent conclusion by creation date
+      const latestConclusion = al.conlusions.reduce((prev:any, current:any) => {
+        return new Date(prev.createdAt) > new Date(current.createdAt) ? prev : current;
+      });
+  
+      if (!latestConclusion.content) {
+        toast.error("La conclusion la plus récente n'a pas de contenu");
+        return;
       }
-    } else {
-      toast.error("Erreur lors de l'attribution de l'alerte");
+  
+      setSelectedAnalyst(session.user.id);
+      
+      const ocp = await responsableValidation(
+        session.user.id,
+        al.id,
+        al.analysteValidation,
+        latestConclusion.content // Send the conclusion content
+      );
+  
+      if (ocp) {
+        toast.success("Alerte validée avec succès!");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Erreur lors de la validation de l'alerte:", error);
+      toast.error("Erreur lors de la validation de l'alerte");
     }
   };
   const removeAnalyste = async () => {
@@ -929,7 +949,7 @@ const AlertDetails = (alert: any) => {
             </div>
           ))}
         {/* Print Button */}
-        {selectedAnalyst === session?.user.id && (
+        {selectedAnalyst === session?.user.id && al.conlusions.length > 0 &&  (
           <div className="relative border lg:p-6 p-4 rounded-lg shadow-md mt-6 bg-card">
             {/* Title Badge */}
             <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">

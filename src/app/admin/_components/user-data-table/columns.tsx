@@ -57,7 +57,7 @@ export const columns: ColumnDef<UserType>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("statut") ? "activé" : "Désactivé";
-      return <Badge variant={status === "activé" ? "default" : "destructive"}>{status}</Badge>;
+      return <Badge className={`${status === "activé" ? "bg-emerald-600 hover:bg-green-600 text-white":"bg-red-600 hover:bg-red-600 text-white"}`}>{status}</Badge>;
     },
   },
   {

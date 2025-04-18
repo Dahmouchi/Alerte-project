@@ -51,7 +51,7 @@ export function DataTableRowActions<TData>({
             Copier ID Alerte
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${task.id}`)}}>
+          <DialogTrigger asChild onClick={() => {router.push(`/analyste/dashboard/alertes/${task.code}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />

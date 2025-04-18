@@ -16,7 +16,9 @@ const Dashboard = async () => {
     alerts = await prisma.alert.findMany({
       where: { step: 2 },
       orderBy: { createdAt: "desc" },
-      include: { persons: true },
+      include: { persons: true,
+       
+       },
     });
   }
   return (

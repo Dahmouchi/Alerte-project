@@ -105,10 +105,16 @@ export const columns: ColumnDef<AlertType>[] = [
 
       return (
         <div
-          className={`flex w-[220px] items-center px-2 py-1 rounded-md ${status.color}`}
+          className={` relative flex w-[200px] items-center px-2 py-1 rounded-md ${status.color}`}
         >
+          {status.value === "INFORMATIONS_MANQUANTES" && (
+            <span className="absolute -right-1 -top-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          )}
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium">{status.label}</span>
+          <span className="font-medium text-xs">{status.label}</span>
         </div>
       );
     },
@@ -131,9 +137,7 @@ export const columns: ColumnDef<AlertType>[] = [
                 ? conclusion.slice(0, 20) + "..."
                 : conclusion}
             </HoverCardTrigger>
-            <HoverCardContent>
-            {conclusion}
-            </HoverCardContent>
+            <HoverCardContent>{conclusion}</HoverCardContent>
           </HoverCard>
         </div>
       );
@@ -142,11 +146,22 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date création" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => {
-      const field = row.getValue("createdAt") as Date;
-      return <div>{field.toDateString()}</div>;
+      const field = row.getValue("createdAt") as string;
+      const date = new Date(field);
+      return (
+        <div>
+          {date.toLocaleString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      );
     },
   },
   {

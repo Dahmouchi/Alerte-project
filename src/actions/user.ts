@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
 import prisma from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { compare } from "bcrypt";
@@ -127,5 +129,51 @@ export async function UserInfo(userId: string) {
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw new Error("Failed to retrieve user info");
+  }
+}
+
+export async function saveJustif(
+  alertId: string,
+  content: string,
+  files: File[] | null
+) {
+  try {
+    const imageUrls: string[] = [];
+
+    if (files) {
+      for (const file of files) {
+        const arrayBuffer = await file.arrayBuffer();
+        const fileContent = Buffer.from(arrayBuffer);
+        const uploadResponse = await uploadFile(fileContent, file.name, file.type);
+        const imageUrl = getFileUrl(uploadResponse.Key); // assuming Key is the filename
+        imageUrls.push(imageUrl);
+      }
+    }
+
+    // Create the Justif record
+    const newJustif = await prisma.justif.create({
+      data: {
+        alertId,
+        content,
+        files: {
+          create: imageUrls.map((url) => ({
+            url, // assuming FileJustif has a `url` field
+          })),
+        },
+      },
+      include: {
+        files: true,
+      },
+    });
+    const updatedAlert = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        status: "EN_COURS_TRAITEMENT",
+      },
+    });
+    return newJustif;
+  } catch (error) {
+    console.error("Error saving justification:", error);
+    throw new Error("Failed to save justification");
   }
 }

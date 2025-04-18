@@ -12,7 +12,14 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-
+import {
+  BookOpen,
+  House,
+  Settings2,
+  SwatchBook,
+  BookMarked,
+  FolderLock,
+} from "lucide-react";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { NavUser } from "./nav-user";
 import { ChevronDown, KeySquare, LayoutDashboard, UserCheck, UserCog } from "lucide-react";
@@ -21,13 +28,51 @@ import { Button } from "@/components/ui/button";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "react-toastify";
-
+const navMain = [
+   
+  {
+    title: "Accueil",
+    url: "overview",
+    icon: House,
+    
+  },
+  {
+    title: "Toutes les Alertes",
+    url: "alertes",
+    icon: SwatchBook,
+    
+  },
+  {
+    title: "Mes Alertes",
+    url: "myAlertes",
+    icon: BookMarked,
+  },
+  {
+    title: "Alertes clôturées",
+    url: "cloture",
+    icon: FolderLock,
+  },
+  {
+    title: "Documentation",
+    url: "documentation",
+    icon: BookOpen,
+   
+  },
+  {
+    title: "Settings",
+    url: "settings",
+    icon: Settings2,
+    
+  },
+]
 const Header = () => {
   const pathname = usePathname();
   const lastSegment = pathname.split("/").filter(Boolean).pop() || "Home"; // Extract last segment
   const { data: session, update } = useSession();
   const router = useRouter()
-
+  const page = navMain.find(
+    (cat) => cat.url === lastSegment
+  );
   const handleDashboardSwitch = async (path: string) => {
     try {
       console.log("old result",session)
@@ -56,7 +101,7 @@ const Header = () => {
         <BreadcrumbSeparator className="hidden md:block" />
         <BreadcrumbItem>
           <BreadcrumbPage className="capitalize hidden lg:block">
-            {lastSegment}
+            {page?.title || lastSegment}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
