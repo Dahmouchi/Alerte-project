@@ -44,20 +44,20 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align='end' className='w-[200px]'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(task.id)}
+            onClick={() => navigator.clipboard.writeText(task.code)}
           >
             <Copy className='mr-2 h-4 w-4' />
             Copier ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/${task.id}`)}}>
+          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/${task.code}`)}}>
             <DropdownMenuItem>
               {" "}
               <Eye className='mr-2 h-4 w-4' />
               Voir détails
             </DropdownMenuItem>
           </DialogTrigger>
-          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/histoire/${task.id}`)}}>
+          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/histoire/${task.code}`)}}>
             <DropdownMenuItem>
               {" "}
               <History className='mr-2 h-4 w-4' />

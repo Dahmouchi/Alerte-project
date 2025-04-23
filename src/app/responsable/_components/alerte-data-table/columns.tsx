@@ -13,7 +13,7 @@ import {
   analyste_alert_status_options,
   criticity_options,
   label_options,
-  responsable_alert_status_options,
+  responsable_alert,
 } from "@/components/filters";
 import {
   HoverCard,
@@ -99,7 +99,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "analysteValidation",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Analyste" />
+      <DataTableColumnHeader column={column} title="Traitement" />
     ),
     cell: ({ row }) => {
       const status = analyste_alert_status_options.find(
@@ -117,6 +117,33 @@ export const columns: ColumnDef<AlertType>[] = [
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium text-xs">{status.label}</span>
         </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "responsableValidation",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Validation" className="flex items-center justify-center" />
+    ),
+    cell: ({ row }) => {
+      const criticity = responsable_alert.find(
+        (option) => option.value === row.getValue("responsableValidation")
+      );
+      const status = row.getValue("analysteValidation");
+
+      if (!criticity || status === "PENDING") {
+        return <div className="text-gray-400"></div>;
+      }
+
+      return (
+        <div
+            className={`flex w-[150px] items-center px-2 py-1 justify-center ${criticity.className}`}
+          >
+            <span className="font-medium text-xs">{criticity.label}</span>
+          </div>
       );
     },
     filterFn: (row, id, value) => {
@@ -158,48 +185,27 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "responsableValidation",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Responsable" />
-    ),
-    cell: ({ row }) => {
-      const criticity = responsable_alert_status_options.find(
-        (option) => option.value === row.getValue("responsableValidation")
-      );
-      const status = row.getValue("analysteValidation");
-
-      if (!criticity || status === "PENDING") {
-        return <div className="text-gray-400"></div>;
-      }
-
-      return (
-        <div className="flex items-center w-[100px]">
-          <div
-            className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.className}`}
-          >
-            {criticity.icon && (
-              <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
-            )}
-            <span className="text-xs font-medium">{criticity.label}</span>
-          </div>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date de création" />
-    ),
-    cell: ({ row }) => {
-      const field = row.getValue("createdAt") as Date;
-      return <div>{field.toDateString()}</div>;
-    },
-  },
+   {
+          accessorKey: "createdAt",
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Date de création" />
+          ),
+          cell: ({ row }) => {
+            const field = row.getValue("createdAt") as string;
+            const date = new Date(field);
+            return (
+              <div>
+                {date.toLocaleString("fr-FR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            );
+          },
+        },
   {
     accessorKey: "assignedResponsableId",
     header: ({ column }) => (

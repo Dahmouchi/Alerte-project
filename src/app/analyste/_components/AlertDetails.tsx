@@ -66,7 +66,7 @@ import { useRouter } from "next/navigation";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useSession } from "next-auth/react";
-import { saveConclusion } from "@/actions/alertActions";
+import { saveConclusion, saveDemande } from "@/actions/alertActions";
 import { AlertChat } from "@/components/alert-chat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
@@ -214,11 +214,13 @@ const AlertDetails = (alert: any) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [justification, setJustification] = useState("");
   const [justification1, setJustification1] = useState("");
-
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [urgenceLevel, setUrgenceLevel] = useState("1");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
-  const [decision, setDecision] = useState<UserAlertStatus>("APPROVED");
+  const [decision, setDecision] = useState<UserAlertStatus>(
+    "INFORMATIONS_MANQUANTES"
+  );
   const reactToPrintFn = useReactToPrint({ contentRef });
   const router = useRouter();
   const status = admin_alert_status_options.find(
@@ -325,6 +327,31 @@ const AlertDetails = (alert: any) => {
       toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
+  const sendDemande = async () => {
+    if (session) {
+      try {
+        if(decision === "APPROVED"){
+          setSelectedAnalyst(session.user.id);
+        const ocp = await saveDemande(
+          session.user.id,
+          al.id,
+        );
+        if (ocp) {
+          setJustification("");
+          setJustification1("");
+          toast.success("demande envoyer successfully!");
+          router.refresh();
+        }
+        }else{
+          toast.info("check the cloture")
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'attribution de l'alerte:", error);
+      }
+    } else {
+      toast.error("Erreur lors de l'attribution de l'alerte");
+    }
+  };
   const removeAnalyste = async () => {
     if (session) {
       setSelectedAnalyst(session?.user.id);
@@ -361,6 +388,14 @@ const AlertDetails = (alert: any) => {
       toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
+  const handleToggleApproval = () => {
+    if (decision !== "APPROVED") {
+      setShowConfirmDialog(true);
+    } else {
+      setDecision("INFORMATIONS_MANQUANTES"); // Reset if already approved
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center gap-4 mb-2 group">
@@ -822,7 +857,7 @@ const AlertDetails = (alert: any) => {
               </h3>
             </div>
             {al.recevable === "NON_DECIDE" ? (
-              <div>
+              <div className="mt-6">
                 <div className="grid grid-cols-2 gap-3   dark:bg-slate-800 rounded-t-xl">
                   {/* Recevable Button */}
                   <button
@@ -999,50 +1034,7 @@ const AlertDetails = (alert: any) => {
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Décision
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {/* Approved */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="APPROVED"
-                              className="peer hidden"
-                              checked={decision === "APPROVED"}
-                              onChange={() => setDecision("APPROVED")}
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20">
-                              <CheckCircle2 className="w-6 h-6 text-green-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Approuvé
-                              </span>
-                            </div>
-                          </label>
 
-                          {/* Missing Info */}
-                          <label className="relative">
-                            <input
-                              type="radio"
-                              name="decision"
-                              value="INFORMATIONS_MANQUANTES"
-                              className="peer hidden"
-                              checked={decision === "INFORMATIONS_MANQUANTES"}
-                              onChange={() =>
-                                setDecision("INFORMATIONS_MANQUANTES")
-                              }
-                            />
-                            <div className="flex flex-col items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20">
-                              <AlertCircle className="w-6 h-6 text-amber-500 mb-2" />
-                              <span className="font-medium text-gray-900 dark:text-white">
-                                Infos manquantes
-                              </span>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
                       {/* Submit Button */}
                       <div className="flex justify-end">
                         <button
@@ -1058,8 +1050,95 @@ const AlertDetails = (alert: any) => {
                     <div></div>
                   )}
                 </div>
+                {recevable === "RECEVALBE" && (
+                  <div className="space-y-4 border-blue-500 bg-blue-50 border-2 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Clôture
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Approved */}
+
+                      <div
+                        className={`${
+                          decision === "APPROVED"
+                            ? "border-green-500 border-2"
+                            : " border"
+                        } flex items-start space-x-4 p-4 rounded-lg  bg-white dark:bg-gray-900 `}
+                      >
+                        <div className="flex items-center h-5">
+                          <input
+                            type="checkbox"
+                            checked={decision === "APPROVED"}
+                            onChange={handleToggleApproval}
+                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <label
+                            htmlFor="approval-checkbox"
+                            className="flex items-center cursor-pointer"
+                          >
+                            <div className="ml-3 text-sm">
+                              <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                                <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
+                                Demande de clôture
+                              </div>
+                              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                                {decision === "APPROVED"
+                                  ? "Clôture approuvée (cliquez pour annuler)"
+                                  : "Cochez pour demander la clôture"}
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Confirmation Dialog */}
+                      <AlertDialog
+                        open={showConfirmDialog}
+                        onOpenChange={setShowConfirmDialog}
+                      >
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Confirmer la demande de clôture
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Êtes-vous sûr de vouloir effectuer cette demande
+                              de clôture ?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                setDecision("APPROVED");
+                                setShowConfirmDialog(false);
+                              }}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Confirmer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                      {/* Missing Info */}
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={sendConclusion}
+                        className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      >
+                        <Save className="w-5 h-5 mr-2" />
+                        Envoyer la demande
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
+              <div>
               <div className="flex items-center justify-between text-center gap-4 py-2 px-5">
                 <div
                   className={`w-full py-2 border-green-500 font-semibold rounded-lg border text-sm transition-all duration-300 ease-in-out transform ${
@@ -1078,6 +1157,7 @@ const AlertDetails = (alert: any) => {
                     />
                     Recevable
                   </span>
+                  
                 </div>
 
                 <div
@@ -1098,6 +1178,93 @@ const AlertDetails = (alert: any) => {
                     Non Recevable
                   </span>
                 </div>
+                </div>
+                {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
+                    <div className="space-y-4 border-blue-500 border-2 bg-blue-50 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Clôture
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Approved */}
+
+                        <div
+                          className={`${
+                            decision === "APPROVED"
+                              ? "border-green-500 border-2"
+                              : " border"
+                          } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
+                        >
+                          <div className="flex items-center h-5">
+                            <input
+                              type="checkbox"
+                              checked={decision === "APPROVED"}
+                              onChange={handleToggleApproval}
+                              className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <label
+                              htmlFor="approval-checkbox"
+                              className="flex items-center cursor-pointer"
+                            >
+                              <div className="ml-3 text-sm">
+                                <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                                  <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
+                                  Demande de clôture
+                                </div>
+                                <p className="text-gray-500 dark:text-gray-400 mt-1">
+                                  {decision === "APPROVED"
+                                    ? "Clôture approuvée (cliquez pour annuler)"
+                                    : "Cochez pour demander la clôture"}
+                                </p>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Confirmation Dialog */}
+                        <AlertDialog
+                          open={showConfirmDialog}
+                          onOpenChange={setShowConfirmDialog}
+                        >
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirmer la demande de clôture
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Êtes-vous sûr de vouloir effectuer cette demande
+                                de clôture ?
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  setDecision("APPROVED");
+                                  setShowConfirmDialog(false);
+                                }}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                Confirmer
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+
+                        {/* Missing Info */}
+                      </div>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={sendDemande}
+                          className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                          <Save className="w-5 h-5 mr-2" />
+                          Envoyer la demande
+                        </button>
+                      </div>
+                    </div>
+                  )}
               </div>
             )}
           </div>
@@ -1131,9 +1298,10 @@ const AlertDetails = (alert: any) => {
                       </div>
                     </div>
 
-                    {con.createdBy.id === session?.user.id && (
-                      <UpdateConclusion task={con} alerte={al} />
-                    )}
+                    {con.createdBy.id === session?.user.id &&
+                      al.responsableValidation === "PENDING" && (
+                        <UpdateConclusion task={con} alerte={al} />
+                      )}
                   </div>
 
                   {/* Status badges */}

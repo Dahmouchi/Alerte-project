@@ -9,7 +9,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { analyste_alert_status_options, criticity_options, label_options, responsable_alert_status_options } from "@/components/filters"
+import {
+  analyste_alert_status_options,
+  criticity_options,
+  label_options,
+  responsable_alert} from "@/components/filters";
 import {
   HoverCard,
   HoverCardContent,
@@ -84,35 +88,61 @@ export const columns: ColumnDef<AlertType>[] = [
                 ? conclusion.slice(0, 20) + "..."
                 : conclusion}
             </HoverCardTrigger>
-            <HoverCardContent>
-            {conclusion}
-            </HoverCardContent>
+            <HoverCardContent>{conclusion}</HoverCardContent>
           </HoverCard>
         </div>
       );
     },
   },
-   {
-     accessorKey: "analysteValidation",
+  {
+    accessorKey: "analysteValidation",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Analyste" />
+    ),
+    cell: ({ row }) => {
+      const status = analyste_alert_status_options.find(
+        (status) => status.value === row.getValue("analysteValidation")
+      );
+
+      if (!status) {
+        return null;
+      }
+
+      return (
+        <div
+          className={`flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
+        >
+          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
+          <span className="font-medium text-xs">{status.label}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  
+ {
+     accessorKey: "responsableValidation",
      header: ({ column }) => (
-       <DataTableColumnHeader column={column} title="Analyste" />
+       <DataTableColumnHeader column={column} title="Validation" className="flex items-center justify-center" />
      ),
      cell: ({ row }) => {
-       const status = analyste_alert_status_options.find(
-         (status) => status.value === row.getValue("analysteValidation")
+       const criticity = responsable_alert.find(
+         (option) => option.value === row.getValue("responsableValidation")
        );
+       const status = row.getValue("analysteValidation");
  
-       if (!status) {
-         return null;
+       if (!criticity || status === "PENDING") {
+         return <div className="text-gray-400"></div>;
        }
  
        return (
          <div
-           className={`flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
-         >
-           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-           <span className="font-medium text-xs">{status.label}</span>
-         </div>
+             className={`flex w-[150px] items-center px-2 py-1 justify-center ${criticity.className}`}
+           >
+             <span className="font-medium text-xs">{criticity.label}</span>
+           </div>
        );
      },
      filterFn: (row, id, value) => {
@@ -120,54 +150,30 @@ export const columns: ColumnDef<AlertType>[] = [
      },
    },
    {
-      accessorKey: "criticite",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Criticité" />
-      ),
-      cell: ({ row }) => {
-        const criticity = criticity_options.find(
-          (option) => option.value === Number(row.getValue("criticite"))
-        );
-        const status = row.getValue("analysteValidation");
-        
-        if (!criticity || status === "PENDING") {
-          return <div className="text-gray-400">Non défini</div>;
-        }
-    
-        return (
-          <div className="flex items-center w-[100px]">
-            <div className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}>
-              {criticity.icon && <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />}
-              <span className="text-xs font-medium">{criticity.label}</span>
-            </div>
-          </div>
-        );
-      },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id));
-      },
-    },
-  {
-    accessorKey: "responsableValidation", // Changed from analysteValidation
+    accessorKey: "criticite",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Responsable" /> // Changed title
+      <DataTableColumnHeader column={column} title="Criticité" />
     ),
     cell: ({ row }) => {
-      const status = responsable_alert_status_options.find(
-        (status) => status.value === row.getValue("responsableValidation")
+      const criticity = criticity_options.find(
+        (option) => option.value === Number(row.getValue("criticite"))
       );
-  
-      if (!status) {
-        return null;
+      const status = row.getValue("analysteValidation");
+
+      if (!criticity || status === "PENDING") {
+        return <div className="text-gray-400">Non défini</div>;
       }
-  
+
       return (
-        <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-full border 
-             ${status.badgeClass}`}
-        >
-          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium text-xs">{status.label}</span>
+        <div className="flex items-center w-[100px]">
+          <div
+            className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}
+          >
+            {criticity.icon && (
+              <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+            )}
+            <span className="text-xs font-medium">{criticity.label}</span>
+          </div>
         </div>
       );
     },
@@ -181,8 +187,19 @@ export const columns: ColumnDef<AlertType>[] = [
       <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => {
-      const field = row.getValue("createdAt") as Date;
-      return <div>{field.toDateString()}</div>;
+      const field = row.getValue("createdAt") as string;
+      const date = new Date(field);
+      return (
+        <div>
+          {date.toLocaleString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      );
     },
   },
   {

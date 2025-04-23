@@ -20,8 +20,8 @@ const Dashboard = async () => {
     });
   }
   return (
-    <div className="overflow-hidden max-w-full">
-      <div className="flex flex-col gap-2">
+    <div className="overflow-hidden p-2 max-w-full">
+      <div className="flex flex-col gap-2 ">
         <div className="flex items-center justify-between">
           <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold tracking-tight">
             Liste des Alertes
@@ -32,12 +32,14 @@ const Dashboard = async () => {
           votre action.
         </p>
       </div>
-      <ScrollArea className="lg:w-auto w-96 whitespace-nowrap rounded-md ">
-        <Shell>
-          <DataTable data={alerts || []} columns={columns} />
-        </Shell>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      <div className="relative w-full overflow-hidden mt-4">
+        <ScrollArea className="w-full rounded-md border">
+          <Shell className="p-0 sm:p-4">
+            <DataTable data={alerts || []} columns={columns} />
+          </Shell>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
     </div>
   );
 };

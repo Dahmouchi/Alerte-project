@@ -11,6 +11,7 @@ enum Role {
   ADMIN = "ADMIN",
   ANALYSTE = "ANALYSTE",
   RESPONSABLE = "RESPONSABLE",
+  ADMIN_RESPONSABLE = "ADMIN_RESPONSABLE",
 }
 
 const AccessDenied = (role:any) => {
@@ -30,6 +31,9 @@ useEffect(()=>{
         break;
       case Role.RESPONSABLE:
         setUrl("/responsable/dashboard");
+        break;
+      case Role.ADMIN_RESPONSABLE:
+        setUrl("/admin/dashboard");
         break;
       default:
         setUrl("/access-denied");

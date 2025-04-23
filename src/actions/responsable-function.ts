@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { createHistoryRecord } from "./alertActions";
 import { AlertStatus, UserAlertStatus } from "@prisma/client";
+import { io } from "socket.io-client";
 
 export async function ResponsableAssign(
   responsableId: string,
@@ -82,6 +83,19 @@ export async function responsableValidation(
       },
     });
 
+    if(userId){
+      await prisma.notification.create({
+        data:{
+          userId:updatedAlert.createdById,
+          title:"Messages informatifs",
+          message:"Votre alerte a été traitée. Veuillez consulter la nouvelle réponse.",
+          type:"SYSTEM",
+          relatedId:updatedAlert.code,
+        }
+      })
+    }
+    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+    socket.emit("notifyUser");
     // Create history record
     await createHistoryRecord(
       alertId,

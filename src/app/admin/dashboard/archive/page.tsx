@@ -19,7 +19,7 @@ const Users = async () => {
   });
   
   return (
-    <div className="overflow-hidden max-w-full">
+    <div className="overflow-hidden max-w-full p-2">
     <div className="flex items-center justify-between space-y-2">
       <h2 className="text-2xl font-bold tracking-tight">
         Liste des utilisateurs
@@ -28,13 +28,14 @@ const Users = async () => {
         <AddUser />
       </div>
     </div>
-
-    <ScrollArea className="lg:w-auto w-96 whitespace-nowrap rounded-md ">
-      <Shell>
-        <DataTable data={users || []} columns={columns} />
-      </Shell>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    <div className="relative w-full overflow-hidden mt-4">
+        <ScrollArea className="w-full rounded-md border">
+          <Shell className="p-0 sm:p-4">
+            <DataTable data={users || []} columns={columns} />
+          </Shell>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
 </div>
   );
   

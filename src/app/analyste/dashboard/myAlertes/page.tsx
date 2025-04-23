@@ -19,7 +19,7 @@ const Dashboard = async () => {
     });
   }
   return (
-    <div className="overflow-scroll lg:overflow-hidden max-w-full">
+    <div className="overflow-scroll lg:overflow-hidden max-w-full p-2">
        <div className="flex flex-col gap-2 pb-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold tracking-tight">
@@ -36,12 +36,14 @@ const Dashboard = async () => {
           </p>
         </div>
       </div>
-      <ScrollArea className="lg:w-auto w-96 whitespace-nowrap rounded-md ">
-          <Shell>
+      <div className="relative w-full overflow-hidden mt-4">
+        <ScrollArea className="w-full rounded-md border">
+          <Shell className="p-0 sm:p-4">
             <DataTable data={alerts || []} columns={columns} />
           </Shell>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
+      </div>
     </div>
   );
 };

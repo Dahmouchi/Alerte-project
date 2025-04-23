@@ -40,13 +40,14 @@ const Dashboard = async () => {
           </p>
         </div>
       </div>
-
-      <ScrollArea className="lg:w-auto w-96 whitespace-nowrap rounded-md ">
-        <Shell>
-          <DataTable data={alerts || []} columns={columns} />
-        </Shell>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      <div className="relative w-full overflow-hidden mt-4">
+        <ScrollArea className="w-full rounded-md border">
+          <Shell className="p-0 sm:p-4">
+            <DataTable data={alerts || []} columns={columns} />
+          </Shell>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
     </div>
   );
 };

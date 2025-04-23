@@ -6,6 +6,7 @@ import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
 import prisma from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { compare } from "bcrypt";
+import { io } from "socket.io-client";
 
 export async function GetAnalyste() {
   try {
@@ -225,9 +226,88 @@ export async function saveJustif(
         status: "EN_COURS_TRAITEMENT",
       },
     });
+    
+    if(updatedAlert.assignedAnalystId){
+      await prisma.notification.create({
+        data:{
+          userId:updatedAlert.assignedAnalystId,
+          title:"📢 Messages à destination de l’analyste/responsable",
+          message:"Un utilisateur a répondu à son alerte avec une justification. Veuillez la consulter.",
+          type:"SYSTEM",
+          relatedId:updatedAlert.code,
+        }
+      })
+      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+      socket.emit("notifyUser");
+    }
+    if(updatedAlert.assignedResponsableId){
+      await prisma.notification.create({
+        data:{
+          userId:updatedAlert.assignedResponsableId,
+          title:"📢 Messages à destination de l’analyste/responsable",
+          message:"Un utilisateur a répondu à son alerte avec une justification. Veuillez la consulter.",
+          type:"SYSTEM",
+          relatedId:updatedAlert.code,
+        }
+      })
+      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+      socket.emit("notifyUser");
+    }
+   
     return newJustif;
   } catch (error) {
     console.error("Error saving justification:", error);
     throw new Error("Failed to save justification");
+  }
+}
+
+export async function GetUserByUsername(userId: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: userId },
+      select: {
+        id: true,
+        password:true,
+        username: true,
+        email: true,
+        role: true,
+        twoFactorEnabled: true,
+        twoFactorSecret: true,
+        createdAt: true,
+        qrSecret:true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+
+export async function UpdatePassword(userId: string,password:string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const hashedPassword = await hash(password, 10);
+
+  // Update the password in the database
+    await prisma.user.update({
+      where: { username:userId },
+      data: { password: hashedPassword },
+    });
+
+    return "Password updated successfully.";
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
   }
 }

@@ -43,7 +43,14 @@ export async function RecentSales(alerts: any) {
               <div className="space-y-1">
                 <p className="text-sm leading-none font-medium">{sale.title}</p>
                 <p className="text-muted-foreground text-sm">
-                  {sale.createdAt.toDateString()}
+                  {
+                  sale.createdAt.toLocaleString("fr-FR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </p>
               </div>
               <div
@@ -65,7 +72,7 @@ export async function RecentSales(alerts: any) {
               >
                 {sale.adminStatus}
               </div>
-              <Link href={`/analyste/dashboard/alertes/${sale.id}`}>
+              <Link href={`/analyste/dashboard/alertes/${sale.code}`}>
                 <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
                   <Eye className="h-4 w-4" />
                 </div>

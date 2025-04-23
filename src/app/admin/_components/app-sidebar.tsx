@@ -6,8 +6,8 @@ import {
   BellElectric,
   Settings2,
   Users,
-  AlertCircle,
   Archive,
+  SwatchBook,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -43,6 +43,11 @@ const datas = {
       
     },
     {
+      title: "Alertes",
+      url: "/admin/dashboard/alertes",
+      icon: SwatchBook,
+    },
+    {
       title: "Users",
       url: "/admin/dashboard/users",
       icon: Users,
@@ -52,11 +57,7 @@ const datas = {
       url: "/admin/dashboard/archive",
       icon: Archive,
     },
-    {
-      title: "Alertes",
-      url: "/admin/dashboard/alertes",
-      icon: AlertCircle,
-    },
+    
     {
       title: "Settings",
       url: "/admin/dashboard/settings",

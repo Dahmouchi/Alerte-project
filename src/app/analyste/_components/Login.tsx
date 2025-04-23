@@ -40,14 +40,13 @@ import {
   SendHorizontal,
 } from "lucide-react";
 import Image from "next/image";
-import { UserInfo } from "@/actions/user";
+import { GetUserByUsername, UpdatePassword, UserInfo } from "@/actions/user";
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  password: z.string().min(6, {
-    message: "password must be at least 6 characters.",
-  }),
+  password: z.string().optional(),
+   confirmPassword: z.string().optional(),
 });
 export default function UsernameLogin() {
   const [isTwoFactor, setIsTwoFactor] = useState(false);
@@ -60,6 +59,7 @@ export default function UsernameLogin() {
   const { data: session, update } = useSession(); // Use session and update function
   const router = useRouter();
   const [isView, setIsView] = useState(false);
+  const [password, setPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,32 +161,95 @@ export default function UsernameLogin() {
     }
   };
 
-  /* Handle Login */
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
-    const res = await signIn("username-only", {
-      username: values.username,
-      password: values.password,
-      redirect: false,
-    });
-
-    if (res?.error) {
-      toast.error(res.error);
-      setLoading(false);
-    } else {
-      await update(); // Refresh session after login
-      const session = await getSession();
-
-      if (session?.user.twoFactorEnabled) {
-        setIsTwoFactor(true); // Show 2FA modal
-        setUser(session.user);
-      } else {
-        toast.success("Connexion réussie");
-        redirect("/analyste/dashboard");
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+      setLoading(true);
+      
+      if (password) {
+        // This is the new password submission flow
+        try {
+         if(values.password && values.password === values.confirmPassword){
+           // Call your UpdatePassword function
+           await UpdatePassword(values.username, values.password);
+           toast.success("Password set successfully");
+           
+           // Now try to sign in with the new password
+           const res = await signIn("username-only", {
+             username: values.username,
+             password: values.password,
+             redirect: false,
+           });
+     
+           if (res?.error) {
+            toast.error(res.error);
+            setLoading(false);
+          } else {
+            await update(); // Refresh session after login
+            const session = await getSession();
+      
+            if (session?.user.twoFactorEnabled) {
+              setIsTwoFactor(true); // Show 2FA modal
+              setUser(session.user);
+            } else {
+              toast.success("Connexion réussie");
+              redirect("/analyste/dashboard");
+            }
+            setLoading(false);
+          }
+         }else{
+          toast.error("Failed to set password");
+         }
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Failed to set password");
+        } finally {
+          setLoading(false);
+        }
+        return;
       }
-      setLoading(false);
+    
+      if (values.password) {
+        // Existing login flow
+        const res = await signIn("username-only", {
+          username: values.username,
+          password: values.password,
+          redirect: false,
+        });
+    
+        if (res?.error) {
+          toast.error(res.error);
+          setLoading(false);
+        } else {
+          await update(); // Refresh session after login
+          const session = await getSession();
+    
+          if (session?.user.twoFactorEnabled) {
+            setIsTwoFactor(true); // Show 2FA modal
+            setUser(session.user);
+          } else {
+            toast.success("Connexion réussie");
+            redirect("/analyste/dashboard");
+          }
+          setLoading(false);
+        }
+      } else {
+        try {
+          const userN = values.username;
+          if (userN) {
+            const res = await GetUserByUsername(userN);
+            if (res && res.password === null) {
+              setPassword(true); // Show password set form
+              form.setValue("username", userN);
+            } else {
+              toast.error("Invalid username or password required");
+            }
+          }
+        } catch (error) {
+          console.error("Verification error:", error);
+          toast.error("Une erreur est survenue");
+        } finally {
+          setLoading(false);
+        }
+      }
     }
-  }
 
   if (loading) {
     return <Loading />;
@@ -369,93 +432,206 @@ export default function UsernameLogin() {
 
             {/* Right Pane */}
             <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
-              <div className="max-w-md w-full p-6">
-                {/* Sign Up Form */}
-                <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                  <div className="text-center pb-8">
-                    <div className="mt-5">
-                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
-                        S&apos;identifier
-                      </h3>
-                    </div>
-                  </div>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-8  w-full "
-                    >
-                      <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input
-                                className="dark:bg-slate-900"
-                                placeholder="Entrer votre username"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input
-                                  className="dark:bg-slate-900"
-                                  type={isView ? "text" : "password"}
-                                  id="password"
-                                  placeholder="entrer votre mot de pass"
-                                  {...field}
-                                />
-                                {isView ? (
-                                  <Eye
-                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                    onClick={() => {
-                                      setIsView(!isView);
-                                    }}
-                                  />
-                                ) : (
-                                  <EyeOff
-                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                    onClick={() => setIsView(!isView)}
-                                  />
-                                )}
-                              </div>
-                            </FormControl>
+            {password ? (
+                 <div className="max-w-md w-full p-6">
+                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
+                   <div className="text-center pb-8">
+                     <div className="mt-5">
+                       <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
+                         Définir votre mot de passe
+                       </h3>
+                       <p className="text-gray-600 dark:text-gray-300 mt-2">
+                         Veuillez créer un nouveau mot de passe pour votre compte
+                       </p>
+                     </div>
+                   </div>
+                   <Form {...form}>
+                     <form
+                       onSubmit={form.handleSubmit(onSubmit)}
+                       className="space-y-8 w-full"
+                     >
+                       <FormField
+                         control={form.control}
+                         name="username"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Nom d&apos;utilisateur</FormLabel>
+                             <FormControl>
+                               <Input
+                                 className="dark:bg-slate-900"
+                                 disabled
+                                 {...field}
+                               />
+                             </FormControl>
+                           </FormItem>
+                         )}
+                       />
+                       <FormField
+                         control={form.control}
+                         name="password"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Nouveau mot de passe</FormLabel>
+                             <FormControl>
+                               <div className="relative">
+                                 <Input
+                                   className="dark:bg-slate-900"
+                                   type={isView ? "text" : "password"}
+                                   placeholder="Entrez votre nouveau mot de passe"
+                                   {...field}
+                                 />
+                                 {isView ? (
+                                   <Eye
+                                     className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                     onClick={() => setIsView(!isView)}
+                                   />
+                                 ) : (
+                                   <EyeOff
+                                     className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                     onClick={() => setIsView(!isView)}
+                                   />
+                                 )}
+                               </div>
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+                       <FormField
+                         control={form.control}
+                         name="confirmPassword"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Confirmer le mot de passe</FormLabel>
+                             <FormControl>
+                             <div className="relative">
+                                 <Input
+                                   className="dark:bg-slate-900"
+                                   type={isView ? "text" : "password"}
+                                   placeholder="Confirmez votre nouveau mot de passe"
+                                   {...field}
+                                 />
+                                 {isView ? (
+                                   <Eye
+                                     className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                     onClick={() => setIsView(!isView)}
+                                   />
+                                 ) : (
+                                   <EyeOff
+                                     className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                     onClick={() => setIsView(!isView)}
+                                   />
+                                 )}
+                               </div>
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+                       <div className="w-full flex items-center justify-start">
+                         <Button
+                           type="submit"
+                           className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                         >
+                           Enregistrer le mot de passe
+                         </Button>
+                       </div>
+                     </form>
+                   </Form>
+                 </div>
+               </div>
+                ) : (
+                  <div className="max-w-md w-full p-6">
+                    {/* Original login form */}
+                    <div className="max-w-md w-full p-6">
+                      {/* Sign Up Form */}
+                      <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
+                        <div className="text-center pb-8">
+                          <div className="mt-5">
+                            <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
+                              S&apos;identifier
+                            </h3>
+                          </div>
+                        </div>
+                        <Form {...form}>
+                          <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-8  w-full "
+                          >
+                            <FormField
+                              control={form.control}
+                              name="username"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Username</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      className="dark:bg-slate-900"
+                                      placeholder="Entrer votre username"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="password"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Mot de pass</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <Input
+                                        className="dark:bg-slate-900"
+                                        type={isView ? "text" : "password"}
+                                        id="password"
+                                        placeholder="entrer votre mot de pass"
+                                        {...field}
+                                      />
+                                      {isView ? (
+                                        <Eye
+                                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                          onClick={() => {
+                                            setIsView(!isView);
+                                          }}
+                                        />
+                                      ) : (
+                                        <EyeOff
+                                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                          onClick={() => setIsView(!isView)}
+                                        />
+                                      )}
+                                    </div>
+                                  </FormControl>
 
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <div className="w-full flex items-center justify-start">
-                        <Button
-                          type="submit"
-                          className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
-                        >
-                          Submit
-                        </Button>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="w-full flex items-center justify-start">
+                              <Button
+                                type="submit"
+                                className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                              >
+                                Submit
+                              </Button>
+                            </div>
+                          </form>
+                        </Form>
+                        <div className="w-full flex items-center justify-center mt-4">
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                          <div className="text-xs text-gray-500 text-center w-full">
+                            Espace Analyste{" "}
+                          </div>
+
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                        </div>
                       </div>
-                    </form>
-                  </Form>
-                  <div className="w-full flex items-center justify-center mt-4">
-                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                    <div className="text-xs text-gray-500 text-center w-full">
-                      Espace Analyste{" "}
-                    </div>
-
-                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                    </div>{" "}
                   </div>
-                </div>
-              </div>
+                )}
             </div>
           </div>
         </div>

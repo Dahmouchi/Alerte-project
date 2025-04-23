@@ -21,21 +21,21 @@ export default async function OverViewLayout({
   const pendingAlerts = await prisma.alert.count({
     where: {
       step: 2,
-      adminStatus: "PENDING",
+      status: "EN_COURS_TRAITEMENT",
     },
   });
 
   const totalAlerts = await prisma.alert.count({
     where: {
       step: 2,
-      adminStatus: "DECLINED",
+      status: "REJETE",
     },
   });
 
   const aprovedAlert = await prisma.alert.count({
     where: {
       step: 2,
-      adminStatus: "APPROVED",
+      status: "TRAITE",
     },
   });
   users = await prisma.user.findMany({

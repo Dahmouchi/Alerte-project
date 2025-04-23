@@ -78,6 +78,7 @@ model User {
   AlertResponsable Alert[] @relation(name: "AlertAssignmentResponsable")
   AlertHistory AlertHistory[]
   ChatMessage ChatMessage[]
+  notification Notification[]
 }
 
 model Account {
@@ -207,7 +208,24 @@ model AlertChat {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String   // User who should receive the notification
+  title       String   // Short title of the notification
+  message     String   // Detailed message
+  type        String   // e.g., "ALERT", "SYSTEM", "MESSAGE"
+  relatedId   String?  // ID of related entity (e.g., alert ID)
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  readAt      DateTime?
+  // Relation to user (assuming you have a User model)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Indexes for better query performance
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
 model ChatMessage {
   id          String    @id @default(uuid())
   chatId      String

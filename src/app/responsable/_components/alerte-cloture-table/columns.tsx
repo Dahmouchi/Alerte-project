@@ -58,7 +58,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
        accessorKey: "analysteValidation",
        header: ({ column }) => (
-         <DataTableColumnHeader column={column} title="Analyste" />
+         <DataTableColumnHeader column={column} title="Traitement" />
        ),
        cell: ({ row }) => {
          const status = analyste_alert_status_options.find(
@@ -86,7 +86,7 @@ export const columns: ColumnDef<AlertType>[] = [
      {
       accessorKey: "responsableValidation",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Responsable" className="flex items-center justify-center" />
+        <DataTableColumnHeader column={column} title="Validation" className="" />
       ),
       cell: ({ row }) => {
         const status = responsable_alert.find(
@@ -101,10 +101,10 @@ export const columns: ColumnDef<AlertType>[] = [
       if(analysteValidation !== "PENDING"){
         return (
           <div
-            className={`flex w-[150px] items-center px-2 py-1 justify-center ${status.className}`}
-          >
-            <span className="font-medium text-xs">{status.label}</span>
-          </div>
+          className={`flex w-[150px] items-center px-2 py-1 justify-center ${status.className}`}
+        >
+          <span className="font-medium text-xs">{status.label}</span>
+        </div>
         );
       }
       },

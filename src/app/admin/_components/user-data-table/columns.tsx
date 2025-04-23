@@ -65,7 +65,7 @@ export const columns: ColumnDef<UserType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Role" />
     ),
-    cell: ({ row }) => <div className="w-[100px] font-medium">{row.getValue("role")}</div>,
+    cell: ({ row }) => <div className="w-[200px] font-medium">{row.getValue("role")}</div>,
   },
   
   {
