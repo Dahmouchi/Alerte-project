@@ -13,10 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, Pencil } from "lucide-react";
 import { alertSchema  } from "@/lib/validations/schema";
 import { Dialog } from "@/components/ui/dialog";
-import DeleteDialog from "@/components/modals/delete-modal";
 import Link from "next/link";
 
 interface DataTableRowActionsProps<TData> {
@@ -27,8 +26,6 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
 
-  const [showDeleteDialog, setShowDeleteDialog] =
-    React.useState<boolean>(false);
   const task = alertSchema.parse(row.original);
 
 
@@ -50,7 +47,7 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.id)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Copy Task ID
+            Coupier Alerte ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
             <Link href={`/user/dashboard/alerte/create/${task.code}`}>
@@ -60,21 +57,10 @@ export function DataTableRowActions<TData>({
               Compléter la création
             </DropdownMenuItem>
             </Link>
-          <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            className='text-red-600'
-          >
-            <Trash2 className='mr-2 h-4 w-4' />
-            Delete Details
-          </DropdownMenuItem>
-         
+
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeleteDialog
-        task={task}
-        isOpen={showDeleteDialog}
-        showActionToggle={setShowDeleteDialog}
-      />
+    
     </Dialog>
   );
 }

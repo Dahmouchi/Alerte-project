@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Captcha from "../../../_components/Captcha";
+import { createAlerte } from "@/actions/alertActions";
 
 const categories = [
   {
@@ -138,12 +138,12 @@ const highlightMatch = (text: string, search: string) => {
   const handleNext = async () => {
     if (step === 1) {
       // Step 1: Create the alert in the backend
-      const res = await axios.post("/api/alerte", {
-        category: formData.category,
-        createdById: userId,
-      });
-      setAlertId(res.data.code);
-      router.push(`/user/dashboard/alerte/create/${res.data.code}`);
+      const res = await createAlerte(
+        formData.category,
+        userId,
+      );
+      setAlertId(res.id);
+      router.push(`/user/dashboard/alerte/create/${res.code}`);
     } else {
       // Step 2-4: Use server action instead of API call
       if (alertId) {

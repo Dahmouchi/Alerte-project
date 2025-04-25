@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,11 +12,13 @@ import {
 import { saveJustif } from "@/actions/user";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-const MissingInformationSection = (al : any) => {
+const MissingInformationSection = (al: any) => {
   const [justificationText, setJustificationText] = useState("");
-  const [attachments, setAttachments] = useState<File[]>([]);
+  const [attachments, setAttachments] = useState<File[] | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
   const router = useRouter();
   const dropZoneConfig = {
     maxFiles: 5,
@@ -27,17 +28,22 @@ const MissingInformationSection = (al : any) => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    if (!session) return null;
     try {
       const justif = await saveJustif(
-        al.al.id,             // alertId
-        justificationText,    // content
-        attachments           // files
+        al.al.id, // alertId
+        session.user.id,
+        justificationText, // content
+        attachments // files
       );
-  
-      toast.success("Justification envoyée avec succès !");
-      setJustificationText("");
-      setAttachments([]);
-      router.refresh();
+      if (justif) {
+        toast.success("Justification envoyée avec succès !");
+        router.refresh();
+        setJustificationText("");
+        setAttachments([]);
+      } else {
+        toast.error("Error");
+      }
     } catch (error) {
       console.error(error);
       toast.error("Erreur lors de l'envoi de la justification.");
@@ -85,13 +91,13 @@ const MissingInformationSection = (al : any) => {
             <label className="cursor-pointer">
               <FileUploader
                 value={attachments}
-                onValueChange={(value) => setAttachments(value ?? [])}
+                onValueChange={setAttachments}
                 dropzoneOptions={dropZoneConfig}
                 className="relative rounded-lg p-2 dark:bg-slate-800 "
               >
                 <FileInput
                   id="fileInput"
-                  className="outline-dashed outline-1 outline-slate-500 dark:outline-gray-200 bg-white dark:bg-slate-700"
+                  className="outline-dashed outline-1 outline-slate-500 dark:outline-gray-200"
                 >
                   <div className="flex items-center justify-center flex-col p-8 w-full ">
                     <CloudUpload className="text-gray-500 dark:text-gray-200 w-10 h-10" />
@@ -154,7 +160,7 @@ const MissingInformationSection = (al : any) => {
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Envoyer 
+                Envoyer
               </>
             )}
           </Button>

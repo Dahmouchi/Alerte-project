@@ -14,6 +14,7 @@ const Alert = async (params: any) => {
       conlusions:{
         include:{
           createdBy:true,
+          files:true,
         }
       },
       files: true,

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-
+import { nanoid } from "nanoid"; // Generate unique codes
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
@@ -9,13 +10,43 @@ import { io } from "socket.io-client";
 import { sendAlertNotification } from "./notifications";
 import sendEmail from "./sendemail";
 
+export async function createAlerte(
+  category: string,
+  createdById: string,
+){
+  try{
+    if(category || createdById ){
+      const newAlert = await prisma.alert.create({
+        data: {
+          code: nanoid(8), // Generate an 8-character unique code
+          category,
+          createdById,
+          step: 1, // Start at step 1
+        },
+      });
+      createHistoryRecord(
+        newAlert.id,
+        createdById,
+        'CREATE',
+       `L'alerte a été créée par l'utilisateur.`
+      )
+      return newAlert
+    }else{
+      console.error("Error category or createby:");
+      throw new Error("Failed to update alert");
+    }
+  }catch(error){
+    console.error("Error updating alert:", error);
+    throw new Error("Failed to update alert");
+  }
+}
 export async function updateAlert(
   alertId: string,
   formData: any,
   step: number,
   persons: { nom?: string; prenom?: string; fonction?: string }[],
   files: File[], // This can be images and audio
-  audioFile: File | null, // New field for audio file
+  audioUrl: string | null, // New field for audio file
   anonymeUser: string,
   type: string,
   anonyme: boolean,
@@ -23,10 +54,6 @@ export async function updateAlert(
 ) {
   try {
     const imageUrls: string[] = [];
-    const audioUrl: string | null = audioFile
-      ? await uploadAudio(audioFile)
-      : null;
-
     if (files) {
       for (const image of files) {
         const arrayBuffer = await image.arrayBuffer();
@@ -370,6 +397,55 @@ export async function saveConclusion(
           },
         });
       }
+      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+      socket.emit("notifyUser");
+
+      return { updatedAlert, res };
+    }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+export async function saveReponse(
+  userId: string,
+  content: string,
+  alertId: string,
+  involved: boolean,
+) {
+  try {
+   
+      const updatedAlert = await prisma.conclusion.create({
+        data: {
+          content,
+          alertId,
+          createdById: userId,
+        },
+      });
+      const res = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          responsableValidation:"PENDING",
+        },
+      });
+      createHistoryRecord(
+        alertId,
+        userId,
+        "SET_STATUS",
+        `L'alerte ${res.code} a été jugée non recevable par l'analyste et transmise au responsable pour information.`
+      );
+      if (res.assignedResponsableId) {
+        await prisma.notification.create({
+          data: {
+            userId: res.assignedResponsableId,
+            title: "Alerte traitée par l'analyste",
+            message:
+              "l'alerte a été traitée avec l'analyste et besoin de votre validation",
+            type: "SYSTEM",
+            relatedId: res.code,
+          },
+        });
+      
       const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
       socket.emit("notifyUser");
 

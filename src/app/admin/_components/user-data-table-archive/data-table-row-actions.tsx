@@ -52,7 +52,7 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.id)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Copy Task ID
+            Coupier User ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DialogTrigger asChild onClick={() => {}}>

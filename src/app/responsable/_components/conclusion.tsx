@@ -4,18 +4,7 @@
 
 // * * This is just a demostration of delete modal, actual functionality may vary
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -25,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import DeleteConclusion from "./delete-conclusion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -123,22 +111,12 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
               mettre à jour
             </DropdownMenuItem>
           </DialogTrigger>
-          <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            className="text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            supprimer
-          </DropdownMenuItem>
+         
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Delete Dialog */}
-      <DeleteConclusion
-        task={task}
-        isOpen={showDeleteDialog}
-        showActionToggle={setShowDeleteDialog}
-      />
+     
 
       {/* Update Dialog Content */}
       <DialogContent>

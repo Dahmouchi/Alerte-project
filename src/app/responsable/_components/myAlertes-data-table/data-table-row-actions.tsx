@@ -48,7 +48,7 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.id)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Copy Task ID
+            Coupier Alerte ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DialogTrigger asChild onClick={() => {router.push(`/responsable/dashboard/alertes/${task.code}`)}}>

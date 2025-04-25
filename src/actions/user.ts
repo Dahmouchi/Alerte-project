@@ -189,6 +189,7 @@ export async function UserInfo(userId: string) {
 
 export async function saveJustif(
   alertId: string,
+  createdById:string,
   content: string,
   files: File[] | null
 ) {
@@ -206,16 +207,18 @@ export async function saveJustif(
     }
 
     // Create the Justif record
-    const newJustif = await prisma.justif.create({
+    const newJustif = await prisma.conclusion.create({
       data: {
         alertId,
         content,
+        createdById,
         files: {
           create: imageUrls.map((url) => ({
             url, // assuming FileJustif has a `url` field
           })),
         },
       },
+      
       include: {
         files: true,
       },
@@ -223,6 +226,7 @@ export async function saveJustif(
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
       data: {
+        involved:false,
         status: "EN_COURS_TRAITEMENT",
       },
     });

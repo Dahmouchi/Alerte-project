@@ -77,6 +77,7 @@ export async function responsableValidation(
       where: { id: alertId },
       data: {
         responsableValidation: "APPROVED",
+        involved:true,
         status: statusToSet,
         conclusion:content,
         updatedAt: new Date(),

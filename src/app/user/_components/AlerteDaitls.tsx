@@ -19,10 +19,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
-import { useSession } from "next-auth/react";
 import MissingInformationSection from "./messing-info";
 import JustifCard from "./justifCard";
 const categories = [
@@ -116,9 +115,13 @@ const categories = [
   },
 ];
 const AlerteDaitls = (alert: { alert: any }) => {
-  const session = useSession();
   const [al, setAl] = useState(alert.alert);
+  const [reload, SetReload] = useState(true);
+
   const router = useRouter();
+  useEffect(()=>{
+    router.refresh();
+  },[reload])
   const formatFrenchDate = (isoString: any) => {
     const parisTime = toZonedTime(isoString, "Europe/Paris");
     return format(parisTime, "dd/MM/yyyy à HH:mm", {
@@ -451,8 +454,8 @@ const AlerteDaitls = (alert: { alert: any }) => {
         al.conlusions.map((con: any, index: any) => (
           <div key={index}>
             {" "}
-            {con.createdBy.role === "ANALYSTE" && (
-              <div className="bg-white dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+            {con.createdBy.role === "ANALYSTE" ? (
+              <div className="bg-white my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
                 {/* Header with analyst info and actions */}
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div className="flex items-center gap-3">
@@ -527,18 +530,14 @@ const AlerteDaitls = (alert: { alert: any }) => {
                   </div>
                 </div>
               </div>
+            ):(
+              <JustifCard justif={con} />
             )}
           </div>
         ))}
-      {al.justif && (
-        <div className="my-4">
-          {al.justif.map((justif: any) => (
-            <JustifCard key={justif.id} justif={justif} />
-          ))}
-        </div>
-      )}
-      {al.status === "INFORMATIONS_MANQUANTES" && (
-        <MissingInformationSection al={al} />
+     
+      {al.status === "INFORMATIONS_MANQUANTES" && al.involved && (
+        <MissingInformationSection al={al} reload={()=>SetReload(!reload)}/>
       )}
     </div>
   );

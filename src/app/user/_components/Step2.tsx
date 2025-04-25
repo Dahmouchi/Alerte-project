@@ -286,7 +286,7 @@ const Step2 = (alert: { alert: any }) => {
           2,
           persons,
           filesToPass,
-          audioPass, // Pass the audio file here
+          values.audioUrl || null, // Pass the audio file here
           anonymeUser,
           textAudio,
           anonyme,
@@ -314,9 +314,6 @@ const Step2 = (alert: { alert: any }) => {
    }
   }
 
-  const retour = () => {
-    setSteps(steps - 1);
-  };
   if (loading) {
     return <Loading />;
   }

@@ -11,14 +11,10 @@ const Alert = async (params: any) => {
   const alert = await prisma.alert.findUnique({
     where: { code: params.params.id },
     include: {
-      justif:{
-        include:{
-          files:true,
-        }
-      },
       conlusions:{
         include:{
           createdBy:true,
+          files:true,
         }
       },
       files: true,
