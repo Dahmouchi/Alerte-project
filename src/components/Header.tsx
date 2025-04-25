@@ -19,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { io } from "socket.io-client";
-import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import {
@@ -65,7 +64,6 @@ const Header = () => {
     const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
     socket.on("notifyUser", (message) => {
       setMessage(message);
-      toast.info(message);
     });
     // Cleanup function to remove the event listener
     return () => {

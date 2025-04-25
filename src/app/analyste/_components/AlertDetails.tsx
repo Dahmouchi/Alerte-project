@@ -66,7 +66,11 @@ import { useRouter } from "next/navigation";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useSession } from "next-auth/react";
-import { saveConclusion, saveDemande, saveReponse } from "@/actions/alertActions";
+import {
+  saveConclusion,
+  saveDemande,
+  saveReponse,
+} from "@/actions/alertActions";
 import { AlertChat } from "@/components/alert-chat";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
@@ -228,19 +232,12 @@ const AlertDetails = (alert: any) => {
     (status) => status.value === al?.adminStatus
   );
 
-
   const handleSubmitResponse = async (response: string) => {
     if (session) {
       try {
         setSelectedAnalyst(session.user.id);
-        const ocp = await saveReponse(
-          session.user.id,
-          response,          
-          al.id,
-          true,
-        );
+        const ocp = await saveReponse(session.user.id, response, al.id, true);
         if (ocp) {
-         
           toast.success("Reponse enregister");
           router.refresh();
         }
@@ -1391,7 +1388,7 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
-        {!al.involved && (
+        {!al.involved && al.responsableValidation !=="PENDING" && (
           <div className="w-full mx-auto">
             <div className="space-y-6  bg-white shadow-lg dark:bg-gray-800 rounded-lg p-4 border">
               {/* Decision Section */}
@@ -1400,9 +1397,7 @@ const AlertDetails = (alert: any) => {
 
               {/* Justification Textarea */}
               <div className="space-y-2">
-              <AnalystResponseForm
-            onSubmit={handleSubmitResponse}
-          />
+                <AnalystResponseForm onSubmit={handleSubmitResponse} />
               </div>
             </div>
           </div>

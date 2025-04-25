@@ -107,7 +107,6 @@ const Header = () => {
     const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
     socket.on("notifyUser", (message) => {
       setMessage(message);
-      toast.info(message);
     });
     // Cleanup function to remove the event listener
     return () => {

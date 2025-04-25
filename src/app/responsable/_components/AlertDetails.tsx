@@ -80,6 +80,7 @@ import {
   ResponsableAssign,
   responsableValidation,
 } from "@/actions/responsable-function";
+import JustifCard from "@/app/user/_components/justifCard";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -170,13 +171,7 @@ const categories = [
     ],
   },
 ];
-const predefinedJustifications = [
-  "Manque d'informations",
-  "Problème technique",
-  "Signalement sans preuve",
-  "Non concerné",
-  "Autre",
-];
+
 
 const AlertDetails = (alert: any) => {
   const al = alert.alert;
@@ -884,67 +879,7 @@ const AlertDetails = (alert: any) => {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-blue-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="flex flex-col space-y-4">
-                    {/* Section Responsable */}
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Responsable
-                        </p>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {con.createdBy.name} {con.createdBy.prenom}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Statut de Décision */}
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          getStatusStyles(al.responsableValidation).className
-                        }`}
-                      >
-                        {getStatusStyles(al.responsableValidation).label}
-                      </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Statut
-                      </span>
-                    </div>
-                    {/* Commentaire */}
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                        Commentaire
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {con?.content}
-                      </p>
-                    </div>
-
-                    {/* Date de Validation */}
-                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        Validé le: {formatFrenchDate(con.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <JustifCard justif={con} />
               )}
             </div>
           ))}

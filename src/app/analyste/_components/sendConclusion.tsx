@@ -22,6 +22,7 @@ export function AnalystResponseForm({
     setIsSubmitting(true);
     try {
       await onSubmit(response);
+      window.location.reload();
       setResponse(""); // Clear form after submission
     } finally {
       setIsSubmitting(false);

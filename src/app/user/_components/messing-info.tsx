@@ -37,6 +37,7 @@ const MissingInformationSection = (al: any) => {
         attachments // files
       );
       if (justif) {
+        window.location.reload();
         toast.success("Justification envoyée avec succès !");
         router.refresh();
         setJustificationText("");
