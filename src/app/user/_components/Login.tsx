@@ -164,7 +164,7 @@ export default function UsernameLogin() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const res = await signIn("username-only", {
-      username: values.username,
+      username: values.username.toLowerCase(),
       password: values.password,
       redirect: false,
     });

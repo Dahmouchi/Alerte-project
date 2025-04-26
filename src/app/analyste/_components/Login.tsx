@@ -209,7 +209,7 @@ export default function UsernameLogin() {
       if (values.password) {
         // Existing login flow
         const res = await signIn("username-only", {
-          username: values.username,
+          username: values.username.toLowerCase(),
           password: values.password,
           redirect: false,
         });
