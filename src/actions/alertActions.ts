@@ -67,7 +67,6 @@ export async function updateAlert(
         imageUrls.push(imageUrl);
       }
     }
-
     // Update the alert first
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
@@ -110,6 +109,7 @@ export async function updateAlert(
       updatedAlert.code,
       "Une nouvelle alerte a été détectée dans le système."
     );
+    
     createHistoryRecord(
       alertId,
       updatedAlert.createdById,
@@ -210,12 +210,12 @@ export async function AssignAlertAdmin(
         <p style="font-size: 16px; color: #4b5563; margin-bottom: 24px;">Bonjour,</p>
         
         <div style="background-color: #f8fafc; border-left: 4px solid #4361ee; padding: 16px; margin-bottom: 24px; border-radius: 0 8px 8px 0;">
-          <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'administrateur vous a assigné une nouvelle tâche nécessitant votre expertise.</p>
+          <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'admin vous a assigné une nouvelle alerte nécessitant votre traitement.</p>
         </div>
         
-        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de cette assignation et prendre les mesures appropriées.</p>
+        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${updatedAlert.code} et faire le nécessaire.</p>
         
-        <a href="#" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
+        <a href="https://alerte-project.vercel.app/analyste" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
       </div>
       
       <!-- Footer -->
@@ -234,7 +234,7 @@ export async function AssignAlertAdmin(
         data: {
           userId: analysteId,
           title: "Assignment notification",
-          message: "l'administration assigner a vous une alerte",
+          message: `l'admin vous a assigné l'alerte ${updatedAlert.code}`,
           type: "SYSTEM",
           relatedId: updatedAlert.code,
         },
@@ -263,12 +263,12 @@ export async function AssignAlertAdmin(
               <p style="font-size: 16px; color: #4b5563; margin-bottom: 24px;">Bonjour,</p>
               
               <div style="background-color: #f8fafc; border-left: 4px solid #4361ee; padding: 16px; margin-bottom: 24px; border-radius: 0 8px 8px 0;">
-                <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'administrateur vous a assigné une nouvelle tâche nécessitant votre expertise.</p>
+                <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'admin vous a assigné une nouvelle alerte nécessitant votre validation.</p>
               </div>
               
-              <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de cette assignation et prendre les mesures appropriées.</p>
+        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${updatedAlert.code} et faire le nécessaire.</p>
               
-              <a href="#" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
+              <a href="https://alerte-project.vercel.app/responsable" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
             </div>
             
             <!-- Footer -->
@@ -287,7 +287,7 @@ export async function AssignAlertAdmin(
         data: {
           userId: responsableId,
           title: "Assignment notification",
-          message: "l'administration assigner a vous une alerte",
+          message: `l'admin vous a assigné l'alerte ${updatedAlert.code}`,
           type: "SYSTEM",
           relatedId: updatedAlert.code,
         },
@@ -346,8 +346,7 @@ export async function saveConclusion(
           data: {
             userId: res.assignedResponsableId,
             title: "Alerte traitée par l'analyste",
-            message:
-              "l'alerte a été traitée avec l'analyste et besoin de votre validation",
+            message: `l'alerte ${res.code} traitée et en attente de validation`,
             type: "SYSTEM",
             relatedId: res.code,
           },
@@ -390,8 +389,7 @@ export async function saveConclusion(
           data: {
             userId: res.assignedResponsableId,
             title: "Alerte traitée par l'analyste",
-            message:
-              "l'alerte a été traitée avec l'analyste et besoin de votre validation",
+            message: `l'alerte ${res.code} traitée et en attente de validation`,
             type: "SYSTEM",
             relatedId: res.code,
           },
@@ -440,7 +438,7 @@ export async function saveReponse(
             userId: res.assignedResponsableId,
             title: "Alerte traitée par l'analyste",
             message:
-              "l'alerte a été traitée avec l'analyste et besoin de votre validation",
+              `l'alerte ${res.code} traitée et en attente de validation`,
             type: "SYSTEM",
             relatedId: res.code,
           },
@@ -471,8 +469,7 @@ export async function saveDemande(userId: string, alertId: string) {
         data: {
           userId: updatedAlert.assignedResponsableId,
           title: "Alerte traitée par l'analyste",
-          message:
-            "l'alerte a été traitée avec l'analyste et besoin de votre validation",
+          message:`Demande de clôture de l'alerte ${updatedAlert.code}`,
           type: "SYSTEM",
           relatedId: updatedAlert.code,
         },

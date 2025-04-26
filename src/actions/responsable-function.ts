@@ -89,7 +89,7 @@ export async function responsableValidation(
         data:{
           userId:updatedAlert.createdById,
           title:"Messages informatifs",
-          message:"Votre alerte a été traitée. Veuillez consulter la nouvelle réponse.",
+          message:`Alerte ${updatedAlert.code} traitée. Veuillez consulter la nouvelle réponse.`,
           type:"SYSTEM",
           relatedId:updatedAlert.code,
         }

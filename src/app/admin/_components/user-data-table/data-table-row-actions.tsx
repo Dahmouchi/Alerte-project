@@ -13,11 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Archive, Copy, Eye, MoreHorizontal, Pencil } from "lucide-react";
+import { Archive, Copy, MoreHorizontal, Pencil } from "lucide-react";
 import {  userSchema  } from "@/lib/validations/schema";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import EditDialog from "@/app/admin/_components/modals/edit-modal";
 import ArchiveModal from "../modals/archive-modal";
+import { useSession } from "next-auth/react";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -31,6 +32,7 @@ export function DataTableRowActions<TData>({
   const [showDeleteDialog, setShowDeleteDialog] =
     React.useState<boolean>(false);
   const task = userSchema.parse(row.original);
+  const {data:session} = useSession();
   const handleEditClick = () => {
     setDialogContent(<EditDialog user={task} />);
   };
@@ -52,29 +54,25 @@ export function DataTableRowActions<TData>({
             onClick={() => navigator.clipboard.writeText(task.id)}
           >
             <Copy className='mr-2 h-4 w-4' />
-            Coupier User ID
+            Copier ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DialogTrigger asChild onClick={() => {}}>
-            <DropdownMenuItem>
-              {" "}
-              <Eye className='mr-2 h-4 w-4' />
-              View Details
-            </DropdownMenuItem>
-          </DialogTrigger>
+          
           <DialogTrigger asChild onClick={handleEditClick}>
             <DropdownMenuItem>
               <Pencil className='mr-2 h-4 w-4' />
-              Edit Details
+              Modifier
             </DropdownMenuItem>
           </DialogTrigger>
+          {session?.user.id !== task.id && 
           <DropdownMenuItem
-            onSelect={() => setShowDeleteDialog(true)}
-            
-          >
-            <Archive className='mr-2 h-4 w-4' />
-            Archiver
-          </DropdownMenuItem>
+          onSelect={() => setShowDeleteDialog(true)}
+          
+        >
+          <Archive className='mr-2 h-4 w-4' />
+          Archiver
+        </DropdownMenuItem>
+        }
           
         </DropdownMenuContent>
       </DropdownMenu>

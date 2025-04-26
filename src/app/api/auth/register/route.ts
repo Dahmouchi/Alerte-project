@@ -17,7 +17,12 @@ export async function POST(request: Request) {
   const hashedPassword = await hash(password, 10);
 
   const user = await prisma.user.create({
-    data: { name, username, password: hashedPassword,email:username },
+    data: { 
+      name, 
+      username: username.toLowerCase(),  // Convert to lowercase
+      password: hashedPassword,
+      email: username.toLowerCase()     // Also lowercase the email if needed
+    }
   });
 
   return NextResponse.json({ message: "Signup successful!", user });

@@ -21,30 +21,39 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Le prénom doit contenir au moins 2 caractères."),
   prenom: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
   email: z.string().email("Veuillez entrer un email valide."),
-  username: z.string().min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères."),
+  username: z
+    .string()
+    .min(2, "Le nom d'utilisateur doit contenir au moins 2 caractères."),
   role: z.string().nonempty("Veuillez sélectionner un rôle."),
   statut: z.boolean().default(true), // Added statut field
 });
 
-const EditDialog = (user:any) => {
+const EditDialog = (user: any) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-
+  const { data: session } = useSession();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name:user.user.name || "",
+      name: user.user.name || "",
       prenom: user.user.prenom || "",
       email: user.user.email || "",
-      username: user.user.username ,
+      username: user.user.username,
       role: user.user.role,
       statut: user.user.statut, // Default to active
     },
@@ -53,7 +62,7 @@ const EditDialog = (user:any) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.patch(`/api/users/${user.user.id}`,values);
+      const response = await axios.patch(`/api/users/${user.user.id}`, values);
 
       if (response.status === 200) {
         toast.success("Utilisateur ajouté avec succès");
@@ -65,8 +74,8 @@ const EditDialog = (user:any) => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error.response?.data?.message || 
-        "Erreur lors de l'ajout de l'utilisateur"
+        error.response?.data?.message ||
+          "Erreur lors de l'ajout de l'utilisateur"
       );
     } finally {
       setIsSubmitting(false);
@@ -75,138 +84,149 @@ const EditDialog = (user:any) => {
 
   return (
     <div>
- 
-          <DialogHeader>
-            <DialogTitle>Modifier les informations de l&apos;utilisateur</DialogTitle>
-            <DialogDescription>
-              Remplissez les informations.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* First Name Field */}
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Prénom*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Entrez le prénom" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Last Name Field */}
-                  <FormField
-                    control={form.control}
-                    name="prenom"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nom*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Entrez le nom" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+      <DialogHeader>
+        <DialogTitle>
+          Modifier les informations de l&apos;utilisateur
+        </DialogTitle>
+        <DialogDescription>Remplissez les informations.</DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 w-full"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              {/* First Name Field */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prénom*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Entrez le prénom" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Last Name Field */}
+              <FormField
+                control={form.control}
+                name="prenom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nom*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Entrez le nom" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                {/* Email Field */}
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email*</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="Entrez l'email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Username Field */}
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom d&apos;utilisateur*</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrez le username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {session?.user.role !== "ADMIN" && (
+              <div className="grid grid-cols-2 gap-4">
+                {/* Role Dropdown */}
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="role"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email*</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Entrez l'email" {...field} />
-                      </FormControl>
+                      <FormLabel>Rôle*</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez un rôle" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ADMIN_RESPONSABLE">Admin/responsable</SelectItem>
+                          <SelectItem value="ANALYSTE">Analyste</SelectItem>
+                          <SelectItem value="RESPONSABLE">
+                            Responsable
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Username Field */}
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="statut"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom d&apos;utilisateur*</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Entrez le username" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Statut du compte</FormLabel>
+                      <div className="flex items-center gap-2 pt-2">
+                        <Switch
+                          id="user-statut"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-green-500"
+                        />
+                        <label htmlFor="user-statut" className="text-sm">
+                          {field.value ? "Activé" : "Désactivé"}
+                        </label>
+                      </div>
                     </FormItem>
                   )}
                 />
+              </div>
+            )}
 
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Role Dropdown */}
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Rôle*</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Sélectionnez un rôle" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="ADMIN">Admin</SelectItem>
-                            <SelectItem value="ANALYSTE">Analyste</SelectItem>
-                            <SelectItem value="RESPONSABLE">Responsable</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Statut Toggle */}
-                  <FormField
-                    control={form.control}
-                    name="statut"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Statut du compte</FormLabel>
-                        <div className="flex items-center gap-2 pt-2">
-                          <Switch
-                            id="user-statut"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="data-[state=checked]:bg-green-500"
-                          />
-                          <label htmlFor="user-statut" className="text-sm">
-                            {field.value ? "Activé" : "Désactivé"}
-                          </label>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-2 pt-2">
-                <Button 
-                type="submit" 
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                type="submit"
                 className=" hover:bg-blue-800/90 cursor-pointer shadow-sm bg-blue-600"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "En cours..." : "Mettre à jour"}
               </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

@@ -235,8 +235,8 @@ export async function saveJustif(
       await prisma.notification.create({
         data:{
           userId:updatedAlert.assignedAnalystId,
-          title:"📢 Messages à destination de l’analyste/responsable",
-          message:"Un utilisateur a répondu à son alerte avec une justification. Veuillez la consulter.",
+          title:"📢 Messages à destination de l’analyste",
+          message:`Le soumissionnaire de l'alerte ${updatedAlert.code} a répondu a la demande.`,
           type:"SYSTEM",
           relatedId:updatedAlert.code,
         }
@@ -248,8 +248,8 @@ export async function saveJustif(
       await prisma.notification.create({
         data:{
           userId:updatedAlert.assignedResponsableId,
-          title:"📢 Messages à destination de l’analyste/responsable",
-          message:"Un utilisateur a répondu à son alerte avec une justification. Veuillez la consulter.",
+          title:"📢 Messages à destination de responsable",
+          message:`Le soumissionnaire de l'alerte ${updatedAlert.code} a répondu a la demande.`,
           type:"SYSTEM",
           relatedId:updatedAlert.code,
         }

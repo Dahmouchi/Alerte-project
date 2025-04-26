@@ -32,7 +32,13 @@ import {
 } from "@/components/ui/input-otp";
 import Loading from "@/components/Loading";
 import { Card } from "@/components/ui/card";
-import { CloudLightningIcon, Eye, EyeOff, QrCodeIcon, SendHorizontal } from "lucide-react";
+import {
+  CloudLightningIcon,
+  Eye,
+  EyeOff,
+  QrCodeIcon,
+  SendHorizontal,
+} from "lucide-react";
 import Image from "next/image";
 import { UserInfo } from "@/actions/user";
 const formSchema = z.object({
@@ -53,7 +59,7 @@ export default function UsernameLogin() {
   const [secret, setSecret] = useState<any>();
   const { data: session, update } = useSession(); // Use session and update function
   const router = useRouter();
-    const [isView, setIsView] = useState(false);
+  const [isView, setIsView] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -206,16 +212,34 @@ export default function UsernameLogin() {
                   value={value}
                   onChange={(value) => setValue(value)}
                 >
-                  <InputOTPGroup >
-                    <InputOTPSlot index={0} className="bg-white dark:bg-slate-900"/>
-                    <InputOTPSlot index={1} className="bg-white dark:bg-slate-900"/>
-                    <InputOTPSlot index={2} className="bg-white dark:bg-slate-900"/>
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="bg-white dark:bg-slate-900"
+                    />
                   </InputOTPGroup>
                   <InputOTPSeparator />
-                  <InputOTPGroup >
-                    <InputOTPSlot index={3} className="bg-white dark:bg-slate-900"/>
-                    <InputOTPSlot index={4} className="bg-white dark:bg-slate-900"/>
-                    <InputOTPSlot index={5} className="bg-white dark:bg-slate-900"/>
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="bg-white dark:bg-slate-900"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="bg-white dark:bg-slate-900"
+                    />
                   </InputOTPGroup>
                 </InputOTP>
                 {/* OTP Input */}
@@ -246,80 +270,136 @@ export default function UsernameLogin() {
               </div>
             </Card>
           ) : (
-            <div className="container mx-auto  flex justify-center w-full">
-              <Card className=" bg-white p-8 shadow-lg rounded-lg dark:bg-slate-800 ">
-                <div className="flex items-center justify-center ">
+            <div className="container mx-auto flex justify-center w-full">
+              <Card className="bg-white p-8 shadow-lg dark:bg-slate-800 rounded-lg max-w-4xl w-full">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Logo */}
                   <div className="flex items-center gap-4">
                     <Image
                       src={"/logo.png"}
                       alt="logo"
                       width={300}
                       height={50}
+                      className="dark:invert"
                     />
                   </div>
-                </div>
-                <div className="flex lg:flex-row flex-col items-center gap-4">
-                  {qrImage && (
-                    <img
-                      src={qrImage}
-                      alt="2FA QR Code"
-                      className="rounded-lg border-2"
-                    />
-                  )}
-                  <div>
-                    <ul className="list-none list-inside mb-4 text-gray-700 dark:text-slate-100">
-                      <li className="mb-2">
-                        <span className="font-bold">Step 1:</span> Scan the QR
-                        Code with your Authenticator app.
-                      </li>
-                      <li className="mb-2">
-                        <span className="font-bold">Step 2:</span> Enter the
-                        code below from your app.
-                      </li>
-                    </ul>
-                    <div className="flex items-center justify-center flex-col lg:items-start">
-                      <InputOTP
-                        maxLength={6}
-                        value={value}
-                        onChange={(value) => setValue(value)}
-                      >
-                        <InputOTPGroup>
-                    <InputOTPSlot
-                      index={0}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={1}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={2}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot
-                      index={3}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={4}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                    <InputOTPSlot
-                      index={5}
-                      className="bg-white dark:bg-slate-900"
-                    />
-                  </InputOTPGroup>
-                      </InputOTP>
-                      {/* OTP Input */}
-                      <button
-                        onClick={handleOtpChange}
-                        className="bg-blue-700 cursor-pointer text-white font-semibold py-2 px-10 rounded-sm my-3"
-                      >
-                        validate
-                      </button>
+
+                  {/* QR Code and Instructions */}
+                  <div className="flex lg:flex-row flex-col items-center gap-8 w-full">
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-lg font-semibold text-gray-800 dark:text-slate-100">
+                        Setup Instructions
+                      </h3>
+                      <ul className="list-none space-y-3 text-gray-700 dark:text-slate-300">
+                        <li className="flex items-start">
+                          <span className="font-bold mr-2">1.</span>
+                          <span>
+                            Scan the QR Code with your Authenticator app (Google
+                            Authenticator, Authy, etc.)
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="font-bold mr-2">2.</span>
+                          <span>
+                            Or manually enter this secret key into your
+                            authenticator app
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="font-bold mr-2">3.</span>
+                          <span>
+                            Enter the 6-digit code from your app below
+                          </span>
+                        </li>
+                      </ul>
+                      {secret && (
+                        <div className="mt-4 w-full">
+                          <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">
+                            Secret Key:
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <code className="bg-gray-100 dark:bg-slate-700 px-3 py-2 rounded text-sm font-mono break-all">
+                              {secret}
+                            </code>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(secret);
+                                // Add toast or notification here
+                              }}
+                              className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
+                              title="Copy to clipboard"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <rect
+                                  x="9"
+                                  y="9"
+                                  width="13"
+                                  height="13"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Steps and OTP Input */}
+                    <div className="flex-1">
+                      <div className="space-y-4">
+                        {qrImage && (
+                          <img
+                            src={qrImage}
+                            alt="2FA QR Code"
+                            className="rounded-lg border-2 border-gray-200 dark:border-slate-600 p-2 w-48 h-48"
+                          />
+                        )}
+
+                        <div className="space-y-4">
+                          <div className="flex flex-col items-center lg:items-start">
+                            <label
+                              htmlFor="otp"
+                              className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
+                            >
+                              Verification Code
+                            </label>
+                            <InputOTP
+                              maxLength={6}
+                              value={value}
+                              onChange={(value) => setValue(value)}
+                            >
+                              <InputOTPGroup>
+                                {[...Array(6)].map((_, index) => (
+                                  <InputOTPSlot
+                                    key={index}
+                                    index={index}
+                                    className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+                                  />
+                                ))}
+                              </InputOTPGroup>
+                            </InputOTP>
+                          </div>
+
+                          <button
+                            onClick={handleOtpChange}
+                            className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-colors shadow-sm"
+                          >
+                            Verify Code
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -333,13 +413,13 @@ export default function UsernameLogin() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8 lg:w-1/3 bg-white w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-800"
           >
-             <div className="text-center">
-                    <div className="">
-                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
-                        S&apos;identifier
-                      </h3>
-                    </div>
-                  </div>
+            <div className="text-center">
+              <div className="">
+                <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
+                  S&apos;identifier
+                </h3>
+              </div>
+            </div>
             <FormField
               control={form.control}
               name="username"
@@ -347,7 +427,11 @@ export default function UsernameLogin() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrer votre username" {...field} className="dark:bg-slate-900"/>
+                    <Input
+                      placeholder="Entrer votre username"
+                      {...field}
+                      className="dark:bg-slate-900"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -360,9 +444,9 @@ export default function UsernameLogin() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                  <div className="relative">
+                    <div className="relative">
                       <Input
-                      className="dark:bg-slate-900"
+                        className="dark:bg-slate-900"
                         type={isView ? "text" : "password"}
                         id="password"
                         placeholder="entrer votre mot de pass"
@@ -372,7 +456,7 @@ export default function UsernameLogin() {
                         <Eye
                           className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
                           onClick={() => {
-                            setIsView(!isView)
+                            setIsView(!isView);
                           }}
                         />
                       ) : (

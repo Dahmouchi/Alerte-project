@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     // Create user in database
     const newUser = await prisma.user.create({
       data: {
-        username,
+        username:username.toLowerCase(),
         name,
         prenom,
         email,
