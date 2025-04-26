@@ -173,6 +173,29 @@ export async function saveQr(userId: string, qrSecret: string) {
     throw new Error("Failed to retrieve user info");
   }
 }
+export async function updateConclusion(conclusionId: string, content: string,criticite:number,alertId:string) {
+  try {
+    const updatedConclusion = await prisma.conclusion.update({
+      where: { id: conclusionId },
+      data: {
+        content,
+      },
+    });
+    await prisma.alert.update({
+      where:{
+         id:alertId,
+
+      },
+      data:{
+        criticite:criticite,
+      }
+    })
+    return updatedConclusion;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
 export async function AssignAlertAdmin(
   analysteId: string,
   responsableId: string,

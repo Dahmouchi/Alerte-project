@@ -235,6 +235,7 @@ model Conclusion {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   createdById   String
+  valider    Boolean @default(false)
   createdBy     User @relation(fields: [createdById], references: [id], onDelete: Cascade)
   // Foreign key linking to Alert
   alertId   String

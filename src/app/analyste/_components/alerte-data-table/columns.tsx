@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { admin_alert_status_options, analyste_alert_status_options, label_options,responsable_alert } from "@/components/filters"
+import { analyste_alert_status_options, label_options,responsable_alert } from "@/components/filters"
+import { Timer, UserCheck } from "lucide-react";
 
 export const columns: ColumnDef<AlertType>[] = [
  
@@ -137,29 +138,34 @@ export const columns: ColumnDef<AlertType>[] = [
     
     
   {
-    accessorKey: "adminStatus",
+    accessorKey: "assignedAnalystId",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
-      const status = admin_alert_status_options.find(
-        (status) => status.value === row.getValue("adminStatus")
-      );
+      const status = row.getValue("assignedAnalystId")
 
       if (!status) {
-        return null;
+        return(
+          <div
+          className={`flex w-[150px] items-center px-2 py-1 rounded-full text-yellow-500 bg-yellow-100 dark:bg-yellow-900`}
+        >
+         <Timer className="mr-2 h-4 w-4" />
+          <span className="font-medium text-xs">Non Assignée</span>
+        </div>
+        )
       }
-      const analysteStatu =  row.getValue("analysteValidation");
-     if(analysteStatu === "PENDING"){
+     else{
       return (
         <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
+          className={`flex w-[150px] items-center px-2 py-1 rounded-full text-blue-500 bg-blue-100 dark:bg-blue-900`}
         >
-          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium text-xs">{status.label}</span>
+         <UserCheck className="mr-2 h-4 w-4" />
+          <span className="font-medium text-xs">Assignée</span>
         </div>
       );
      }
+     
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));

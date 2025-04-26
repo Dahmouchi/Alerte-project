@@ -27,7 +27,12 @@ export async function GetAnalyste() {
 export async function GetResponsable() {
   try {
     const user = await prisma.user.findMany({
-      where: { role: "RESPONSABLE" },
+      where: {
+        OR: [
+          { role: "RESPONSABLE" },
+          { role: "ADMIN_RESPONSABLE" } // Replace with your second desired role
+        ]
+      }
     });
 
     if (!user) {

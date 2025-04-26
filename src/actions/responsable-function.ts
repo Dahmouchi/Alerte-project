@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
 import prisma from "@/lib/prisma";
@@ -83,7 +84,13 @@ export async function responsableValidation(
         updatedAt: new Date(),
       },
     });
-
+    const updatedConclusion = await prisma.conclusion.updateMany({
+      where: { alertId: alertId },
+      data: {
+        valider:true,
+        updatedAt: new Date(),
+      },
+    });
     if(userId){
       await prisma.notification.create({
         data:{

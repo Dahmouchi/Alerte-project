@@ -9,12 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
-import { admin_alert_status_options, analyste_alert_status_options, label_options, responsable_alert, status_options } from "@/components/filters"
+import { analyste_alert_status_options, label_options, responsable_alert, status_options } from "@/components/filters"
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const columns: ColumnDef<AlertType>[] = [
   {
@@ -95,7 +96,7 @@ export const columns: ColumnDef<AlertType>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Statut user" />
+      <DataTableColumnHeader column={column} title="Statut Alerte" />
     ),
     cell: ({ row }) => {
       const status = status_options.find(
@@ -119,33 +120,6 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "adminStatus",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Statut" />
-    ),
-    cell: ({ row }) => {
-      const status = admin_alert_status_options.find(
-        (status) => status.value === row.getValue("adminStatus")
-      );
-
-      if (!status) {
-        return null;
-      }
-
-      return (
-        <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-md text-xs ${status.color}`}
-        >
-          {status.icon && <status.icon className="mr-2 h-4 w-4" />}
-          <span className="font-medium">{status.label}</span>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
    {
          accessorKey: "analysteValidation",
          header: ({ column }) => (
@@ -156,7 +130,7 @@ export const columns: ColumnDef<AlertType>[] = [
              (status) => status.value === row.getValue("analysteValidation")
            );
      
-           if( row.getValue("adminStatus") === "PENDING")
+           if(!row.getValue("assignedAnalystId"))
             return <div></div>
            if (!status) {
              return null;
@@ -175,7 +149,48 @@ export const columns: ColumnDef<AlertType>[] = [
            return value.includes(row.getValue(id));
          },
        },
-    
+    {
+        accessorKey: "assignedAnalystId",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Assignation T" />
+        ),
+        cell: ({ row }) => {
+          const criticity = row.getValue("assignedAnalystId");
+          
+          return (
+            <div className="flex items-center w-[100px]">
+              <div className={`flex items-center px-3 py-1 rounded-full w-full`}>
+                {criticity ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-8 h-8 font-semibold flex items-center justify-center text-xs">
+                        A
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Assignée</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="bg-red-700 cursor-pointer text-white rounded-full w-8 h-8 font-semibold flex items-center justify-center text-xs">
+                        NA
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Non Assignée</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+          );
+        },
+        filterFn: (row, id, value) => {
+          return value.includes(row.getValue(id));
+        },
+      },
        {
         accessorKey: "responsableValidation",
         header: ({ column }) => (
@@ -187,7 +202,7 @@ export const columns: ColumnDef<AlertType>[] = [
           );
           const analysteValidation = row.getValue("analysteValidation");
     
-          if( row.getValue("adminStatus") === "PENDING")
+          if(!row.getValue("assignedResponsableId"))
             return <div></div>
           if (!status) {
             return null;
@@ -207,6 +222,48 @@ export const columns: ColumnDef<AlertType>[] = [
           return value.includes(row.getValue(id));
         },
       },
+      {
+          accessorKey: "assignedResponsableId",
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Assignation V" />
+          ),
+          cell: ({ row }) => {
+            const criticity = row.getValue("assignedResponsableId");
+            
+            return (
+              <div className="flex items-center w-[100px]">
+                <div className={`flex items-center px-3 py-1 rounded-full w-full`}>
+                  {criticity ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-8 h-8 font-semibold flex items-center justify-center text-xs">
+                          A
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Assignée</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="bg-red-700 cursor-pointer text-white rounded-full w-8 h-8 font-semibold flex items-center justify-center text-xs">
+                          NA
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Non Assignée</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+              </div>
+            );
+          },
+          filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id));
+          },
+        },
    /* {
       accessorKey: "criticite",
       header: ({ column }) => (

@@ -84,6 +84,7 @@ import {
 } from "@/actions/analyste-function";
 import JustifCard from "@/app/user/_components/justifCard";
 import { AnalystResponseForm } from "./sendConclusion";
+import AdditionalModalComponent from "./conclusionTwo";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -261,6 +262,11 @@ const AlertDetails = (alert: any) => {
     );
     setJustification1(selectedJustification?.description || "");
   };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [recevable]); // Trigger when recevable changes
 
   useEffect(() => {
     console.log(al);
@@ -883,6 +889,9 @@ const AlertDetails = (alert: any) => {
                   <button
                     onClick={() => {
                       setRecevable("RECEVALBE");
+                      messagesEndRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                      });
                       setJustification("");
                       setJustification1("");
                     }}
@@ -1019,19 +1028,7 @@ const AlertDetails = (alert: any) => {
                       {/* Criticity Dropdown - Modern Version */}
 
                       {/* Justification Textarea */}
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Réponse
-                        </label>
-                        <textarea
-                          required
-                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          rows={4}
-                          placeholder="Ajouter un commentaire..."
-                          value={justification}
-                          onChange={(e) => setJustification(e.target.value)}
-                        />
-                      </div>
+
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Niveau de criticité
@@ -1054,7 +1051,19 @@ const AlertDetails = (alert: any) => {
                           </div>
                         </div>
                       </div>
-
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Réponse
+                        </label>
+                        <textarea
+                          required
+                          className="block w-full px-4 py-3 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          rows={4}
+                          placeholder="Ajouter un commentaire..."
+                          value={justification}
+                          onChange={(e) => setJustification(e.target.value)}
+                        />
+                      </div>
                       {/* Submit Button */}
                       <div className="flex justify-end">
                         <button
@@ -1070,92 +1079,6 @@ const AlertDetails = (alert: any) => {
                     <div></div>
                   )}
                 </div>
-                {recevable === "RECEVALBE" && (
-                  <div className="space-y-4 border-blue-500 bg-blue-50 border-2 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Clôture
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Approved */}
-
-                      <div
-                        className={`${
-                          decision === "APPROVED"
-                            ? "border-green-500 border-2"
-                            : " border"
-                        } flex items-start space-x-4 p-4 rounded-lg  bg-white dark:bg-gray-900 `}
-                      >
-                        <div className="flex items-center h-5">
-                          <input
-                            type="checkbox"
-                            checked={decision === "APPROVED"}
-                            onChange={handleToggleApproval}
-                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <label
-                            htmlFor="approval-checkbox"
-                            className="flex items-center cursor-pointer"
-                          >
-                            <div className="ml-3 text-sm">
-                              <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                                <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
-                                Demande de clôture
-                              </div>
-                              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                                {decision === "APPROVED"
-                                  ? "Clôture approuvée (cliquez pour annuler)"
-                                  : "Cochez pour demander la clôture"}
-                              </p>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Confirmation Dialog */}
-                      <AlertDialog
-                        open={showConfirmDialog}
-                        onOpenChange={setShowConfirmDialog}
-                      >
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Confirmer la demande de clôture
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir effectuer cette demande
-                              de clôture ?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => {
-                                setDecision("APPROVED");
-                                setShowConfirmDialog(false);
-                              }}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              Confirmer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-
-                      {/* Missing Info */}
-                    </div>
-                    <div className="flex justify-end">
-                      <button
-                        onClick={sendConclusion}
-                        className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      >
-                        <Save className="w-5 h-5 mr-2" />
-                        Envoyer la demande
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <div>
@@ -1301,7 +1224,7 @@ const AlertDetails = (alert: any) => {
                         <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
                           <User className="h-5 w-5 text-green-600 dark:text-green-400" />
                         </div>
-                        {con.createdBy.id === session?.user.id && (
+                        {con.createdBy.id === session?.user.id && !con.valider && (
                           <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
                             <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
                           </div>
@@ -1317,10 +1240,18 @@ const AlertDetails = (alert: any) => {
                       </div>
                     </div>
 
-                    {con.createdBy.id === session?.user.id &&
-                      al.responsableValidation === "PENDING" && (
-                        <UpdateConclusion task={con} alerte={al} />
-                      )}
+                    {con.createdBy.id === session?.user.id && !con.valider && (
+                      <>
+                        {index === 0 ? (
+                          // Add your additional modal component here for the first conclusion
+                          <>
+                            <AdditionalModalComponent task={con} alerte={al} />
+                          </>
+                        ) : (
+                          <UpdateConclusion task={con} alerte={al} />
+                        )}
+                      </>
+                    )}
                   </div>
 
                   {/* Status badges */}
@@ -1388,7 +1319,7 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
-        {!al.involved && al.responsableValidation !=="PENDING" && (
+        {!al.involved && al.responsableValidation !== "PENDING" && (
           <div className="w-full mx-auto">
             <div className="space-y-6  bg-white shadow-lg dark:bg-gray-800 rounded-lg p-4 border">
               {/* Decision Section */}

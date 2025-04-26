@@ -63,7 +63,7 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -74,36 +74,40 @@ type DeleteProps = {
 };
 const conclusionSchema = z.object({
   id: z.string(),
-  commentaire: z.string(),
-    criticity: z.number().min(1).max(4),
+  recevableStatus: z.enum(["RECEVALBE", "NON_RECEVABLE", "NON_RECEVABLE_VALIDER", "NON_DECIDE"]),
+  commentaire: z.string().optional(),
+  decision: z
+    .enum(["APPROVED", "DECLINED", "INFORMATIONS_MANQUANTES"])
+    .optional(),
+    criticity: z.number().min(1).max(4), // Changed to number with range
   });
 
 type ConclusionSchemaType = z.infer<typeof conclusionSchema>;
-export default function UpdateConclusion({ task, alerte }: DeleteProps) {
+export default function AdditionalModalComponent({ task, alerte }: DeleteProps) {
   const form = useForm<ConclusionSchemaType>({
     resolver: zodResolver(conclusionSchema),
     defaultValues: {
       id: task.id,
+      decision:alerte.analysteValidation,
+      recevableStatus: alerte.recevable || "NON_DECIDE",
       commentaire: task.content || "",
       criticity: alerte.criticite ? Number(alerte.criticite) : 1, 
     },
   });
   console.log("task", alerte.recevable);
-  const [isOpen, setIsOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] =
+    React.useState<boolean>(false);
+  const router = useRouter();
 
-  async function onSubmit(values: ConclusionSchemaType) {
-   console.log(values);
-      try{
-        await updateConclusion(task.id,values.commentaire,values.criticity,alerte.id)
-        toast.success("alerte modified");
-        setIsOpen(false)
-        window.location.reload();
-      }catch(error){
-        toast.error("error")
-      }
+  function onSubmit(values: ConclusionSchemaType) {
+    console.log(values);
+    try{
+    }catch(error){
+      toast.error("error")
     }
+  }
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       {/* Dropdown Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -142,9 +146,91 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Recevable Status Selection */}
-              
+              <FormField
+                control={form.control}
+                name="recevableStatus"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Statut de réception
+                        </FormLabel>       
+                      </div>
+                    </div>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="grid grid-cols-1 gap-3"
+                      >
+                        {/* Recevable Option */}
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="RECEVALBE" />
+                          </FormControl>
+                          <FormLabel className="font-normal flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            Recevable
+                          </FormLabel>
+                        </FormItem>
+                        {/* Undecided Option */}
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="NON_RECEVABLE" />
+                          </FormControl>
+                          <FormLabel className="font-normal flex items-center gap-2">
+                          <XCircle className="h-4 w-4 text-red-500" />
+                          Non Recevable
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-             
+              {/* Decision Section - Only shows when RECEVABLE is selected */}
+              {form.watch("recevableStatus") === "RECEVALBE" && (
+                <FormField
+                  control={form.control}
+                  name="decision"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Décision finale</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="grid grid-cols-1 md:grid-cols-3 gap-3"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="APPROVED" />
+                            </FormControl>
+                            <FormLabel className="font-normal flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              Approvée
+                            </FormLabel>
+                          </FormItem>
+                          
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="INFORMATIONS_MANQUANTES" />
+                            </FormControl>
+                            <FormLabel className="font-normal flex items-center gap-2">
+                              <AlertCircle className="h-4 w-4 text-amber-500" />
+                              Infos manquantes
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
    <FormField
       control={form.control}
       name="commentaire"
@@ -162,6 +248,7 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
         </FormItem>
       )}
     />
+
     {/* Criticity Select */}
     <FormField
       control={form.control}
