@@ -9,6 +9,8 @@ import { AlertHistory, RecevalbeStatus, UserAlertStatus } from "@prisma/client";
 import { io } from "socket.io-client";
 import { sendAlertNotification } from "./notifications";
 import sendEmail from "./sendemail";
+import { ElevenLabsClient } from 'elevenlabs';
+import sharp from 'sharp';
 
 export async function createAlerte(
   category: string,
@@ -40,6 +42,8 @@ export async function createAlerte(
     throw new Error("Failed to update alert");
   }
 }
+
+
 export async function updateAlert(
   alertId: string,
   formData: any,
@@ -54,13 +58,22 @@ export async function updateAlert(
 ) {
   try {
     const imageUrls: string[] = [];
+    const quality = 80
     if (files) {
       for (const image of files) {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `${timestamp}-${image.name}`;
         const arrayBuffer = await image.arrayBuffer();
-        const fileContent = Buffer.from(arrayBuffer);
+        const test = await sharp(arrayBuffer)
+        .resize(1200)
+        .jpeg({ quality }) // or .png({ compressionLevel: 9 })
+        .toBuffer();
+        
+        const fileContent = Buffer.from(test);
+      
         const uploadResponse = await uploadFile(
           fileContent,
-          image.name,
+          filename,
           image.type
         );
         const imageUrl = getFileUrl(uploadResponse.Key); // Assuming Key contains the file name
@@ -124,19 +137,68 @@ export async function updateAlert(
     throw new Error("Failed to update alert");
   }
 }
+export const transformVoice = async (blob: Blob): Promise<Blob | undefined> => {
+  const formData = new FormData();
+  formData.append('audio', blob, 'recording.webm');
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  
+  try {
+    const client = new ElevenLabsClient({ apiKey });
+    const voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Your preferred voice ID
 
+    const audioBlob = new Blob([await blob.arrayBuffer()], { 
+      type: blob.type 
+    });
+
+    const audioStream = await client.speechToSpeech.convert(voiceId, {
+      audio: audioBlob,
+      model_id: "eleven_multilingual_sts_v2",
+      output_format: "mp3_44100_128",
+    });
+
+    // Collect the stream data into chunks
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+    
+    // Combine all chunks into a single Blob
+    const transformedBlob = new Blob(chunks, { type: 'audio/mp3' });
+    
+    return transformedBlob;
+
+  } catch (error) {
+    console.error('ElevenLabs error:', error);
+    return undefined;
+  }
+};
 // Helper function to handle audio upload
-async function uploadAudio(audioFile: File): Promise<string> {
-  const arrayBuffer = await audioFile.arrayBuffer();
-  const fileContent = Buffer.from(arrayBuffer);
+export async function uploadAudio(audioBlob: Blob): Promise<string> {
+  try {
+    // Create a filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `audio-recording-${timestamp}.webm`; // or .wav depending on your recorder
+    
+    // Convert Blob to ArrayBuffer
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const fileContent = Buffer.from(arrayBuffer);
 
-  // Assuming uploadFile handles Cloudflare R2 uploads
-  const uploadResponse = await uploadFile(
-    fileContent,
-    audioFile.name,
-    audioFile.type
-  );
-  return getFileUrl(uploadResponse.Key); // Assuming Key contains the file name
+    // Upload to Cloudflare R2
+    const uploadResponse = await uploadFile(
+      fileContent,
+      filename, // Use our generated filename
+      audioBlob.type || 'audio/webm' // Fallback MIME type
+    );
+
+    if (!uploadResponse?.Key) {
+      throw new Error('Upload failed: No key returned');
+    }
+
+    return getFileUrl(uploadResponse.Key);
+  } catch (error) {
+    console.error('Audio upload error:', error);
+    throw new Error('Failed to upload audio');
+  }
 }
 export async function createHistoryRecord(
   alertId: string,
@@ -336,7 +398,67 @@ export async function AssignAlertAdmin(
     throw new Error("Failed to retrieve user info");
   }
 }
+export async function updateConclusionWithAlerte(
+  conId:string,
+  userId: string,
+  content: string,
+  alertId: string,
+  recevable: RecevalbeStatus,
+  criticite: number,
+) {
+  try {
+    if (recevable === "RECEVALBE") {
+      const updatedAlert = await prisma.conclusion.update({
+        where:{id:conId},
+        data: {
+          content,
+        },
+      });
+      const res = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          analysteValidation: "INFORMATIONS_MANQUANTES",
+          recevable: recevable,
+          criticite: criticite,
+        },
+      });
+     
+      createHistoryRecord(
+        alertId,
+        userId,
+        "UPDATE_STATUS",
+        `L'alerte a été modifier recevable par l'analyste et transmise au responsable pour décision.`
+      );
+      return { updatedAlert, res };
+    } else {
+      const updatedAlert = await prisma.conclusion.update({
+        where:{id:conId},
+        data: {
+          content,
+        },
+      });
+      const res = await prisma.alert.update({
+        where: { id: alertId },
+        data: {
+          analysteValidation: "DECLINED",
+          recevable: recevable,
+          criticite: 0,
+        },
+      });
+      createHistoryRecord(
+        alertId,
+        userId,
+        "UPDATE_STATUS",
+        `L'alerte a été modifier jugée non recevable par l'analyste et transmise au responsable pour information.`
+      );
 
+      return { updatedAlert, res };
+    }
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
 export async function saveConclusion(
   userId: string,
   content: string,

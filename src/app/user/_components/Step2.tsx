@@ -74,13 +74,12 @@ import Loading from "@/components/Loading";
 import { Badge } from "@/components/ui/badge";
 import { updateAlert } from "@/actions/alertActions";
 import { Checkbox } from "@/components/ui/checkbox";
-import Record from "./Record";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import check from "../../../../public/checked.json";
 import Link from "next/link";
 import { useReactToPrint } from "react-to-print";
-import AudioRecorder from "./Record";
+import { AudioRecorder } from "./Record";
 
 const categories = [
   {
@@ -259,6 +258,7 @@ const Step2 = (alert: { alert: any }) => {
   useEffect(() => {
     console.log("files : ", audio);
   }, [audio]);
+  
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 6, // Now allows files up to 6MB
@@ -266,52 +266,52 @@ const Step2 = (alert: { alert: any }) => {
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-   if(terms){
-    try {
-      // Check if anonyme is true and persons array is empty
-      if (anonyme && persons.length === 0) {
-        toast.error("Vous devez ajouter au moins une personne !");
-        return; // Stop function execution
-      }
-
-      console.log(values);
-      const filesToPass = files ?? [];
-      const audioPass = audio;
-      setLoading(true);
-
-      if (selectedCategory) {
-        const res = await updateAlert(
-          al.id,
-          values,
-          2,
-          persons,
-          filesToPass,
-          values.audioUrl || null, // Pass the audio file here
-          anonymeUser,
-          textAudio,
-          anonyme,
-          selectedCategory.value
-        );
-        if (res) {
-          setAl(res);
-          toast.success("Success");
-          setError("");
-          setSteps(2);
-          setLoading(false);
-          setTimeout(() => setSuccess(false), 3000);
+    if (terms) {
+      try {
+        // Check if anonyme is true and persons array is empty
+        if (anonyme && persons.length === 0) {
+          toast.error("Vous devez ajouter au moins une personne !");
+          return; // Stop function execution
         }
+
+        console.log(values);
+        const filesToPass = files ?? [];
+        const audioPass = audio;
+        setLoading(true);
+
+        if (selectedCategory) {
+          const res = await updateAlert(
+            al.id,
+            values,
+            2,
+            persons,
+            filesToPass,
+            values.audioUrl || null, // Pass the audio file here
+            anonymeUser,
+            textAudio,
+            anonyme,
+            selectedCategory.value
+          );
+          if (res) {
+            setAl(res);
+            toast.success("Success");
+            setError("");
+            setSteps(2);
+            setLoading(false);
+            setTimeout(() => setSuccess(false), 3000);
+          }
+        }
+      } catch (error) {
+        console.error("Form submission error", error);
+        toast.error("Failed to submit the form. Please try again.");
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-      setLoading(false);
-    } finally {
-      setLoading(false);
+    } else {
+      setError("il doit accepter les termes et les condition!");
+      toast.error("il doit accepter les termes et les condition!");
     }
-   }else{
-    setError("il doit accepter les termes et les condition!")
-    toast.error("il doit accepter les termes et les condition!");
-   }
   }
 
   if (loading) {
@@ -925,26 +925,30 @@ const Step2 = (alert: { alert: any }) => {
                   )}
 
                   {/* Terms and Conditions */}
-                 <div className="space-y-2">
-                 <div className="flex items-center space-x-3 pt-6  bg-slate-50 dark:bg-slate-700/30 rounded-lg">
-                    <Checkbox
-                      onClick={()=>setTerms(true)}
-                      id="terms"
-                      className="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 mt-0.5"
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm font-medium leading-snug text-slate-700 dark:text-slate-300"
-                    >
-                      J&apos;accepte les termes et conditions d&apos;utilisation
-                      <span className="ml-1 text-xs text-red-500 dark:text-red-400">
-                        (requis)
-                      </span>
-                    </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-3 pt-6  bg-slate-50 dark:bg-slate-700/30 rounded-lg">
+                      <Checkbox
+                        onClick={() => setTerms(true)}
+                        id="terms"
+                        className="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 mt-0.5"
+                      />
+                      <label
+                        htmlFor="terms"
+                        className="text-sm font-medium leading-snug text-slate-700 dark:text-slate-300"
+                      >
+                        J&apos;accepte les termes et conditions
+                        d&apos;utilisation
+                        <span className="ml-1 text-xs text-red-500 dark:text-red-400">
+                          (requis)
+                        </span>
+                      </label>
+                    </div>
+                    {error && (
+                      <div className="text-red-500 text-sm">
+                        il doit accepter les termes et les condition!
+                      </div>
+                    )}
                   </div>
-                  {error && <div className="text-red-500 text-sm">il doit accepter les termes et les condition!</div>}
-
-                 </div>
                   {/* Submit Button */}
                   <div className="w-full flex items-center justify-end pt-2">
                     <button
@@ -962,152 +966,178 @@ const Step2 = (alert: { alert: any }) => {
         )}
         {steps === 2 && (
           <div className="lg:p-4 space-y-6">
-          {/* Success Banner - Improved Design */}
-          <section className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl shadow-lg overflow-hidden">
-            <div className="max-w-screen-xl px-6 py-8 mx-auto lg:py-12">
-              <div className="flex flex-col lg:flex-row items-center justify-between">
-                <div className="lg:w-1/2 mb-8 lg:mb-0">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3 bg-white bg-opacity-20 rounded-full mr-4">
-                      <CheckCircle className="w-8 h-8 text-green-600" />
+            {/* Success Banner - Improved Design */}
+            <section className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl shadow-lg overflow-hidden">
+              <div className="max-w-screen-xl px-6 py-8 mx-auto lg:py-12">
+                <div className="flex flex-col lg:flex-row items-center justify-between">
+                  <div className="lg:w-1/2 mb-8 lg:mb-0">
+                    <div className="flex items-center mb-4">
+                      <div className="p-3 bg-white bg-opacity-20 rounded-full mr-4">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <h1 className="text-3xl md:text-4xl font-bold text-white">
+                        Alerte envoyée avec succès !
+                      </h1>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-white">
-                      Alerte envoyée avec succès !
-                    </h1>
+
+                    <p className="text-lg text-white text-opacity-90 mb-6">
+                      Votre alerte a été correctement enregistrée dans notre
+                      système. Vous pouvez suivre son traitement dans votre
+                      tableau de bord.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4"></div>
                   </div>
-                  
-                  <p className="text-lg text-white text-opacity-90 mb-6">
-                    Votre alerte a été correctement enregistrée dans notre système. 
-                    Vous pouvez suivre son traitement dans votre tableau de bord.
-                  </p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4">
-                   
+
+                  <div className="lg:w-1/6  justify-center lg:flex hidden">
+                    <LottiePlayer
+                      loop={false}
+                      animationData={check}
+                      play
+                      className="w-full"
+                    />
                   </div>
-                </div>
-                
-                <div className="lg:w-1/6  justify-center lg:flex hidden">
-                  <LottiePlayer 
-                    loop={false}
-                    animationData={check}
-                    play
-                    className="w-full"
-                  />
                 </div>
               </div>
-            </div>
-          </section>
-        
-          {/* Alert Summary Card - Improved Layout */}
-          <div className="bg-white border border-emerald-100 rounded-xl shadow-sm overflow-hidden">
-            <div className="p-6 md:p-8" ref={contentRef}>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Récapitulatif de l&apos;alerte</h2>
-                  <p className="text-emerald-600 font-medium">Code: #{al.code}</p>
-                </div>
-                <img src="/logo.png" alt="Logo" className="h-12 mt-4 md:mt-0" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left Column */}
-                <div className="space-y-4">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-900 mb-2">Titre</h3>
-                    <p className="text-gray-700">{al.title}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                    <p className="text-gray-700">{al.description}</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-900 mb-2">Catégorie</h3>
-                    <p className="text-gray-700">
-                      {categories.find((cat) => cat.value === al.category)?.title || "Non spécifiée"}
+            </section>
+
+            {/* Alert Summary Card - Improved Layout */}
+            <div className="bg-white border border-emerald-100 rounded-xl shadow-sm overflow-hidden">
+              <div className="p-6 md:p-8" ref={contentRef}>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Récapitulatif de l&apos;alerte
+                    </h2>
+                    <p className="text-emerald-600 font-medium">
+                      Code: #{al.code}
                     </p>
                   </div>
+                  <img
+                    src="/logo.png"
+                    alt="Logo"
+                    className="h-12 mt-4 md:mt-0"
+                  />
                 </div>
-                
-                {/* Right Column */}
-                <div className="space-y-4">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-900 mb-2">Date de création</h3>
-                    <div className="flex items-center text-gray-700">
-                      <Calendar className="mr-2 w-5 h-5" />
-                      {new Date(al.createdAt!).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        Titre
+                      </h3>
+                      <p className="text-gray-700">{al.title}</p>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        Description
+                      </h3>
+                      <p className="text-gray-700">{al.description}</p>
+                    </div>
+
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        Catégorie
+                      </h3>
+                      <p className="text-gray-700">
+                        {categories.find((cat) => cat.value === al.category)
+                          ?.title || "Non spécifiée"}
+                      </p>
                     </div>
                   </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-900 mb-2">Date et lieu de l&apos;incident</h3>
-                    <div className="space-y-2">
+
+                  {/* Right Column */}
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        Date de création
+                      </h3>
                       <div className="flex items-center text-gray-700">
                         <Calendar className="mr-2 w-5 h-5" />
-                        {new Date(al.dateLieu!).toLocaleDateString('fr-FR')}
-                      </div>
-                      <div className="flex items-center text-gray-700">
-                        <MapPin className="mr-2 w-5 h-5" />
-                        {al.location || "Non spécifié"}
+                        {new Date(al.createdAt!).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </div>
                     </div>
-                  </div>
-                  
-                  {al.persons?.length > 0 && (
+
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-900 mb-3">Personnes impliquées</h3>
-                      <div className="space-y-3">
-                        {al.persons?.map((person: any, index: any) => (
-                          <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-xs">
-                            <div className="flex-shrink-0 p-2 bg-emerald-100 text-emerald-600 rounded-full">
-                              <UserRound className="w-5 h-5" />
-                            </div>
-                            <div className="ml-3">
-                              <p className="font-medium text-gray-900">
-                                {person?.prenom} {person?.nom}
-                              </p>
-                              <p className="text-sm text-gray-500">{person?.fonction}</p>
-                            </div>
-                          </div>
-                        ))}
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        Date et lieu de l&apos;incident
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center text-gray-700">
+                          <Calendar className="mr-2 w-5 h-5" />
+                          {new Date(al.dateLieu!).toLocaleDateString("fr-FR")}
+                        </div>
+                        <div className="flex items-center text-gray-700">
+                          <MapPin className="mr-2 w-5 h-5" />
+                          {al.location || "Non spécifié"}
+                        </div>
                       </div>
                     </div>
-                  )}
+
+                    {al.persons?.length > 0 && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h3 className="font-semibold text-gray-900 mb-3">
+                          Personnes impliquées
+                        </h3>
+                        <div className="space-y-3">
+                          {al.persons?.map((person: any, index: any) => (
+                            <div
+                              key={index}
+                              className="flex items-center p-3 bg-white rounded-lg shadow-xs"
+                            >
+                              <div className="flex-shrink-0 p-2 bg-emerald-100 text-emerald-600 rounded-full">
+                                <UserRound className="w-5 h-5" />
+                              </div>
+                              <div className="ml-3">
+                                <p className="font-medium text-gray-900">
+                                  {person?.prenom} {person?.nom}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {person?.fonction}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Actions Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t flex justify-between items-center lg:flex-row flex-col">
-              <div className="text-sm text-gray-500">
-                Vous pouvez modifier cette alerte depuis votre tableau de bord.
-              </div>
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={() => reactToPrintFn()}
-                  className="flex items-center gap-2"
-                >
-                  <Printer className="w-5 h-5" />
-                  Imprimer
-                </Button>
-                <Link href={`/user/dashboard/alerte/${al.code}`}>
-                  <Button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700">
-                    <Eye className="w-5 h-5" />
-                    Voir détails
+
+              {/* Actions Footer */}
+              <div className="bg-gray-50 px-6 py-4 border-t flex justify-between items-center lg:flex-row flex-col">
+                <div className="text-sm text-gray-500">
+                  Vous pouvez modifier cette alerte depuis votre tableau de
+                  bord.
+                </div>
+                <div className="flex space-x-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => reactToPrintFn()}
+                    className="flex items-center gap-2"
+                  >
+                    <Printer className="w-5 h-5" />
+                    Imprimer
                   </Button>
-                </Link>
+                  <Link href={`/user/dashboard/alerte/${al.code}`}>
+                    <Button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700">
+                      <Eye className="w-5 h-5" />
+                      Voir détails
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         )}
       </div>
     </div>

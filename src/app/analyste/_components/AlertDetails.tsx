@@ -36,6 +36,7 @@ import {
   UserPlus,
   UserRound,
   Users,
+  X,
   XCircle,
 } from "lucide-react";
 import {
@@ -221,7 +222,7 @@ const AlertDetails = (alert: any) => {
   const [justification, setJustification] = useState("");
   const [justification1, setJustification1] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [urgenceLevel, setUrgenceLevel] = useState("1");
+  const [urgenceLevel, setUrgenceLevel] = useState("0");
   const unreadCount = useUnreadMessages(al.id);
   const [isOpen, setIsOpen] = useState(false);
   const [decision, setDecision] = useState<UserAlertStatus>(
@@ -232,7 +233,13 @@ const AlertDetails = (alert: any) => {
   const status = admin_alert_status_options.find(
     (status) => status.value === al?.adminStatus
   );
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleFileClick = (file: any) => {
+    setSelectedFile(file);
+    setIsModalOpen(true);
+  };
   const handleSubmitResponse = async (response: string) => {
     if (session) {
       try {
@@ -267,6 +274,7 @@ const AlertDetails = (alert: any) => {
       behavior: "smooth",
     });
   }, [recevable]); // Trigger when recevable changes
+  const [isAdditionalModalOpen, setIsAdditionalModalOpen] = useState(false);
 
   useEffect(() => {
     console.log(al);
@@ -280,7 +288,7 @@ const AlertDetails = (alert: any) => {
       }
     };
     fetchAnalysts();
-  }, []);
+  }, [isAdditionalModalOpen]);
   const formatFrenchDate = (isoString: any) => {
     const parisTime = toZonedTime(isoString, "Europe/Paris");
     return format(parisTime, "dd/MM/yyyy à HH:mm", {
@@ -762,10 +770,69 @@ const AlertDetails = (alert: any) => {
                 </div>
               )}
             </div>
+            {isModalOpen && selectedFile && (
+              <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
 
+                  <div className="p-6">
+                    <h3 className="text-lg font-medium mb-4 dark:text-white">
+                      {selectedFile.name || "Fichier joint"}
+                    </h3>
+
+                    {selectedFile?.mimeType?.startsWith("image") ||
+                    /\.(jpg|jpeg|png|gif|webp)$/i.test(selectedFile?.url) ? (
+                      <img
+                        src={selectedFile.url}
+                        alt={selectedFile.name}
+                        className="max-w-full max-h-[70vh] mx-auto"
+                      />
+                    ) : selectedFile?.mimeType?.startsWith("video") ||
+                      /\.(mp4|webm|ogg)$/i.test(selectedFile?.url) ? (
+                      <video controls className="w-full">
+                        <source
+                          src={selectedFile.url}
+                          type={selectedFile.mimeType}
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : selectedFile?.mimeType?.startsWith("audio") ||
+                      /\.(mp3|wav|ogg)$/i.test(selectedFile?.url) ? (
+                      <audio controls className="w-full">
+                        <source
+                          src={selectedFile.url}
+                          type={selectedFile.mimeType}
+                        />
+                        Your browser does not support the audio element.
+                      </audio>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-8">
+                        <Paperclip className="h-16 w-16 text-gray-400 mb-4" />
+                        <p className="text-gray-500 dark:text-gray-400">
+                          This file type cannot be previewed
+                        </p>
+                        <a
+                          href={selectedFile.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 text-blue-500 hover:underline"
+                        >
+                          Download file
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Attachments */}
             {al.files && al.files.length > 0 && (
-              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="p-4 bg-gray-100 dark:bg-slate-800 rounded-xl">
                 <div className="flex items-center gap-3 mb-4">
                   <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   <h3 className="font-medium text-gray-900 dark:text-white">
@@ -787,10 +854,9 @@ const AlertDetails = (alert: any) => {
 
                     return (
                       <div key={key} className="relative group">
-                        <Link
-                          href={file?.url}
-                          target="_blank"
-                          className="block"
+                        <div
+                          onClick={() => handleFileClick(file)}
+                          className="block cursor-pointer"
                         >
                           <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
                             {/* Image Preview */}
@@ -832,7 +898,7 @@ const AlertDetails = (alert: any) => {
                           <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
                             {file?.name || "Fichier joint"}
                           </div>
-                        </Link>
+                        </div>
                       </div>
                     );
                   })}
@@ -1040,7 +1106,7 @@ const AlertDetails = (alert: any) => {
                             value={urgenceLevel}
                             onChange={(e) => setUrgenceLevel(e.target.value)}
                           >
-                            <option value="">Sélectionner un niveau</option>
+                            <option value="0">Sélectionner un niveau</option>
                             <option value="1">Faible</option>
                             <option value="2">Modérée</option>
                             <option value="3">Élevée</option>
@@ -1224,11 +1290,12 @@ const AlertDetails = (alert: any) => {
                         <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
                           <User className="h-5 w-5 text-green-600 dark:text-green-400" />
                         </div>
-                        {con.createdBy.id === session?.user.id && !con.valider && (
-                          <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
-                            <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        )}
+                        {con.createdBy.id === session?.user.id &&
+                          !con.valider && (
+                            <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
+                              <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                            </div>
+                          )}
                       </div>
                       <div>
                         <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -1245,7 +1312,13 @@ const AlertDetails = (alert: any) => {
                         {index === 0 ? (
                           // Add your additional modal component here for the first conclusion
                           <>
-                            <AdditionalModalComponent task={con} alerte={al} />
+                            <AdditionalModalComponent
+                              task={con}
+                              alerte={al}
+                              onClose={() =>
+                                setIsAdditionalModalOpen(!isAdditionalModalOpen)
+                              }
+                            />
                           </>
                         ) : (
                           <UpdateConclusion task={con} alerte={al} />

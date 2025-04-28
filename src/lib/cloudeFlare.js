@@ -21,7 +21,7 @@ export const uploadFile = async (fileContent, fileName, mimeType) => {
 };
 
 export const getFileUrl = (fileName) => {
-  const endpoint ="https://pub-5f21350fbb5e4f11aa7546453ecea699.r2.dev"; // e.g., https://<bucket-name>.<account-id>.r2.cloudflarestorage.com
+  const endpoint ="https://pub-8e718d4717894c2d8394aa3ab82551f4.r2.dev"; // e.g., https://<bucket-name>.<account-id>.r2.cloudflarestorage.com
   const bucket = process.env.NEXT_PUBLIC_CLOUD_FLARE_BUCKET_NAME;
 
   // Construct the public URL

@@ -43,12 +43,12 @@ const datas = {
       
     },
     {
-      title: "Alertes",
+      title: "Toutes les Alertes",
       url: "/admin/dashboard/alertes",
       icon: SwatchBook,
     },
     {
-      title: "Users",
+      title: "Utilisateurs",
       url: "/admin/dashboard/users",
       icon: Users,
     },

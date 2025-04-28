@@ -16,6 +16,7 @@ import {
   User,
   UserRound,
   Users,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -122,6 +123,13 @@ const AlerteDaitls = (alert: { alert: any }) => {
   useEffect(()=>{
     router.refresh();
   },[reload])
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const handleFileClick = (file: any) => {
+  setSelectedFile(file);
+  setIsModalOpen(true);
+};
   const formatFrenchDate = (isoString: any) => {
     const parisTime = toZonedTime(isoString, "Europe/Paris");
     return format(parisTime, "dd/MM/yyyy à HH:mm", {
@@ -376,77 +384,141 @@ const AlerteDaitls = (alert: { alert: any }) => {
           </div>
 
           {/* Attachments */}
-          {al.files && al.files.length > 0 && (
-            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
-              <div className="flex items-center gap-3 mb-4">
-                <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                <h3 className="font-medium text-gray-900 dark:text-white">
-                  Pièces jointes
-                </h3>
+          {isModalOpen && selectedFile && (
+              <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                <div className="bg-white dark:bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+
+                  <div className="p-6">
+                    <h3 className="text-lg font-medium mb-4 dark:text-white">
+                      {selectedFile.name || "Fichier joint"}
+                    </h3>
+
+                    {selectedFile?.mimeType?.startsWith("image") ||
+                    /\.(jpg|jpeg|png|gif|webp)$/i.test(selectedFile?.url) ? (
+                      <img
+                        src={selectedFile.url}
+                        alt={selectedFile.name}
+                        className="max-w-full max-h-[70vh] mx-auto"
+                      />
+                    ) : selectedFile?.mimeType?.startsWith("video") ||
+                      /\.(mp4|webm|ogg)$/i.test(selectedFile?.url) ? (
+                      <video controls className="w-full">
+                        <source
+                          src={selectedFile.url}
+                          type={selectedFile.mimeType}
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : selectedFile?.mimeType?.startsWith("audio") ||
+                      /\.(mp3|wav|ogg)$/i.test(selectedFile?.url) ? (
+                      <audio controls className="w-full">
+                        <source
+                          src={selectedFile.url}
+                          type={selectedFile.mimeType}
+                        />
+                        Your browser does not support the audio element.
+                      </audio>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-8">
+                        <Paperclip className="h-16 w-16 text-gray-400 mb-4" />
+                        <p className="text-gray-500 dark:text-gray-400">
+                          This file type cannot be previewed
+                        </p>
+                        <a
+                          href={selectedFile.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 text-blue-500 hover:underline"
+                        >
+                          Download file
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
+            )}
+            {/* Attachments */}
+            {al.files && al.files.length > 0 && (
+              <div className="p-4 bg-gray-100 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="font-medium text-gray-900 dark:text-white">
+                    Pièces jointes
+                  </h3>
+                </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {al.files.map((file: any, key: any) => {
-                  const isImage =
-                    file?.mimeType?.startsWith("image") ||
-                    /\.(jpg|jpeg|png|gif|webp)$/i.test(file?.url);
-                  const isVideo =
-                    file?.mimeType?.startsWith("video") ||
-                    /\.(mp4|webm|ogg)$/i.test(file?.url);
-                  const isAudio =
-                    file?.mimeType?.startsWith("audio") ||
-                    /\.(mp3|wav|ogg)$/i.test(file?.url);
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {al.files.map((file: any, key: any) => {
+                    const isImage =
+                      file?.mimeType?.startsWith("image") ||
+                      /\.(jpg|jpeg|png|gif|webp)$/i.test(file?.url);
+                    const isVideo =
+                      file?.mimeType?.startsWith("video") ||
+                      /\.(mp4|webm|ogg)$/i.test(file?.url);
+                    const isAudio =
+                      file?.mimeType?.startsWith("audio") ||
+                      /\.(mp3|wav|ogg)$/i.test(file?.url);
 
-                  return (
-                    <div key={key} className="relative group">
-                      <Link href={file?.url} target="_blank" className="block">
-                        <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
-                          {/* Image Preview */}
-                          {isImage && (
-                            <div
-                              className="w-full h-full bg-cover bg-center"
-                              style={{
-                                backgroundImage: `url(${
-                                  isImage ===
-                                    file?.mimeType?.startsWith("image") ||
-                                  /\.(png)$/i.test(file?.url)
-                                    ? "/document.jpg"
-                                    : file?.url
-                                })`,
-                              }}
-                            />
-                          )}
+                    return (
+                      <div key={key} className="relative group">
+                        <div
+                          onClick={() => handleFileClick(file)}
+                          className="block cursor-pointer"
+                        >
+                          <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                            {/* Image Preview */}
+                            {isImage && (
+                              <div
+                                className="w-full h-full bg-cover bg-center"
+                                style={{
+                                  backgroundImage: `url(${
+                                    isImage ===
+                                      file?.mimeType?.startsWith("image") ||
+                                    /\.(png)$/i.test(file?.url)
+                                      ? "/document.jpg"
+                                      : file?.url
+                                  })`,
+                                }}
+                              />
+                            )}
 
-                          {/* Video Preview */}
-                          {isVideo && (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                              <FileVideo className="h-8 w-8 text-white" />
+                            {/* Video Preview */}
+                            {isVideo && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileVideo className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Audio Preview */}
+                            {isAudio && (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                                <FileAudio className="h-8 w-8 text-white" />
+                              </div>
+                            )}
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Eye className="h-6 w-6 text-white" />
                             </div>
-                          )}
+                          </div>
 
-                          {/* Audio Preview */}
-                          {isAudio && (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                              <FileAudio className="h-8 w-8 text-white" />
-                            </div>
-                          )}
-
-                          {/* Overlay */}
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Eye className="h-6 w-6 text-white" />
+                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {file?.name || "Fichier joint"}
                           </div>
                         </div>
-
-                        <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {file?.name || "Fichier joint"}
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
       {al.conlusions &&

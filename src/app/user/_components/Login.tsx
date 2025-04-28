@@ -103,7 +103,7 @@ export default function UsernameLogin() {
       console.log(session);
       fetchUserInfo();
     }
-  }, [session]); // Add session as a dependency
+  }, [session,secret]); // Add session as a dependency
 
   /* Generate a QR Code */
   const get2faQrCode = async () => {
