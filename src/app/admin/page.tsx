@@ -9,6 +9,6 @@ export default async function Admin() {
   if (!session?.user) {
     return redirect('/admin/login');
   } else {
-    redirect('/admin/dashboard');
+    redirect('/admin/dashboard/overview');
   }
 }

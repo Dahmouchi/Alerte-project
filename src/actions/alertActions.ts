@@ -660,6 +660,21 @@ export async function AnnulerClo(conId:string,userId: string, alertId: string) {
     const conclusion = await prisma.conclusion.delete({
       where:{id:conId}
     });
+    if(updatedAlert.assignedAnalystId){
+      await prisma.notification.create({
+        data: {
+          userId: updatedAlert.assignedAnalystId,
+          title: "Demande de clôture Annulée",
+          message:
+            `la demande de clôture de l'alerte ${updatedAlert.code} a été annuler par le responsable`,
+          type: "SYSTEM",
+          relatedId: updatedAlert.code,
+        },
+      });
+    
+    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+    socket.emit("notifyUser");
+    }
     createHistoryRecord(
       alertId,
       userId,

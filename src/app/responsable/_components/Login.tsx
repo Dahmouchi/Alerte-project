@@ -134,7 +134,7 @@ export default function UsernameLogin() {
          if (response.data.success) {
            toast.success("Code verified");
            await update({ twoFactorVerified: true });
-           router.push("/responsable/dashboard");
+           router.push("/responsable/dashboard/overview");
          } else {
            toast.error("Invalid verification code");
            setInvalidOtp(true);
@@ -182,7 +182,7 @@ export default function UsernameLogin() {
             setUser(session.user);
           } else {
             toast.success("Connexion réussie");
-            redirect("/responsable/dashboard");
+            redirect("/responsable/dashboard/overview");
           }
           setLoading(false);
         }

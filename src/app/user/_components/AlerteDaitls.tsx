@@ -118,11 +118,10 @@ const categories = [
 const AlerteDaitls = (alert: { alert: any }) => {
   const [al, setAl] = useState(alert.alert);
   const [reload, SetReload] = useState(true);
-
   const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<any>(null);
-const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 const handleFileClick = (file: any) => {
   setSelectedFile(file);
