@@ -120,9 +120,7 @@ const AlerteDaitls = (alert: { alert: any }) => {
   const [reload, SetReload] = useState(true);
 
   const router = useRouter();
-  useEffect(()=>{
-    router.refresh();
-  },[reload])
+
   const [selectedFile, setSelectedFile] = useState<any>(null);
 const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -144,7 +142,7 @@ const handleFileClick = (file: any) => {
         return {
           className:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-          label: "Approuvé",
+          label: "Clôturée",
           dotColor: "bg-green-500 ",
         };
       case "DECLINED":
@@ -527,6 +525,70 @@ const handleFileClick = (file: any) => {
           <div key={index}>
             {" "}
             {con.createdBy.role === "ANALYSTE" ? (
+              <div>
+                {con.analysteValidation === "APPROVED"?
+                <div className="bg-green-50 my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                {/* Header with analyst info and actions */}
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                        <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Analyste
+                      </p>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {con.createdBy.name} {con.createdBy.prenom}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status badges */}
+                <div className="flex flex-wrap items-center gap-3 mb-5">
+              
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        getStatusStyles(con.analysteValidation).dotColor
+                      }`}
+                    />
+                    <span
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                        getStatusStyles(con.analysteValidation).className
+                      }`}
+                    >
+                      {getStatusStyles(con.analysteValidation).label}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="mb-5">
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    Commentaire
+                  </h3>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      Votre alerte a été clôturée
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Validé le {formatFrenchDate(con.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              :
               <div className="bg-white my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
                 {/* Header with analyst info and actions */}
                 <div className="flex items-start justify-between gap-4 mb-5">
@@ -567,15 +629,15 @@ const handleFileClick = (file: any) => {
                   <div className="flex items-center gap-2">
                     <div
                       className={`h-2.5 w-2.5 rounded-full ${
-                        getStatusStyles(al.analysteValidation).dotColor
+                        getStatusStyles(con.analysteValidation).dotColor
                       }`}
                     />
                     <span
                       className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        getStatusStyles(al.analysteValidation).className
+                        getStatusStyles(con.analysteValidation).className
                       }`}
                     >
-                      {getStatusStyles(al.analysteValidation).label}
+                      {getStatusStyles(con.analysteValidation).label}
                     </span>
                   </div>
                 </div>
@@ -602,6 +664,8 @@ const handleFileClick = (file: any) => {
                   </div>
                 </div>
               </div>
+              }
+              </div>
             ):(
               <JustifCard justif={con} />
             )}
@@ -609,7 +673,7 @@ const handleFileClick = (file: any) => {
         ))}
      
       {al.status === "INFORMATIONS_MANQUANTES" && al.involved && (
-        <MissingInformationSection al={al} reload={()=>SetReload(!reload)}/>
+        <MissingInformationSection al={al}/>
       )}
     </div>
   );

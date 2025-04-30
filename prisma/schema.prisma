@@ -240,7 +240,7 @@ model Conclusion {
   // Foreign key linking to Alert
   alertId   String
   alert     Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
-
+  analysteValidation UserAlertStatus @default(PENDING)
   files         FileJustif[] 
 }
 model FileJustif {

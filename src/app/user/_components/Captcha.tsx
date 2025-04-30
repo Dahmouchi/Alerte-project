@@ -28,6 +28,7 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
   function handleCaptchaCheck() {
     if (userInput === captcha) {
       setValid(true);
+      setIsCaptchaVerified(true)
       toast.success("CAPTCHA vérifié ✅");
     } else {
       toast.error("Code incorrect. Veuillez réessayer.");

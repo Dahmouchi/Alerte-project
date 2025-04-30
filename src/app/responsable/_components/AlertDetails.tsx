@@ -82,6 +82,7 @@ import {
   responsableValidation,
 } from "@/actions/responsable-function";
 import JustifCard from "@/app/user/_components/justifCard";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -230,7 +231,7 @@ const AlertDetails = (alert: any) => {
         return {
           className:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-          label: "Approuvé",
+          label: "Clôturée",
           dotColor: "bg-green-500 ",
         };
       case "DECLINED":
@@ -910,15 +911,15 @@ const AlertDetails = (alert: any) => {
                     <div className="flex items-center gap-2">
                       <div
                         className={`h-2.5 w-2.5 rounded-full ${
-                          getStatusStyles(al.analysteValidation).dotColor
+                          getStatusStyles(con.analysteValidation).dotColor
                         }`}
                       />
                       <span
                         className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                          getStatusStyles(al.analysteValidation).className
+                          getStatusStyles(con.analysteValidation).className
                         }`}
                       >
-                        {getStatusStyles(al.analysteValidation).label}
+                        {getStatusStyles(con.analysteValidation).label}
                       </span>
                     </div>
                   </div>
@@ -936,13 +937,38 @@ const AlertDetails = (alert: any) => {
                   </div>
 
                   {/* Footer */}
-                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         Validé le {formatFrenchDate(con.createdAt)}
                       </span>
                     </div>
+                    <div className={``}>
+                                {con.valider ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                        V
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Valider</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                        A
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Attente de validation</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
                   </div>
                 </div>
               ) : (

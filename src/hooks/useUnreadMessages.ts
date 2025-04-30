@@ -19,7 +19,7 @@ export function useUnreadMessages(alertId: string) {
     fetchUnreadCount();
 
     // Set up polling (or use WebSockets for real-time updates)
-    const interval = setInterval(fetchUnreadCount, 20000); // Check every 10 seconds
+    const interval = setInterval(fetchUnreadCount, 60000); // Check every 10 seconds
     
     return () => clearInterval(interval);
   }, [alertId]);

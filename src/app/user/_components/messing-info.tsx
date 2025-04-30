@@ -9,7 +9,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-const MissingInformationSection = (al: any) => {
+
+const MissingInformationSection = (al:any) => {
   const [justificationText, setJustificationText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
@@ -60,14 +61,13 @@ const MissingInformationSection = (al: any) => {
         files // files
       );
       if (justif) {
-        window.location.reload();
         toast.success("Justification envoyée avec succès !");
-        router.refresh();
         setJustificationText("");
         setFiles([]);
       } else {
         toast.error("Error");
       }
+      
     } catch (error) {
       console.error(error);
       toast.error("Erreur lors de l'envoi de la justification.");

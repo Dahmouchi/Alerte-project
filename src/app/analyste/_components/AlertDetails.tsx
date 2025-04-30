@@ -86,6 +86,12 @@ import {
 import JustifCard from "@/app/user/_components/justifCard";
 import { AnalystResponseForm } from "./sendConclusion";
 import AdditionalModalComponent from "./conclusionTwo";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import AnnulerCloture from "./anullerCloture";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -269,11 +275,7 @@ const AlertDetails = (alert: any) => {
     );
     setJustification1(selectedJustification?.description || "");
   };
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [recevable]); // Trigger when recevable changes
+  useEffect(() => {}, [recevable]); // Trigger when recevable changes
   const [isAdditionalModalOpen, setIsAdditionalModalOpen] = useState(false);
 
   useEffect(() => {
@@ -303,7 +305,7 @@ const AlertDetails = (alert: any) => {
         return {
           className:
             "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-          label: "Approuvé",
+          label: "Clôturée",
           dotColor: "bg-green-500 ",
         };
       case "DECLINED":
@@ -1187,92 +1189,6 @@ const AlertDetails = (alert: any) => {
                     </span>
                   </div>
                 </div>
-                {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
-                  <div className="space-y-4 border-blue-500 border-2 bg-blue-50 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Clôture
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Approved */}
-
-                      <div
-                        className={`${
-                          decision === "APPROVED"
-                            ? "border-green-500 border-2"
-                            : " border"
-                        } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
-                      >
-                        <div className="flex items-center h-5">
-                          <input
-                            type="checkbox"
-                            checked={decision === "APPROVED"}
-                            onChange={handleToggleApproval}
-                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <label
-                            htmlFor="approval-checkbox"
-                            className="flex items-center cursor-pointer"
-                          >
-                            <div className="ml-3 text-sm">
-                              <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                                <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
-                                Demande de clôture
-                              </div>
-                              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                                {decision === "APPROVED"
-                                  ? "Clôture approuvée (cliquez pour annuler)"
-                                  : "Cochez pour demander la clôture"}
-                              </p>
-                            </div>
-                          </label>
-                        </div>
-                      </div>
-
-                      {/* Confirmation Dialog */}
-                      <AlertDialog
-                        open={showConfirmDialog}
-                        onOpenChange={setShowConfirmDialog}
-                      >
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Confirmer la demande de clôture
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Êtes-vous sûr de vouloir effectuer cette demande
-                              de clôture ?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => {
-                                setDecision("APPROVED");
-                                setShowConfirmDialog(false);
-                              }}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              Confirmer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-
-                      {/* Missing Info */}
-                    </div>
-                    <div className="flex justify-end">
-                      <button
-                        onClick={sendDemande}
-                        className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                      >
-                        <Save className="w-5 h-5 mr-2" />
-                        Envoyer la demande
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -1282,6 +1198,131 @@ const AlertDetails = (alert: any) => {
             <div key={index}>
               {" "}
               {con.createdBy.role === "ANALYSTE" ? (
+                <div>
+                  {con.analysteValidation === "APPROVED" ? 
+                  <div className="bg-green-50 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                  {/* Header with analyst info and actions */}
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                          <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        </div>
+                        {con.createdBy.id === session?.user.id &&
+                          !con.valider && (
+                            <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
+                              <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                            </div>
+                          )}
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Analyste
+                        </p>
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          {con.createdBy.name} {con.createdBy.prenom}
+                        </p>
+                      </div>
+                    </div>
+
+                    {con.createdBy.id === session?.user.id && !con.valider && (
+                      <>
+                        <AnnulerCloture 
+                        task={con}
+                        alerte={al}
+                        onClose={() =>
+                          setIsAdditionalModalOpen(!isAdditionalModalOpen)
+                        }/>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Status badges */}
+                  <div className="flex flex-wrap items-center gap-3 mb-5">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          al.recevable === "RECEVALBE"
+                            ? "bg-green-500"
+                            : "bg-gray-400"
+                        }`}
+                      />
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                        {al.recevable === "RECEVALBE"
+                          ? "Recevable"
+                          : "Non Recevable"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          getStatusStyles(con.analysteValidation).dotColor
+                        }`}
+                      />
+                      <span
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                          getStatusStyles(con.analysteValidation).className
+                        }`}
+                      >
+                        {getStatusStyles(con.analysteValidation).label}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="mb-5">
+                    <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                      Commentaire
+                    </h3>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {con?.content || "Aucun commentaire fourni"}
+                      </p>
+                    </div>
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {con?.content1}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        Validé le {formatFrenchDate(con.createdAt)}
+                      </span>
+                    </div>
+                    <div className={``}>
+                      {con.valider ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                              V
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Valider</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                              A
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Attente de validation</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                :
                 <div className="bg-white dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
                   {/* Header with analyst info and actions */}
                   <div className="flex items-start justify-between gap-4 mb-5">
@@ -1347,15 +1388,15 @@ const AlertDetails = (alert: any) => {
                     <div className="flex items-center gap-2">
                       <div
                         className={`h-2.5 w-2.5 rounded-full ${
-                          getStatusStyles(al.analysteValidation).dotColor
+                          getStatusStyles(con.analysteValidation).dotColor
                         }`}
                       />
                       <span
                         className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                          getStatusStyles(al.analysteValidation).className
+                          getStatusStyles(con.analysteValidation).className
                         }`}
                       >
-                        {getStatusStyles(al.analysteValidation).label}
+                        {getStatusStyles(con.analysteValidation).label}
                       </span>
                     </div>
                   </div>
@@ -1378,14 +1419,40 @@ const AlertDetails = (alert: any) => {
                   </div>
 
                   {/* Footer */}
-                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between">
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         Validé le {formatFrenchDate(con.createdAt)}
                       </span>
                     </div>
+                    <div className={``}>
+                      {con.valider ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                              V
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Valider</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                              A
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Attente de validation</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
                   </div>
+                </div>}
                 </div>
               ) : (
                 <JustifCard justif={con} />
@@ -1403,6 +1470,92 @@ const AlertDetails = (alert: any) => {
               <div className="space-y-2">
                 <AnalystResponseForm onSubmit={handleSubmitResponse} />
               </div>
+            </div>
+          </div>
+        )}
+        {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
+          <div className="space-y-4 border-blue-500 border-2 bg-blue-50 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Clôture
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Approved */}
+
+              <div
+                className={`${
+                  decision === "APPROVED"
+                    ? "border-green-500 border-2"
+                    : " border"
+                } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
+              >
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    checked={decision === "APPROVED"}
+                    onChange={handleToggleApproval}
+                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label
+                    htmlFor="approval-checkbox"
+                    className="flex items-center cursor-pointer"
+                  >
+                    <div className="ml-3 text-sm">
+                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                        <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
+                        Demande de clôture
+                      </div>
+                      <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        {decision === "APPROVED"
+                          ? "Clôture approuvée (cliquez pour annuler)"
+                          : "Cochez pour demander la clôture"}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Confirmation Dialog */}
+              <AlertDialog
+                open={showConfirmDialog}
+                onOpenChange={setShowConfirmDialog}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Confirmer la demande de clôture
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Êtes-vous sûr de vouloir effectuer cette demande de
+                      clôture ?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        setDecision("APPROVED");
+                        setShowConfirmDialog(false);
+                      }}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      Confirmer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Missing Info */}
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={sendDemande}
+                className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                <Save className="w-5 h-5 mr-2" />
+                Envoyer la demande
+              </button>
             </div>
           </div>
         )}

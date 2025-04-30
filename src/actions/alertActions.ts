@@ -476,6 +476,7 @@ export async function saveConclusion(
           alertId,
           createdById: userId,
           content1,
+          analysteValidation: decision,
         },
       });
       const res = await prisma.alert.update({
@@ -513,6 +514,7 @@ export async function saveConclusion(
           alertId,
           createdById: userId,
           content1,
+          analysteValidation: decision,
         },
       });
       const res = await prisma.alert.update({
@@ -563,6 +565,7 @@ export async function saveReponse(
           content,
           alertId,
           createdById: userId,
+          analysteValidation:"INFORMATIONS_MANQUANTES",
         },
       });
       const res = await prisma.alert.update({
@@ -609,6 +612,14 @@ export async function saveDemande(userId: string, alertId: string) {
         responsableValidation: "PENDING",
       },
     });
+    const conclusion = await prisma.conclusion.create({
+      data: {
+        content:`Demande de clôture de l'alerte ${updatedAlert.code}`,
+        alertId,
+        analysteValidation:"APPROVED",
+        createdById: userId,
+      },
+    });
     if (updatedAlert.assignedResponsableId) {
       await prisma.notification.create({
         data: {
@@ -629,6 +640,31 @@ export async function saveDemande(userId: string, alertId: string) {
       userId,
       "DEMANDE_DE_VALIDATION",
       `L'analyste envyer une demande de validation`
+    );
+    return updatedAlert;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
+export async function AnnulerClo(conId:string,userId: string, alertId: string) {
+  try {
+    const updatedAlert = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        status: "EN_COURS_TRAITEMENT",
+        analysteValidation: "INFORMATIONS_MANQUANTES",
+        responsableValidation: "PENDING",
+      },
+    });
+    const conclusion = await prisma.conclusion.delete({
+      where:{id:conId}
+    });
+    createHistoryRecord(
+      alertId,
+      userId,
+      "ANNULER_LA_CLOTURE",
+      `L'analyste annullé la demande de clôture`
     );
     return updatedAlert;
   } catch (error) {
