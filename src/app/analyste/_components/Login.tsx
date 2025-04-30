@@ -139,7 +139,7 @@ export default function UsernameLogin() {
         if (response.data.success) {
           toast.success("Code verified");
           await update({ twoFactorVerified: true });
-          router.push("/user/dashboard");
+          router.push("/analyste/dashboard");
         } else {
           toast.error("Invalid verification code");
           setInvalidOtp(true);
