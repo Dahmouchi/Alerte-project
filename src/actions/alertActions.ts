@@ -655,6 +655,7 @@ export async function AnnulerClo(conId:string,userId: string, alertId: string) {
         status: "EN_COURS_TRAITEMENT",
         analysteValidation: "INFORMATIONS_MANQUANTES",
         responsableValidation: "PENDING",
+        involved:false,
       },
     });
     const conclusion = await prisma.conclusion.delete({
