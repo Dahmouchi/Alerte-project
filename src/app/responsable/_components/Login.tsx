@@ -47,30 +47,34 @@ export default function UsernameLogin() {
   const [user, setUser] = useState<any>(null);
   const [invalidOtp, setInvalidOtp] = useState(false);
   const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  
+  const [authLoading, setAuthLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [userInfoLoading, setUserInfoLoading] = useState(false);
+  
   const [qrImage, setQrImage] = useState();
   const [secret, setSecret] = useState<any>();
-  const { data: session, update } = useSession(); // Use session and update function
+  
+  const { data: session, update } = useSession();
   const router = useRouter();
   const [isView, setIsView] = useState(false);
   const [password, setPassword] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
       username: "",
-      confirmPassword :"",
     },
   });
-
+  
   /* Fetch User Info */
   async function fetchUserInfo() {
     if (!session?.user) return;
-
-    setLoading(true);
+  
+    setUserInfoLoading(true);
     try {
       const userData = await UserInfo(session.user.id);
-      console.log(userData);
       if (!userData.twoFactorSecret && !userData.qrSecret) {
         await get2faQrCode();
       } else if (!userData.twoFactorSecret && userData.qrSecret) {
@@ -88,18 +92,17 @@ export default function UsernameLogin() {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      setUserInfoLoading(false);
     }
   }
-
+  
   /* useEffect to Fetch User Data */
   useEffect(() => {
     if (session) {
-      console.log(session);
       fetchUserInfo();
     }
-  }, [session,secret]); // Add session as a dependency
-
+  }, [session]);
+  
   /* Generate a QR Code */
   const get2faQrCode = async () => {
     try {
@@ -114,137 +117,120 @@ export default function UsernameLogin() {
       console.error("Error generating QR Code:", error);
     }
   };
-
-  /* Validate OTP Code */
- const handleOtpChange = useCallback(async (value: string) => {
-     setValue(value);
-     
-     // Automatically verify when 6 digits are entered
-     if (value.length === 6) {
-       setLoading(true);
-       try {
-         if (!session?.user?.id || !secret) return;
-   
-         const response = await axios.post(`/api/2fa/verify`, {
-           secret,
-           token: value,
-           userId: session.user.id,
-         });
-   
-         if (response.data.success) {
-           toast.success("Code verified");
-           await update({ twoFactorVerified: true });
-           router.push("/responsable/dashboard/overview");
-         } else {
-           toast.error("Invalid verification code");
-           setInvalidOtp(true);
-           setValue(""); // Clear the input on failure
-         }
-       } catch (error) {
-         console.error("Verification error:", error);
-         toast.error("An error occurred during verification");
-         setValue(""); // Clear the input on error
-       } finally {
-         setLoading(false);
-       }
-     }
-   }, [secret, session, update, router]);
- 
-
-  /* Handle Login */
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
-    
-    if (password) {
-      // This is the new password submission flow
+  
+  /* OTP Change Handler */
+  const handleOtpChange = useCallback(async (value: string) => {
+    setValue(value);
+  
+    if (value.length === 6) {
+      setOtpLoading(true);
       try {
-       if(values.password && values.password === values.confirmPassword){
-         // Call your UpdatePassword function
-         await UpdatePassword(values.username, values.password);
-         toast.success("Password set successfully");
-         
-         // Now try to sign in with the new password
-         const res = await signIn("username-only", {
-           username: values.username,
-           password: values.password,
-           redirect: false,
-         });
-   
-         if (res?.error) {
-          toast.error(res.error);
-          setLoading(false);
+        if (!session?.user?.id || !secret) return;
+  
+        const response = await axios.post(`/api/2fa/verify`, {
+          secret,
+          token: value,
+          userId: session.user.id,
+        });
+  
+        if (response.data.success) {
+          toast.success("Code verified");
+          await update({ twoFactorVerified: true });
+          router.push("/responsable/dashboard/overview");
         } else {
-          await update(); // Refresh session after login
+          toast.error("Invalid verification code");
+          setInvalidOtp(true);
+          setValue("");
+        }
+      } catch (error) {
+        console.error("Verification error:", error);
+        toast.error("An error occurred during verification");
+        setValue("");
+      } finally {
+        setOtpLoading(false);
+      }
+    }
+  }, [secret, session, update, router]);
+  
+  /* Submit Handler */
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setAuthLoading(true);
+  
+    try {
+      if (password) {
+        if (values.password && values.password === values.confirmPassword) {
+          await UpdatePassword(values.username, values.password);
+          toast.success("Password set successfully");
+  
+          const res = await signIn("username-only", {
+            username: values.username,
+            password: values.password,
+            redirect: false,
+          });
+  
+          if (res?.error) {
+            toast.error(res.error);
+          } else {
+            await update();
+            const session = await getSession();
+  
+            if (session?.user.twoFactorEnabled) {
+              setIsTwoFactor(true);
+              setUser(session.user);
+            } else {
+              toast.success("Connexion réussie");
+              router.push("/responsable/dashboard/overview");
+            }
+          }
+        } else {
+          toast.error("Passwords do not match");
+        }
+      } else if (values.password) {
+        const res = await signIn("username-only", {
+          username: values.username.toLowerCase(),
+          password: values.password,
+          redirect: false,
+        });
+  
+        if (res?.error) {
+          toast.error(res.error);
+        } else {
+          await update();
           const session = await getSession();
-    
+  
           if (session?.user.twoFactorEnabled) {
-            setIsTwoFactor(true); // Show 2FA modal
+            setIsTwoFactor(true);
             setUser(session.user);
           } else {
             toast.success("Connexion réussie");
-            redirect("/responsable/dashboard/overview");
+            router.push("/responsable/dashboard/overview");
           }
-          setLoading(false);
         }
-       }else{
-        toast.error("Failed to set password");
-       }
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to set password");
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-  
-    if (values.password) {
-      // Existing login flow
-      const res = await signIn("username-only", {
-        username: values.username.toLowerCase(),
-        password: values.password,
-        redirect: false,
-      });
-  
-      if (res?.error) {
-        toast.error(res.error);
-        setLoading(false);
       } else {
-        await update(); // Refresh session after login
-        const session = await getSession();
-  
-        if (session?.user.twoFactorEnabled) {
-          setIsTwoFactor(true); // Show 2FA modal
-          setUser(session.user);
-        } else {
-          toast.success("Connexion réussie");
-          redirect("/responsable/dashboard");
-        }
-        setLoading(false);
-      }
-    } else {
-      try {
         const userN = values.username;
         if (userN) {
           const res = await GetUserByUsername(userN);
           if (res && res.password === null) {
-            setPassword(true); // Show password set form
+            setPassword(true);
             form.setValue("username", userN);
           } else {
             toast.error("Invalid username or password required");
           }
         }
-      } catch (error) {
-        console.error("Verification error:", error);
-        toast.error("Une erreur est survenue");
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      console.error("Auth error:", error);
+      toast.error(error instanceof Error ? error.message : "Authentication error");
+    } finally {
+      setAuthLoading(false);
     }
   }
-
-  if (loading) {
+  
+  /* Global Loading Spinner */
+  if (authLoading || otpLoading || userInfoLoading) {
     return <Loading />;
   }
+  
   return (
     <div className="w-full ">
       {isTwoFactor ? (
@@ -303,104 +289,90 @@ export default function UsernameLogin() {
             </Card>
           ) : (
             <div className="container mx-auto flex justify-center w-full">
-            <Card className="bg-white p-8 shadow-lg dark:bg-slate-800 rounded-lg max-w-4xl w-full">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
               <div className="flex flex-col items-center space-y-6">
-                {/* Logo */}
-                <div className="flex items-center gap-4">
-                  <Image
-                    src={"/logo.png"}
-                    alt="logo"
-                    width={300}
-                    height={50}
-                    className="dark:invert"
-                  />
+                {/* Welcome message */}
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">Two-Factor Authentication</h1>
+                  <p className="text-gray-600 dark:text-slate-300">Secure your account with 2FA</p>
                 </div>
           
-                {/* QR Code and Instructions */}
-                <div className="flex lg:flex-row flex-col items-center gap-8 w-full">
-                  
-                    <div className="flex flex-col items-center">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-slate-100">Setup Instructions</h3>
-                      <ul className="list-none space-y-3 text-gray-700 dark:text-slate-300">
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">1.</span>
-                          <span>Scan the QR Code with your Authenticator app (Google Authenticator, Authy, etc.)</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">2.</span>
-                          <span>Or manually enter this secret key into your authenticator app</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">3.</span>
-                          <span>Enter the 6-digit code from your app below</span>
-                        </li>
-                      </ul>
-                      {secret && (
-                        <div className="mt-4 w-full">
-                          <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Secret Key:</p>
-                          <div className="flex items-center gap-2">
-                            <code className="bg-gray-100 dark:bg-slate-700 px-3 py-2 rounded text-sm font-mono break-all">
-                              {secret}
-                            </code>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(secret);
-                                // Add toast or notification here
-                              }}
-                              className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-                              title="Copy to clipboard"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  
-          
-                  {/* Steps and OTP Input */}
-                  <div className="flex-1">
-                    <div className="space-y-4">
-                    {qrImage && (
+                {/* QR Code Section */}
+                <div className="flex flex-col items-center w-full">
+                  {qrImage && (
+                    <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
                       <img
-                      src={qrImage}
-                      alt="2FA QR Code"
-                      className="rounded-lg border-2 border-gray-200 dark:border-slate-600 p-2 w-48 h-48"
-                    />
-                    )}
+                        src={qrImage}
+                        alt="2FA QR Code"
+                        className="w-48 h-48"
+                      />
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
+                    Scan this QR code with your authenticator app
+                  </p>
+                </div>
           
-                      <div className="space-y-4">
-                        <div className="flex flex-col items-center lg:items-start">
-                          <label htmlFor="otp" className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-                            Verification Code
-                          </label>
-                          <InputOTP
-                            maxLength={6}
-                            value={value}
-                            onChange={handleOtpChange}  // This will trigger on each change
-                            >
-                            <InputOTPGroup>
-                              {[...Array(6)].map((_, index) => (
-                                <InputOTPSlot
-                                  key={index}
-                                  index={index}
-                                  className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
-                                />
-                              ))}
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </div>
-          
-                        
-                      </div>
+                {/* Secret Key */}
+                {secret && (
+                  <div className="w-full">
+                    <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">Or enter this secret key manually:</p>
+                    <div className="flex items-center gap-2">
+                      <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
+                        {secret}
+                      </code>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(secret)}
+                        className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
+                        title="Copy to clipboard"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                      </button>
                     </div>
                   </div>
+                )}
+          
+                {/* Verification Code Input */}
+                <div className="w-full space-y-2">
+                  <label htmlFor="otp" className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300">
+                    Verification Code
+                  </label>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={value}
+                      onChange={handleOtpChange}
+                    >
+                      <InputOTPGroup>
+                        {[...Array(6)].map((_, index) => (
+                          <InputOTPSlot
+                            key={index}
+                            index={index}
+                            className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+                          />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                 </div>
+          
+                {/* Submit Button */}
+                
               </div>
-            </Card>
+            </div>
           </div>
           )}
         </div>

@@ -424,6 +424,12 @@ const AlertDetails = (alert: any) => {
       toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
+  const allConclusionsApproved = al?.conlusions?.every(
+    (conclusion:any) => conclusion.valider === true
+  );
+  
+  const canRequestClosure =
+    al.analysteValidation === "INFORMATIONS_MANQUANTES" && allConclusionsApproved;
   const handleToggleApproval = () => {
     if (decision !== "APPROVED") {
       setShowConfirmDialog(true);
@@ -1201,7 +1207,6 @@ const AlertDetails = (alert: any) => {
                 <div>
                   {con.analysteValidation === "APPROVED" ? 
                   <div className="bg-green-50 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
-                  {/* Header with analyst info and actions */}
                   <div className="flex items-start justify-between gap-4 mb-5">
                     <div className="flex items-center gap-3">
                       <div className="relative">
@@ -1473,92 +1478,104 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
         )}
-        {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
-          <div className="space-y-4 border-blue-500 border-2 bg-blue-50 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Clôture
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {/* Approved */}
+       {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
+  <div
+    className={`space-y-4 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl ${
+      canRequestClosure
+        ? "border-blue-500 bg-blue-50 border-2"
+        : "border-gray-300 bg-gray-100 border"
+    }`}
+  >
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      Clôture
+    </h3>
 
-              <div
-                className={`${
-                  decision === "APPROVED"
-                    ? "border-green-500 border-2"
-                    : " border"
-                } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
-              >
-                <div className="flex items-center h-5">
-                  <input
-                    type="checkbox"
-                    checked={decision === "APPROVED"}
-                    onChange={handleToggleApproval}
-                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <label
-                    htmlFor="approval-checkbox"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <div className="ml-3 text-sm">
-                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
-                        Demande de clôture
-                      </div>
-                      <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        {decision === "APPROVED"
-                          ? "Clôture approuvée (cliquez pour annuler)"
-                          : "Cochez pour demander la clôture"}
-                      </p>
-                    </div>
-                  </label>
-                </div>
+    {!allConclusionsApproved && (
+      <p className="text-red-600 text-sm">
+        Toutes les validations doivent être approuvées avant de demander la clôture.
+      </p>
+    )}
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-100">
+      <div
+        className={`${
+          decision === "APPROVED" ? "border-green-500 border-2" : "border"
+        } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
+      >
+        <div className="flex items-center h-5">
+          <input
+            type="checkbox"
+            checked={decision === "APPROVED"}
+            onChange={handleToggleApproval}
+            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+            disabled={!canRequestClosure}
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <label
+            htmlFor="approval-checkbox"
+            className="flex items-center cursor-pointer"
+          >
+            <div className="ml-3 text-sm">
+              <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
+                Demande de clôture
               </div>
-
-              {/* Confirmation Dialog */}
-              <AlertDialog
-                open={showConfirmDialog}
-                onOpenChange={setShowConfirmDialog}
-              >
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Confirmer la demande de clôture
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir effectuer cette demande de
-                      clôture ?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        setDecision("APPROVED");
-                        setShowConfirmDialog(false);
-                      }}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      Confirmer
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
-              {/* Missing Info */}
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                {decision === "APPROVED"
+                  ? "Clôture approuvée (cliquez pour annuler)"
+                  : "Cochez pour demander la clôture"}
+              </p>
             </div>
-            <div className="flex justify-end">
-              <button
-                onClick={sendDemande}
-                className="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <Save className="w-5 h-5 mr-2" />
-                Envoyer la demande
-              </button>
-            </div>
-          </div>
-        )}
+          </label>
+        </div>
+      </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer la demande de clôture</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir effectuer cette demande de clôture ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setDecision("APPROVED");
+                setShowConfirmDialog(false);
+              }}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Confirmer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+
+    <div className="flex justify-end">
+      <button
+        onClick={sendDemande}
+        disabled={!canRequestClosure}
+        className={`inline-flex items-center px-4 py-2.5 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+          canRequestClosure
+            ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        <Save className="w-5 h-5 mr-2" />
+        Envoyer la demande
+      </button>
+    </div>
+  </div>
+)}
+
         {/* Print Button */}
         <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button

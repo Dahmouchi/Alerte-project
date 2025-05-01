@@ -217,6 +217,7 @@ export async function saveJustif(
         alertId,
         content,
         createdById,
+        valider:true,
         files: {
           create: imageUrls.map((url) => ({
             url, // assuming FileJustif has a `url` field
@@ -233,6 +234,7 @@ export async function saveJustif(
       data: {
         involved:false,
         status: "EN_COURS_TRAITEMENT",
+        conclusion:"",
       },
     });
     

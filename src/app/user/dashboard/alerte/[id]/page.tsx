@@ -9,6 +9,9 @@ export default async function Update(params:any) {
           persons:true,
           files:true,
           conlusions:{
+            orderBy:{
+              createdAt:"asc",
+            },
             include:{
               createdBy:true,
               files:true,

@@ -654,7 +654,7 @@ export async function AnnulerClo(conId:string,userId: string, alertId: string) {
       data: {
         status: "EN_COURS_TRAITEMENT",
         analysteValidation: "INFORMATIONS_MANQUANTES",
-        responsableValidation: "PENDING",
+        responsableValidation: "APPROVED",
         involved:false,
       },
     });

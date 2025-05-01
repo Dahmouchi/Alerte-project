@@ -13,56 +13,58 @@ export async function GET(
 ) {
   try {
     const id = (await params).id;
-
+  
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
+  
     const user = await UserInfo(id);
-
+  
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,
       });
     }
-
-    // If the user already has a twoFactorSecret, return an error
+  
     if (user.twoFactorSecret) {
       return new Response(JSON.stringify({ error: "2FA already enabled" }), {
         status: 400,
       });
     }
-
-    const secret = user.qrSecret;
+  
+    let base32Secret = user.qrSecret;
     let qrCodeData;
-
-    if (secret) {
-      // If qrSecret exists, generate QR from it
-      const otpauth_url = `otpauth://totp/CompliRisk:${user.username}?secret=${secret}&issuer=CompliRisk`;
+  
+    if (base32Secret) {
+      // QR already stored
+      const otpauth_url = `otpauth://totp/CompliRisk:${user.username}?secret=${base32Secret}&issuer=CompliRisk`;
       qrCodeData = await QRCode.toDataURL(otpauth_url);
     } else {
-      // If no qrSecret, generate a new one and store it
+      // Generate new secret
       const secret = speakeasy.generateSecret({
-        name: `CompliRisk:${user.username}`, // Include username in the secret name
+        name: `CompliRisk:${user.username}`,
       });
-    
-      if (secret.otpauth_url) {
-        qrCodeData = await QRCode.toDataURL(secret.otpauth_url);
-        await saveQr(user.id, secret.base32);
-      } else {
-        return new Response(JSON.stringify({ error: "2FA already enabled" }), {
-          status: 401,
+  
+      if (!secret.otpauth_url || !secret.base32) {
+        return new Response(JSON.stringify({ error: "Failed to generate secret" }), {
+          status: 500,
         });
       }
+  
+      qrCodeData = await QRCode.toDataURL(secret.otpauth_url);
+      base32Secret = secret.base32;
+      await saveQr(user.id, base32Secret);
     }
-    
+  
     return new Response(
-      JSON.stringify({ data: qrCodeData, secret, status: 200 }),
+      JSON.stringify({ data: qrCodeData, secret: base32Secret, status: 200 }),
       { status: 200 }
     );
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete item" },
+      { error: "Failed to process request" },
       { status: 500 }
     );
   }
+  
 }

@@ -75,7 +75,7 @@ export const status_options = [
   },
   {
     value: "TRAITE",
-    label: "Traité",
+    label: "Clôturée",
     icon: CheckCircle2,
     color: "text-green-500 bg-green-100 dark:bg-green-900",
   },

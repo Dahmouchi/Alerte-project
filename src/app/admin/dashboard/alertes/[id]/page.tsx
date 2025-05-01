@@ -16,6 +16,9 @@ const Alert = async (params: any) => {
       assignedAnalyst:true,
       assignedResponsable:true,
       conlusions:{
+        orderBy:{
+          createdAt:"asc",
+        },
         include:{
           createdBy:true,
         }

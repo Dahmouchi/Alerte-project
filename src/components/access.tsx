@@ -24,16 +24,16 @@ useEffect(()=>{
         setUrl("/user/dashboard");
         break;
       case Role.ADMIN:
-        setUrl("/admin/dashboard");
+        setUrl("/admin/dashboard/overview");
         break;
       case Role.ANALYSTE:
-        setUrl("/analyste/dashboard");
+        setUrl("/analyste/dashboard/overview");
         break;
       case Role.RESPONSABLE:
-        setUrl("/responsable/dashboard");
+        setUrl("/responsable/dashboard/overview");
         break;
       case Role.ADMIN_RESPONSABLE:
-        setUrl("/admin/dashboard");
+        setUrl("/admin/dashboard/overview");
         break;
       default:
         setUrl("/access-denied");

@@ -51,91 +51,98 @@ const formSchema = z.object({
 });
 export default function UsernameLogin() {
   const [isTwoFactor, setIsTwoFactor] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [invalidOtp, setInvalidOtp] = useState(false);
-  const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [qrImage, setQrImage] = useState();
-  const [secret, setSecret] = useState<any>();
-  const { data: session, update } = useSession(); // Use session and update function
-  const router = useRouter();
-  const [isView, setIsView] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      password: "",
-      username: "",
-    },
-  });
+const [user, setUser] = useState<any>(null);
+const [invalidOtp, setInvalidOtp] = useState(false);
+const [value, setValue] = useState("");
 
-  /* Fetch User Info */
-  async function fetchUserInfo() {
-    if (!session?.user) return;
+const [authLoading, setAuthLoading] = useState(false);
+const [otpLoading, setOtpLoading] = useState(false);
+const [userInfoLoading, setUserInfoLoading] = useState(false);
 
-    setLoading(true);
-    try {
-      const userData = await UserInfo(session.user.id);
-      console.log(userData);
-      if (!userData.twoFactorSecret && !userData.qrSecret) {
-        await get2faQrCode();
-      } else if (!userData.twoFactorSecret && userData.qrSecret) {
-        setIsTwoFactor(true);
-        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
-        if (response.status === 200) {
-          setQrImage(response.data.data);
-          setSecret(response.data.secret);
-        }
-      } else {
-        setSecret(userData.twoFactorSecret);
-        setIsTwoFactor(true);
+const [qrImage, setQrImage] = useState();
+const [secret, setSecret] = useState<any>();
+
+const { data: session, update } = useSession();
+const router = useRouter();
+const [isView, setIsView] = useState(false);
+
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    password: "",
+    username: "",
+  },
+});
+
+/* Fetch User Info */
+async function fetchUserInfo() {
+  if (!session?.user) return;
+
+  setUserInfoLoading(true);
+  try {
+    const userData = await UserInfo(session.user.id);
+    console.log(userData);
+
+    if (!userData.twoFactorSecret && !userData.qrSecret) {
+      await get2faQrCode();
+    } else if (!userData.twoFactorSecret && userData.qrSecret) {
+      setIsTwoFactor(true);
+      const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+      if (response.status === 200) {
+        setQrImage(response.data.data);
+        setSecret(response.data.secret);
       }
-      setUser(userData);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } else {
+      setSecret(userData.twoFactorSecret);
+      setIsTwoFactor(true);
     }
+
+    setUser(userData);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setUserInfoLoading(false);
   }
+}
 
-  /* useEffect to Fetch User Data */
-  useEffect(() => {
+/* useEffect to Fetch User Data */
+useEffect(() => {
+  if (session) {
+    fetchUserInfo();
+  }
+}, [session]); // Remove `secret` from dependency to avoid infinite loop
+
+/* Generate QR Code */
+const get2faQrCode = async () => {
+  try {
     if (session) {
-      console.log(session);
-      fetchUserInfo();
-    }
-  }, [session,secret]); // Add session as a dependency
-
-  /* Generate a QR Code */
-  const get2faQrCode = async () => {
-    try {
-      if (session) {
-        const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
-        if (response.status === 200) {
-          setQrImage(response.data.data);
-          setSecret(response.data.secret);
-        }
+      const response = await axios.get(`/api/2fa/qrcode/${session.user.id}`);
+      if (response.status === 200) {
+        setQrImage(response.data.data);
+        setSecret(response.data.secret);
       }
-    } catch (error) {
-      console.error("Error generating QR Code:", error);
     }
-  };
+  } catch (error) {
+    console.error("Error generating QR Code:", error);
+  }
+};
 
-  /* Validate OTP Code */
-  const handleOtpChange = useCallback(async (value: string) => {
+/* Handle OTP */
+const handleOtpChange = useCallback(
+  async (value: string) => {
     setValue(value);
-    
-    // Automatically verify when 6 digits are entered
+
     if (value.length === 6) {
-      setLoading(true);
+      setOtpLoading(true);
       try {
         if (!session?.user?.id || !secret) return;
-  
+
         const response = await axios.post(`/api/2fa/verify`, {
           secret,
           token: value,
           userId: session.user.id,
         });
-  
+
         if (response.data.success) {
           toast.success("Code verified");
           await update({ twoFactorVerified: true });
@@ -143,21 +150,25 @@ export default function UsernameLogin() {
         } else {
           toast.error("Invalid verification code");
           setInvalidOtp(true);
-          setValue(""); // Clear the input on failure
+          setValue("");
         }
       } catch (error) {
         console.error("Verification error:", error);
         toast.error("An error occurred during verification");
-        setValue(""); // Clear the input on error
+        setValue("");
       } finally {
-        setLoading(false);
+        setOtpLoading(false);
       }
     }
-  }, [secret, session, update, router]);
+  },
+  [secret, session, update, router]
+);
 
-  /* Handle Login */
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
+/* Handle Login */
+async function onSubmit(values: z.infer<typeof formSchema>) {
+  setAuthLoading(true);
+
+  try {
     const res = await signIn("username-only", {
       username: values.username.toLowerCase(),
       password: values.password,
@@ -166,28 +177,34 @@ export default function UsernameLogin() {
 
     if (res?.error) {
       toast.error(res.error);
-      setLoading(false);
     } else {
-      await update(); // Refresh session after login
+      await update();
       const session = await getSession();
 
       if (session?.user.twoFactorEnabled) {
-        setIsTwoFactor(true); // Show 2FA modal
+        setIsTwoFactor(true);
         setUser(session.user);
       } else {
         toast.success("Connexion réussie");
-        redirect("/user/dashboard");
+        router.push("/user/dashboard");
       }
-      setLoading(false);
     }
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error("Login failed");
+  } finally {
+    setAuthLoading(false);
   }
+}
 
-  if (loading) {
-    return <Loading />;
-  }
+/* Show global loading UI */
+if (userInfoLoading || otpLoading || authLoading) {
+  return <Loading />;
+}
+
   return (
     <div className="w-full h-full flex items-center justify-center p-2">
-      {isTwoFactor && !loading ? (
+      {isTwoFactor ? (
         <div className="flex justify-center w-full">
           {user.twoFactorSecret ? (
             <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">
@@ -205,8 +222,8 @@ export default function UsernameLogin() {
                 <InputOTP
                   maxLength={6}
                   value={value}
-                  onChange={handleOtpChange}  // This will trigger on each change
-                  >
+                  onChange={handleOtpChange} // This will trigger on each change
+                >
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={0}
@@ -238,96 +255,110 @@ export default function UsernameLogin() {
                   </InputOTPGroup>
                 </InputOTP>
                 {/* OTP Input */}
-                
               </div>
             </Card>
           ) : (
             <div className="container mx-auto flex justify-center w-full">
-  <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
-    <div className="flex flex-col items-center space-y-6">
-      {/* Welcome message */}
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">Two-Factor Authentication</h1>
-        <p className="text-gray-600 dark:text-slate-300">Secure your account with 2FA</p>
-      </div>
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Welcome message */}
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">
+                      Two-Factor Authentication
+                    </h1>
+                    <p className="text-gray-600 dark:text-slate-300">
+                      Secure your account with 2FA
+                    </p>
+                  </div>
 
-      {/* QR Code Section */}
-      <div className="flex flex-col items-center w-full">
-        {qrImage && (
-          <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
-            <img
-              src={qrImage}
-              alt="2FA QR Code"
-              className="w-48 h-48"
-            />
-          </div>
-        )}
-        <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
-          Scan this QR code with your authenticator app
-        </p>
-      </div>
+                  {/* QR Code Section */}
+                  <div className="flex flex-col items-center w-full">
+                    {qrImage && (
+                      <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
+                        <img
+                          src={qrImage}
+                          alt="2FA QR Code"
+                          className="w-48 h-48"
+                        />
+                      </div>
+                    )}
+                    <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
+                      Scan this QR code with your authenticator app
+                    </p>
+                  </div>
 
-      {/* Secret Key */}
-      {secret && (
-        <div className="w-full">
-          <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">Or enter this secret key manually:</p>
-          <div className="flex items-center gap-2">
-            <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
-              {secret}
-            </code>
-            <button
-              onClick={() => navigator.clipboard.writeText(secret)}
-              className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-              title="Copy to clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
+                  {/* Secret Key */}
+                  {secret && (
+                    <div className="w-full">
+                      <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">
+                        Or enter this secret key manually:
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
+                          {secret}
+                        </code>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(secret)}
+                          className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
+                          title="Copy to clipboard"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect
+                              x="9"
+                              y="9"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-      {/* Verification Code Input */}
-      <div className="w-full space-y-2">
-        <label htmlFor="otp" className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300">
-          Verification Code
-        </label>
-        <div className="flex justify-center">
-          <InputOTP
-            maxLength={6}
-            value={value}
-            onChange={handleOtpChange}
-          >
-            <InputOTPGroup>
-              {[...Array(6)].map((_, index) => (
-                <InputOTPSlot
-                  key={index}
-                  index={index}
-                  className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
-                />
-              ))}
-            </InputOTPGroup>
-          </InputOTP>
-        </div>
-      </div>
+                  {/* Verification Code Input */}
+                  <div className="w-full space-y-2">
+                    <label
+                      htmlFor="otp"
+                      className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300"
+                    >
+                      Verification Code
+                    </label>
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={6}
+                        value={value}
+                        onChange={handleOtpChange}
+                      >
+                        <InputOTPGroup>
+                          {[...Array(6)].map((_, index) => (
+                            <InputOTPSlot
+                              key={index}
+                              index={index}
+                              className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+                            />
+                          ))}
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                  </div>
 
-      {/* Submit Button */}
-      
-    </div>
-  </div>
-</div>
+                  {/* Submit Button */}
+                </div>
+              </div>
+            </div>
           )}
         </div>
       ) : (

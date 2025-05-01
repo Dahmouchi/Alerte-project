@@ -12,15 +12,13 @@ import {
   MapPin,
   MessageCircle,
   Paperclip,
-  Pencil,
   User,
   UserRound,
   Users,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import MissingInformationSection from "./messing-info";
@@ -117,12 +115,14 @@ const categories = [
 ];
 const AlerteDaitls = (alert: { alert: any }) => {
   const [al, setAl] = useState(alert.alert);
-  const [reload, SetReload] = useState(true);
   const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleReload = () => {
+    router.refresh();
+  };
 const handleFileClick = (file: any) => {
   setSelectedFile(file);
   setIsModalOpen(true);
@@ -672,7 +672,7 @@ const handleFileClick = (file: any) => {
         ))}
      
       {al.status === "INFORMATIONS_MANQUANTES" && al.involved && (
-        <MissingInformationSection al={al}/>
+        <MissingInformationSection al={al} onReload={handleReload} />
       )}
     </div>
   );

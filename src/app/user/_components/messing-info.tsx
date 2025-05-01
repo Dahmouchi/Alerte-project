@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +9,12 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 
-const MissingInformationSection = (al:any) => {
+interface MissingInformationSectionProps {
+  al: any;
+  onReload: () => void;
+}
+
+const MissingInformationSection = ({ al, onReload }: MissingInformationSectionProps) => {  
   const [justificationText, setJustificationText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
@@ -54,20 +58,18 @@ const MissingInformationSection = (al:any) => {
     setIsSubmitting(true);
     if (!session) return null;
     try {
-      const justif = await saveJustif(
-        al.al.id, // alertId
+      await saveJustif(
+        al.id, // alertId
         session.user.id,
         justificationText, // content
         files // files
       );
-      if (justif) {
         toast.success("Justification envoyée avec succès !");
+        onReload();
+        router.refresh();
+        window.location.reload();
         setJustificationText("");
-        setFiles([]);
-      } else {
-        toast.error("Error");
-      }
-      
+        setFiles([]);  
     } catch (error) {
       console.error(error);
       toast.error("Erreur lors de l'envoi de la justification.");

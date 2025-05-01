@@ -12,6 +12,9 @@ const Alert = async (params: any) => {
     where: { code: params.params.id },
     include: {
       conlusions:{
+        orderBy:{
+          createdAt:"asc",
+        },
         include:{
           createdBy:true,
           files:true,
