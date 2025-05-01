@@ -72,6 +72,12 @@ export async function responsableValidation(
   }else{
     throw new Error("Statut de validation non valide.");
   }
+  let conclusinSet :string
+  if(validationStatus === "APPROVED"){
+    conclusinSet = "Votre alerte a été clôturée."
+  }else{
+    conclusinSet = content
+  }
   try {
     // Update the alert status
     const updatedAlert = await prisma.alert.update({
@@ -80,7 +86,7 @@ export async function responsableValidation(
         responsableValidation: "APPROVED",
         involved:true,
         status: statusToSet,
-        conclusion:content,
+        conclusion:conclusinSet,
         updatedAt: new Date(),
       },
     });
