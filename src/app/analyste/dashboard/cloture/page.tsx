@@ -29,17 +29,16 @@ const Dashboard = async () => {
       <div className="flex flex-col gap-2 ">
         <div className="flex items-center justify-between">
           <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold tracking-tight">
-            Toutes les Alertes
+            Les Alertes Clôturées
           </h2>
         </div>
         <div className="flex lg:items-center items-start gap-2 flex-col lg:flex-row">
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/20">
             <User className="mr-1 h-3.5 w-3.5" />
-            Toutes les alertes
+            Les alertes
           </span>
           <p className="text-sm text-muted-foreground">
-            Cette section regroupe toutes les alertes en attente de traitement
-            ou de validation.
+            Cette section regroupe toutes les alertes Clôturées
           </p>
         </div>
       </div>

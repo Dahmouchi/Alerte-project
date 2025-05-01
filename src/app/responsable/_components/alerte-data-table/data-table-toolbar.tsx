@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { X } from "lucide-react"
-import { analyste_alert_status_options, criticity_options } from "@/components/filters"
+import { analyste_alert_status_options, criticity_options, responsable_alert_status_options, status_options } from "@/components/filters"
 import { DataTableFacetedFilterNumber } from "@/components/data-table/data-table-faceted-filter-number"
+import { exportToCSV3 } from "@/lib/exportCSV"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -18,6 +19,8 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
+  const filteredRows = table.getFilteredRowModel().rows.map(row => row.original)
+  const selectedColumns = ["code", "title","category","status","analysteValidation","responsableValidation","criticite","createdAt"]
 
   return (
     <div className="flex items-center justify-between">
@@ -55,6 +58,19 @@ export function DataTableToolbar<TData>({
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
+         <Button
+                  variant="outline"
+                  onClick={() => exportToCSV3(filteredRows as object[], "filtered-alertes-data.csv", selectedColumns,
+                    {
+                      analysteValidation: analyste_alert_status_options,
+                      responsableValidation: responsable_alert_status_options,
+                      status: status_options,
+                      criticite:criticity_options,
+                    })}
+                  className="h-8 px-2 lg:px-3"
+                >
+                  Export CSV
+                </Button>
       </div>
       <DataTableViewOptions table={table} />
     </div>

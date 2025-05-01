@@ -8,7 +8,6 @@ import { DataTableFacetedFilter } from "@/components/data-table/data-table-facet
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { X } from "lucide-react";
 import {  role_options } from "@/components/filters";
-import { exportToCSV } from "@/lib/exportCSV";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -16,7 +15,6 @@ interface DataTableToolbarProps<TData> {
 
 export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const filteredRows = table.getFilteredRowModel().rows.map(row => row.original)
 
   return (
     <div className="flex items-center justify-between">
@@ -47,13 +45,6 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
             <X className="ml-2 h-4 w-4" />
           </Button>
         )}
-        <Button
-                  variant="outline"
-                  onClick={() => exportToCSV(filteredRows as object[], "filtered-alertes-data.csv")}
-                  className="h-8 px-2 lg:px-3"
-                >
-                  Export CSV
-                </Button>
       </div>
       <DataTableViewOptions table={table} />
     </div>
