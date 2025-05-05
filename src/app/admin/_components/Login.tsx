@@ -188,7 +188,7 @@ export default function UsernameLogin() {
     return <Loading />;
   }
   return (
-    <div className="w-full ">
+    <div className="w-full">
       {isTwoFactor ? (
         <div className="flex justify-center w-full">
           {user.twoFactorSecret ? (
@@ -350,7 +350,7 @@ export default function UsernameLogin() {
         <div className="min-h-screen overflow-hidden flex items-center justify-center ">
           <div className="flex min-h-screen w-full">
             {/* Right Pane */}
-            <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
+            <div className="w-full relative flex items-center justify-center ">
               <div className="max-w-md w-full p-6">
                 {/* Sign Up Form */}
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
@@ -358,7 +358,7 @@ export default function UsernameLogin() {
                       <div className="mt-5 w-full flex items-center justify-center ">
                         <Link
                           href="/"
-                          className="mr-6  lg:flex"
+                          className="lg:flex"
                           prefetch={false}
                         >
                           <img src="/logo.png" alt="" className="w-56 h-auto" />
