@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 "use client";
-import Link from "next/link";
 import { LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,9 +20,7 @@ export default function Component(session:any) {
     <div className="mx-auto px-2 md:px-6 lg:px-8">
       <header className="flex h-20 w-full shrink-0 items-center lg:justify-normal justify-between px-4 md:px-6">
 
-        <Link href="/" className="mr-6  lg:flex" prefetch={false}>
-          <img src="/logo.png" alt="" className="w-56 h-auto" />
-        </Link>
+        
         <div className="ml-auto -2 ">
           <div className=" flex items-center gap-1">
             {session.session && 

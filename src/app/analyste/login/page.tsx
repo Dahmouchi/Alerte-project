@@ -14,7 +14,7 @@ const Login = async () => {
 
   return (
     <div
-      className="w-full relative h-screen bg-cover dark:bg-slate-900"
+      className="w-full relative min-h-screen bg-cover dark:bg-slate-900"
       style={{ backgroundImage: 'url("/bg7.jpg")' }}
     >
       <div className="w-full absolute top-0 z-40">

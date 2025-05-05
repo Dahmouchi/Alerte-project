@@ -347,32 +347,33 @@ export default function UsernameLogin() {
           )}
         </div>
       ) : (
-        <div className="h-screen overflow-hidden flex items-center justify-center ">
-          <div className="flex h-screen w-full">
-            {/* Left Pane */}
-            <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
-              <div
-                className="w-full text-center h-full bg-cover"
-                style={{
-                  backgroundImage: 'url("/login.jpg")',
-                }}
-              >
-                {/* SVG Paths here */}
-              </div>
-            </div>
-
+        <div className="min-h-screen overflow-hidden flex items-center justify-center ">
+          <div className="flex min-h-screen w-full">
             {/* Right Pane */}
             <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
               <div className="max-w-md w-full p-6">
                 {/* Sign Up Form */}
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                  <div className="text-center pb-8">
-                    <div className="mt-5">
-                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
-                        S&apos;identifier
-                      </h3>
+                <div className="pb-8">
+                      <div className="mt-5 w-full flex items-center justify-center ">
+                        <Link
+                          href="/"
+                          className="mr-6  lg:flex"
+                          prefetch={false}
+                        >
+                          <img src="/logo.png" alt="" className="w-56 h-auto" />
+                        </Link>
+                        </div>
+                        <div className="w-full flex items-center justify-center mt-4">
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                          <div className="text-xs text-gray-500 text-center w-full">
+                            Espace Administration{" "}
+                          </div>
+
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                        </div>
+                      
                     </div>
-                  </div>
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
@@ -440,14 +441,7 @@ export default function UsernameLogin() {
                       </div>
                     </form>
                   </Form>
-                  <div className="w-full flex items-center justify-center mt-4">
-                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                    <div className="text-xs text-gray-500 text-center w-full">
-                      Espace Administration{" "}
-                    </div>
-
-                    <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                  </div>
+                  
                 </div>
               </div>
             </div>

@@ -523,7 +523,7 @@ export default function UsernameLogin() {
                       <div className="mt-5 w-full flex items-center justify-center ">
                         <Link
                           href="/"
-                          className="mr-6  lg:flex"
+                          className="lg:flex"
                           prefetch={false}
                         >
                           <img src="/logo.png" alt="" className="w-56 h-auto" />

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import DarkModeSwitcher from "@/components/DarkModeSwitcher";
 import { LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,7 +24,6 @@ export default function Component(session:any) {
         <div></div>
         <div className="ml-auto -2 ">
           <div className=" flex items-center gap-1">
-          <DarkModeSwitcher /> 
             {session.session && 
              <DropdownMenu>
              <DropdownMenuTrigger asChild>
