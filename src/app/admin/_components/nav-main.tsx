@@ -50,11 +50,11 @@ export function NavMain({
                     <SidebarMenuButton
                       tooltip={item.title}
                       className={clsx(
-                        "cursor-pointer transition-all p-2 rounded-r-full duration-200",
-                        isActive ? "bg-blue-200 dark:bg-blue-200 text-blue-900  font-semibold" : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                        "cursor-pointer transition-all rounded-lg duration-200 py-5",
+                        isActive ? "bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-600 hover:text-white  font-semibold" : "hover:bg-white dark:hover:bg-gray-800"
                       )}
                     >
-                      {item.icon && <item.icon />}
+                      <div  className={`${isActive ? "bg-white rounded-md p-1.5 text-blue-700" : ""}`}>  {item.icon && <item.icon className="w-4 h-4"/>}</div>  
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </Link>

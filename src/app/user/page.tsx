@@ -1,247 +1,27 @@
-"use client";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
+import React from "react";
 import Header from "./_components/Header";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextAuth";
+import { redirect } from "next/navigation";
+import UsernameLogin from "./_components/Register";
 
-// ✅ Zod Schema for Validation
-const formSchema = z
-  .object({
-    username: z.string().min(2, "Username must be at least 2 characters."),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters.")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter.")
-      .regex(/[0-9]/, "Must contain at least one number.")
-      .regex(/[@$!%*?&]/, "Must contain at least one special character."),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
-  });
+const Register = async () => {
+  const session = await getServerSession(authOptions);
 
-export default function RegisterForm() {
-  const [isView, setIsView] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-  const router = useRouter();
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    try {
-      const response = await axios.post("/api/auth/register", {
-        username: values.username,
-
-        password: values.password,
-
-        name: values.username,
-      });
-      if (response.status === 200) {
-        router.push("/user/login");
-        toast.success("Utilisateur inscrit avec succès");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Erreur interne lors de l'inscription");
-    }
+  if (session?.user && session.user.twoFactorVerified) {
+    redirect("/user/dashboard");
   }
 
   return (
-    <div
-      className="w-full relative h-screen bg-cover dark:bg-slate-900"
-      style={{ backgroundImage: 'url("/bg-test.jpg")' }}
-    >
+    <div className="w-full relative h-screen bg-cover dark:bg-slate-900" style={{backgroundImage:'url("/bg7.jpg")'}}>
       <div className="w-full absolute top-0">
-        <Header />
+        <Header session={session}/>
       </div>
-      <div className="w-full h-full flex justify-center items-center p-2">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 lg:w-1/3 w-full border shadow-lg p-8 rounded-2xl dark:bg-slate-800 bg-white"
-          >
-             <div className="text-center">
-                    <div className="">
-                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
-                        Créer un compte
-                      </h3>
-                    </div>
-                  </div>
-            {/* Username Field */}
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your username" {...field} className="dark:bg-slate-900"/>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Password Field */}
-            {/* Password Field */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mot de passe</FormLabel>
-                  <FormControl>
-                  <div className="relative">
-                      <Input
-                      className="dark:bg-slate-900"
-                        type={isView ? "text" : "password"}
-                        id="password"
-                        placeholder="entrer votre mot de pass"
-                        {...field}
-                      />
-                      {isView ? (
-                        <Eye
-                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                          onClick={() => {
-                            setIsView(!isView)
-                          }}
-                        />
-                      ) : (
-                        <EyeOff
-                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                          onClick={() => setIsView(!isView)}
-                        />
-                      )}
-                    </div>
-                  </FormControl>
-                  {
-                    form.getValues("password").length > 0 && 
-                    <div className="mt-1 text-xs text-gray-600">
-                    <p
-                      className={
-                        form.watch("password")?.length >= 8
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }
-                    >
-                      • Minimum 8 caractères
-                    </p>
-                    <p
-                      className={
-                        /[A-Z]/.test(form.watch("password") || "")
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }
-                    >
-                      • Une lettre majuscule
-                    </p>
-                    <p
-                      className={
-                        /[0-9]/.test(form.watch("password") || "")
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }
-                    >
-                      • Un chiffre
-                    </p>
-                    <p
-                      className={
-                        /[@$!%*?&]/.test(form.watch("password") || "")
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }
-                    >
-                      • Un caractère spécial (@$!%*?&)
-                    </p>
-                  </div>
-                  }
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Confirm Password Field */}
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirmez le mot de passe</FormLabel>
-                  <FormControl>
-                  <div className="relative">
-                      <Input
-                      className="dark:bg-slate-900"
-                        type={isView ? "text" : "password"}
-                        id="password"
-                        placeholder="confirmer votre mot de pass"
-                        {...field}
-                      />
-                      {isView ? (
-                        <Eye
-                          className="absolute right-4 top-3 z-10 cursor-pointer text-gray-500 w-4 h-4"
-                          onClick={() => {
-                            setIsView(!isView)
-                          }}
-                        />
-                      ) : (
-                        <EyeOff
-                          className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                          onClick={() => setIsView(!isView)}
-                        />
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
-            >
-              Register
-            </Button>
-            <div className="mt-4 text-sm text-slate-600 text-center dark:text-slate-300">
-              <p>
-                Vous avez déjà un compte ?{" "}
-                <Link
-                  href={"/user/login"}
-                  className="text-black hover:underline font-semibold dark:text-slate-200"
-                >
-                  Connectez-vous ici
-                </Link>
-              </p>
-            </div>
-          </form>
-        </Form>
+      <div className="flex items-center justify-center w-full h-full">
+        <UsernameLogin />
       </div>
     </div>
   );
-}
+};
+
+export default Register;

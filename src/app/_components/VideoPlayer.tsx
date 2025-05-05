@@ -14,11 +14,11 @@ const VideoPlayer = () => {
   };
 
   return (
-    <div className="relative w-full h-auto">
+    <div className="w-full h-full object-contain">
     {/* Video Element */}
     <video
       ref={videoRef}
-      className="w-full h-auto rounded-xl"
+      className="w-full h-auto rounded-b-lg"
       controls
       autoPlay
       muted

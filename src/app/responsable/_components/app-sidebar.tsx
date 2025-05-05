@@ -78,8 +78,8 @@ const datas = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
-   <Sidebar collapsible="icon" {...props} className="bg-slate-200 dark:bg-slate-800 p-2">
-         <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl shadow-lg">
+   <Sidebar collapsible="icon" {...props} className="bg-white dark:bg-slate-800 p-2">
+         <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl ">
            <Image src={"/logo.png"} alt="logo" width={300} height={200}/>
          </SidebarHeader>
          <SidebarContent className="dark:bg-slate-900 pt-4 pl-0 bg-white rounded-b-xl">

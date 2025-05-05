@@ -385,20 +385,9 @@ export default function UsernameLogin() {
       ) : (
         <div className="h-screen overflow-hidden flex items-center justify-center ">
           <div className="flex h-screen w-full">
-            {/* Left Pane */}
-            <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
-              <div
-                className="w-full text-center h-full bg-cover"
-                style={{
-                  backgroundImage: 'url("/loginE.jpg")',
-                }}
-              >
-                {/* SVG Paths here */}
-              </div>
-            </div>
-
+           
             {/* Right Pane */}
-            <div className="w-full relative lg:w-1/2 flex items-center justify-center ">
+            <div className="w-full relative lg:w-full flex items-center justify-center ">
             {password ? (
                  <div className="max-w-md w-full p-6">
                  <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
@@ -518,6 +507,14 @@ export default function UsernameLogin() {
                             <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-3xl">
                               S&apos;identifier
                             </h3>
+                            <div className="w-full flex items-center justify-center mt-4">
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                          <div className="text-xs text-gray-500 text-center w-full">
+                            Espace Analyste{" "}
+                          </div>
+
+                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                        </div>
                           </div>
                         </div>
                         <Form {...form}>
@@ -587,14 +584,7 @@ export default function UsernameLogin() {
                             </div>
                           </form>
                         </Form>
-                        <div className="w-full flex items-center justify-center mt-4">
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                          <div className="text-xs text-gray-500 text-center w-full">
-                            Espace Analyste{" "}
-                          </div>
-
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                        </div>
+                        
                       </div>
                     </div>{" "}
                   </div>

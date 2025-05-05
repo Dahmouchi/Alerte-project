@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import Link from "next/link";
-import DarkModeSwitcher from "@/components/DarkModeSwitcher";
 import { LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,7 +28,6 @@ export default function Component(session:any) {
         </Link>
         <div className="ml-auto -2 ">
           <div className=" flex items-center gap-1">
-          <DarkModeSwitcher /> 
             {session.session && 
              <DropdownMenu>
              <DropdownMenuTrigger asChild>

@@ -2,7 +2,6 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import DarkModeSwitcher from "@/components/DarkModeSwitcher";
 import { ArrowRight, EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -14,22 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 export default function Component() {
   return (
-    <div className="mx-auto px-2 md:px-6 lg:px-8">
+    <div className="mx-auto px-2 md:px-6 lg:px-8 z-50">
       <header className="flex h-20 w-full shrink-0 items-center lg:justify-normal justify-between px-4 md:px-6">
-        <div className="lg:hidden">
-          <DarkModeSwitcher />
-        </div>
         <Link href="/" className="mr-6  lg:flex" prefetch={false}>
           <img src="/logo.png" alt="" className="w-56 h-auto" />
         </Link>
         <div className="ml-auto -2  hidden lg:block">
           <div className=" flex items-center gap-1">
-            <DarkModeSwitcher />
-
-            <Button asChild className="w-full sm:w-auto bg-blue-700 dark:text-white">
+            <Button asChild className="w-full sm:w-auto hover:bg-blue-800 bg-blue-700 dark:text-white rounded-l-full">
               <Link href="user">Crée un Profil</Link>
             </Button>
-            <Button asChild variant="outline" className="w-full sm:w-auto dark:bg-white dark:text-black">
+            <Button asChild variant="outline" className="w-full sm:w-auto dark:bg-white dark:text-black rounded-r-full">
               <Link href="/user/dashboard">
                 S&apos;Identifier
                 <ArrowRight className="size-4" />
