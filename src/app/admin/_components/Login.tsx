@@ -188,7 +188,7 @@ export default function UsernameLogin() {
     return <Loading />;
   }
   return (
-    <div className="w-full ">
+    <div className="w-full p-2">
       {isTwoFactor ? (
         <div className="flex justify-center w-full items-center min-h-screen">
           {user.twoFactorSecret ? (

@@ -28,7 +28,7 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname(); // Get the current route
-  const {state} = useSidebar()
+  const { state, setOpenMobile } = useSidebar();
 
   // Function to remove the language prefix ("/fr" or "/en") from pathname
   const getPathWithoutLocale = (path: string) => {
@@ -41,35 +41,36 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => {
           const isActive =
-          getPathWithoutLocale(pathname) === item.url ||
-          (item.url !== "/user/dashboard" && getPathWithoutLocale(pathname).startsWith(item.url));
-        
+            getPathWithoutLocale(pathname) === item.url ||
+            (item.url !== "/user/dashboard" &&
+              getPathWithoutLocale(pathname).startsWith(item.url));
           return (
-            <Collapsible key={item.title} asChild  className="group/collapsible">
+            <Collapsible key={item.title} asChild className="group/collapsible">
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <Link href={item.url}>
                     <SidebarMenuButton
-                                          tooltip={item.title}
-                                          className={clsx(
-                                            "cursor-pointer transition-all rounded-lg duration-200 py-5",
-                                            isActive
-                                              ? "bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-600 hover:text-white  font-semibold"
-                                              : "hover:bg-white dark:hover:bg-gray-800"
-                                          )}
-                                        >
-                                          <div
-                                           className={`${
-                                            isActive && state === "expanded" 
-                                              ? "bg-white rounded-md p-1.5 text-blue-700"
-                                              : ""
-                                          }`}
-                                          >
-                                            {" "}
-                                            {item.icon && <item.icon className="w-4 h-4" />}
-                                          </div>
-                                          <span>{item.title}</span>
-                                        </SidebarMenuButton>
+                      onClick={() => setOpenMobile(false)}
+                      tooltip={item.title}
+                      className={clsx(
+                        "cursor-pointer transition-all rounded-lg duration-200 py-5",
+                        isActive
+                          ? "bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-600 hover:text-white  font-semibold"
+                          : "hover:bg-white dark:hover:bg-gray-800"
+                      )}
+                    >
+                      <div
+                        className={`${
+                          isActive && state === "expanded"
+                            ? "bg-white rounded-md p-1.5 text-blue-700"
+                            : ""
+                        }`}
+                      >
+                        {" "}
+                        {item.icon && <item.icon className="w-4 h-4" />}
+                      </div>
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
                   </Link>
                 </CollapsibleTrigger>
               </SidebarMenuItem>

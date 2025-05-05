@@ -28,7 +28,7 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname(); // Get the current route
-  const {state} = useSidebar()
+  const {state,setOpenMobile} = useSidebar()
 
   // Function to remove the language prefix ("/fr" or "/en") from pathname
   const getPathWithoutLocale = (path: string) => {
@@ -52,6 +52,8 @@ export function NavMain({
                   <Link href={item.url}>
                     <SidebarMenuButton
                       tooltip={item.title}
+                      onClick={()=>setOpenMobile(false)}
+
                       className={clsx(
                         "cursor-pointer transition-all rounded-lg duration-200 py-5",
                         isActive

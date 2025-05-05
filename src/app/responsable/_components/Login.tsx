@@ -232,9 +232,9 @@ export default function UsernameLogin() {
   }
   
   return (
-    <div className="w-full ">
+    <div className="w-full p-2">
       {isTwoFactor ? (
-        <div className="flex justify-center w-full items-center min-h-screen">
+          <div className="min-h-screen overflow-hidden flex items-center justify-center ">
           {user.twoFactorSecret ? (
             <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">
               <div className="flex items-center justify-center ">
@@ -528,7 +528,7 @@ export default function UsernameLogin() {
                                   <FormControl>
                                     <Input
                                       className="dark:bg-slate-900"
-                                      placeholder="Entrer votre Identifiant"
+                                      placeholder="Entrez votre Identifiant"
                                       {...field}
                                     />
                                   </FormControl>
