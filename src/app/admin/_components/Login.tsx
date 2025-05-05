@@ -384,11 +384,11 @@ export default function UsernameLogin() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel>Identifiant</FormLabel>
                             <FormControl>
                               <Input
                                 className="dark:bg-slate-900"
-                                placeholder="Entrer votre username"
+                                placeholder="Entrez votre identifiant"
                                 {...field}
                               />
                             </FormControl>
@@ -401,14 +401,14 @@ export default function UsernameLogin() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
+                              <FormLabel>Mot de passe</FormLabel>
+                              <FormControl>
                               <div className="relative">
                                 <Input
                                   className="dark:bg-slate-900"
                                   type={isView ? "text" : "password"}
                                   id="password"
-                                  placeholder="entrer votre mot de pass"
+                                  placeholder="Entrez votre mot de passe"
                                   {...field}
                                 />
                                 {isView ? (
@@ -436,7 +436,7 @@ export default function UsernameLogin() {
                           type="submit"
                           className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
                         >
-                          Submit
+                          Soumettre
                         </Button>
                       </div>
                     </form>

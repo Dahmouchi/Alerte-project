@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import clsx from "clsx"; // Utility for conditional classNames
@@ -27,6 +28,7 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname(); // Get the current route
+  const {state} = useSidebar()
 
   // Function to remove the language prefix ("/fr" or "/en") from pathname
   const getPathWithoutLocale = (path: string) => {
@@ -58,11 +60,11 @@ export function NavMain({
                       )}
                     >
                       <div
-                        className={`${
-                          isActive
-                            ? "bg-white rounded-md p-1.5 text-blue-700"
-                            : ""
-                        }`}
+                       className={`${
+                        isActive && state === "expanded" 
+                          ? "bg-white rounded-md p-1.5 text-blue-700"
+                          : ""
+                      }`}
                       >
                         {" "}
                         {item.icon && <item.icon className="w-4 h-4" />}

@@ -414,7 +414,7 @@ export default function UsernameLogin() {
             )}
           </div>
         ) : (
-          <div className="flex justify-center w-full items-center min-h-screen">
+          <div className="min-h-screen overflow-hidden flex items-center justify-center ">
             <div className="lg:w-1/3 space-y-2 bg-white shadow-lg border dark:bg-slate-800 rounded-xl p-4">
             <div className="mt-5 w-full flex items-center justify-center ">
               <Link href="/" className="lg:flex" prefetch={false}>

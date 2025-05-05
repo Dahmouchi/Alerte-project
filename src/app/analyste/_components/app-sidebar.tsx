@@ -17,10 +17,8 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarRail,
-  
 } from "@/components/ui/sidebar";
 import Image from "next/image";
-
 
 // This is sample data.
 const datas = {
@@ -37,18 +35,15 @@ const datas = {
     },
   ],
   navMain: [
-   
     {
       title: "Accueil",
       url: "/analyste/dashboard/overview",
       icon: House,
-      
     },
     {
       title: "Toutes les Alertes",
       url: "/analyste/dashboard/alertes",
       icon: SwatchBook,
-      
     },
     {
       title: "Mes Alertes",
@@ -64,29 +59,29 @@ const datas = {
       title: "Documentation",
       url: "/analyste/dashboard/documentation",
       icon: BookOpen,
-     
     },
     {
       title: "Settings",
       url: "/analyste/dashboard/settings",
       icon: Settings2,
-      
     },
   ],
-
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
   return (
-   <Sidebar collapsible="icon" {...props} className="bg-slate-200 dark:bg-slate-800 p-2">
-         <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl shadow-lg">
-           <Image src={"/logo.png"} alt="logo" width={300} height={200}/>
-         </SidebarHeader>
-         <SidebarContent className="dark:bg-slate-900 pt-4 pl-0 bg-white rounded-b-xl">
-           <NavMain items={datas.navMain} />
-         </SidebarContent>
-         <SidebarRail />
-       </Sidebar>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="bg-white dark:bg-slate-800 p-2"
+    >
+      <SidebarHeader className="dark:bg-slate-900 flex items-center justify-center p-2 bg-white rounded-t-xl">
+        <Image src={"/logo.png"} alt="logo" width={300} height={200} />
+      </SidebarHeader>
+      <SidebarContent className="dark:bg-slate-900 pt-4 pl-0 bg-white rounded-b-xl">
+        <NavMain items={datas.navMain} />
+      </SidebarContent>
+      <SidebarRail />
+    </Sidebar>
   );
 }

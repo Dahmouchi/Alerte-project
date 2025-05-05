@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import clsx from "clsx"; // Utility for conditional classNames
@@ -27,6 +28,7 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname(); // Get the current route
+  const {state} = useSidebar()
 
   // Function to remove the language prefix ("/fr" or "/en") from pathname
   const getPathWithoutLocale = (path: string) => {
@@ -48,15 +50,26 @@ export function NavMain({
                 <CollapsibleTrigger asChild>
                   <Link href={item.url}>
                     <SidebarMenuButton
-                      tooltip={item.title}
-                      className={clsx(
-                        "cursor-pointer transition-all p-2 rounded-r-full duration-200",
-                        isActive ? "bg-blue-200 dark:bg-blue-200 text-blue-900  font-semibold" : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                      )}
-                    >
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
+                                          tooltip={item.title}
+                                          className={clsx(
+                                            "cursor-pointer transition-all rounded-lg duration-200 py-5",
+                                            isActive
+                                              ? "bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-600 hover:text-white  font-semibold"
+                                              : "hover:bg-white dark:hover:bg-gray-800"
+                                          )}
+                                        >
+                                          <div
+                                           className={`${
+                                            isActive && state === "expanded" 
+                                              ? "bg-white rounded-md p-1.5 text-blue-700"
+                                              : ""
+                                          }`}
+                                          >
+                                            {" "}
+                                            {item.icon && <item.icon className="w-4 h-4" />}
+                                          </div>
+                                          <span>{item.title}</span>
+                                        </SidebarMenuButton>
                   </Link>
                 </CollapsibleTrigger>
               </SidebarMenuItem>

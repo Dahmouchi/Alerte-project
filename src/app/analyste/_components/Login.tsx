@@ -428,7 +428,7 @@ export default function UsernameLogin() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nom d&apos;utilisateur</FormLabel>
+                            <FormLabel>Identifiant</FormLabel>
                             <FormControl>
                               <Input
                                 className="dark:bg-slate-900"
@@ -506,7 +506,7 @@ export default function UsernameLogin() {
                           type="submit"
                           className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
                         >
-                          Enregistrer le mot de passe
+                          Enregistrer
                         </Button>
                       </div>
                     </form>
@@ -516,7 +516,6 @@ export default function UsernameLogin() {
             ) : (
               <div className="max-w-md w-full p-6">
                 {/* Original login form */}
-                <div className="max-w-md w-full p-6">
                   {/* Sign Up Form */}
                   <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
                     <div className="pb-8">
@@ -549,11 +548,11 @@ export default function UsernameLogin() {
                           name="username"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Username</FormLabel>
+                              <FormLabel>Identifiant</FormLabel>
                               <FormControl>
                                 <Input
                                   className="dark:bg-slate-900"
-                                  placeholder="Entrer votre username"
+                                  placeholder="Entrez votre identifiant"
                                   {...field}
                                 />
                               </FormControl>
@@ -566,14 +565,14 @@ export default function UsernameLogin() {
                           name="password"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Mot de pass</FormLabel>
+                              <FormLabel>Mot de passe</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <Input
                                     className="dark:bg-slate-900"
                                     type={isView ? "text" : "password"}
                                     id="password"
-                                    placeholder="entrer votre mot de pass"
+                                    placeholder="Entrez votre mot de passe"
                                     {...field}
                                   />
                                   {isView ? (
@@ -601,13 +600,12 @@ export default function UsernameLogin() {
                             type="submit"
                             className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
                           >
-                            Submit
+                            Soumettre
                           </Button>
                         </div>
                       </form>
                     </Form>
                   </div>
-                </div>{" "}
               </div>
             )}
           </div>

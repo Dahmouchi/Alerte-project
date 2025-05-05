@@ -13,7 +13,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
-  console.log(session)
+  console.log(session);
   if (
     !session?.user ||
     (session.user.twoFactorEnabled && !session.user.twoFactorVerified)
@@ -28,18 +28,15 @@ export default async function RootLayout({
   }
   return (
     <div className="">
-   <SidebarProvider>
-     <AppSidebar />
-     <SidebarInset className=" lg:py-2 lg:pr-2 dark:bg-slate-800 bg-slate-200 ">
-     <Header />
-       <div className="flex flex-1 flex-col gap-4 lg:p-4 pt-0 bg-white dark:bg-slate-900 rounded-b-lg">
-         <div className="overflow-x-auto">
-           {children}
-         </div>
-       </div>
-     </SidebarInset>
-   </SidebarProvider>
-</div>
-
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className=" lg:py-2 lg:px-3 dark:bg-slate-800 bg-white ">
+          <Header />
+          <div className="flex flex-1 flex-col gap-4 lg:p-4 pt-0 bg-white dark:bg-slate-900 rounded-lg border-x border-b shadow-[-4px_5px_10px_0px_rgba(0,_0,_0,_0.1)]">
+            <div className="overflow-x-auto">{children}</div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
