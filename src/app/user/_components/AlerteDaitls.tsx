@@ -161,7 +161,7 @@ const handleFileClick = (file: any) => {
       default: // PENDING
         return {
           className:
-            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+            "bg-white shadow-md text-gray-800 dark:bg-gray-700 dark:text-gray-300",
           label: "En attente",
           dotColor: "bg-gray-500",
         };
@@ -179,7 +179,7 @@ const handleFileClick = (file: any) => {
         </button>
       </div>
 
-      <div className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md mb-4">
+      <div className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md mb-4 bg-blue-50">
         <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
           <h3 className="text-sm font-semibold text-white">
             Détails de l&apos;alerte
@@ -189,7 +189,7 @@ const handleFileClick = (file: any) => {
         <div className="mt-4 space-y-4">
           {/* Title & Code */}
           {/* Header Section */}
-          <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+          <div className="grid md:grid-cols-2 gap-6 p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <div className="min-w-[120px]">
@@ -243,7 +243,7 @@ const handleFileClick = (file: any) => {
           </div>
 
           {/* Sender Information */}
-          <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+          <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
             <div className="flex items-center gap-3 mb-3">
               <MessageCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
               <h3 className="font-medium text-gray-900 dark:text-white">
@@ -279,7 +279,7 @@ const handleFileClick = (file: any) => {
 
           {/* Date & Location */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="flex items-center gap-3 mb-2">
                 <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-medium text-gray-900 dark:text-white">
@@ -295,7 +295,7 @@ const handleFileClick = (file: any) => {
               </p>
             </div>
 
-            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="flex items-center gap-3 mb-2">
                 <MapPin className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-medium text-gray-900 dark:text-white">
@@ -307,7 +307,7 @@ const handleFileClick = (file: any) => {
           </div>
 
           {/* Involved Persons */}
-          <div className="lg:p-4 p-2 bg-gray-100  dark:bg-slate-800 rounded-xl">
+          <div className="lg:p-4 p-2 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <Users className="h-5 w-5 text-blue-500 dark:text-blue-400" />
               <h3 className="font-medium text-gray-900 dark:text-white">
@@ -356,7 +356,7 @@ const handleFileClick = (file: any) => {
           </div>
 
           {/* Alert Content */}
-          <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+          <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
               <h3 className="font-medium text-gray-900 dark:text-white">
@@ -386,7 +386,7 @@ const handleFileClick = (file: any) => {
                 <div className="bg-white dark:bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative">
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -443,7 +443,7 @@ const handleFileClick = (file: any) => {
             )}
             {/* Attachments */}
             {al.files && al.files.length > 0 && (
-              <div className="p-4 bg-gray-100 dark:bg-slate-800 rounded-xl">
+              <div className="p-4 bg-white shadow-md dark:bg-slate-800 rounded-xl">
                 <div className="flex items-center gap-3 mb-4">
                   <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   <h3 className="font-medium text-gray-900 dark:text-white">
@@ -469,7 +469,7 @@ const handleFileClick = (file: any) => {
                           onClick={() => handleFileClick(file)}
                           className="block cursor-pointer"
                         >
-                          <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                          <div className="aspect-square bg-white shadow-md dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
                             {/* Image Preview */}
                             {isImage && (
                               <div
@@ -526,7 +526,7 @@ const handleFileClick = (file: any) => {
             {con.createdBy.role === "ANALYSTE" ? (
               <div>
                 {con.analysteValidation === "APPROVED"?
-                <div className="bg-green-50 my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                <div className="bg-green-50 inverted-radius2 my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
                 {/* Header with analyst info and actions */}
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div className="flex items-center gap-3">
@@ -588,7 +588,7 @@ const handleFileClick = (file: any) => {
                 </div>
               </div>
               :
-              <div className="bg-white my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+              <div className="inverted-radius2 z-30 my-3 relative p-6 transition-all duration-200 group border bg-blue-100 shadow-xl">
                 {/* Header with analyst info and actions */}
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div className="flex items-center gap-3">
@@ -618,7 +618,7 @@ const handleFileClick = (file: any) => {
                           : "bg-gray-400"
                       }`}
                     />
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
                       {al.recevable === "RECEVALBE"
                         ? "Recevable"
                         : "Non Recevable"}

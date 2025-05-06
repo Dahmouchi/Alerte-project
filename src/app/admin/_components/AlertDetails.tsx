@@ -44,6 +44,8 @@ import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
 import { AssignAlertAdmin } from "@/actions/alertActions";
 import { useSession } from "next-auth/react";
+import JustifCard from "@/app/user/_components/justifCard";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -213,7 +215,7 @@ const AlertDetails = (alert: any) => {
       default: // PENDING
         return {
           className:
-            "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+            "bg-white shadow-md text-gray-800 dark:bg-gray-700 dark:text-gray-300",
           label: "En attente",
         };
     }
@@ -256,7 +258,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
-          className="relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md"
+          className="relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -342,7 +344,7 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
           {al.adminStatus !== "PANDING" && (
-            <div className="grid md:grid-cols-2 gap-4 p-4 bg-gray-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+            <div className="grid md:grid-cols-2 gap-4 p-4 bg-white shadow-md dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   Assignation
@@ -383,7 +385,7 @@ const AlertDetails = (alert: any) => {
           <div className="mt-4 space-y-4">
             {/* Title & Code */}
             {/* Header Section */}
-            <div className="grid md:grid-cols-2 gap-6 p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="grid md:grid-cols-2 gap-6 p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="min-w-[120px]">
@@ -437,7 +439,7 @@ const AlertDetails = (alert: any) => {
             </div>
 
             {/* Sender Information */}
-            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="flex items-center gap-3 mb-3">
                 <MessageCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-medium text-gray-900 dark:text-white">
@@ -473,7 +475,7 @@ const AlertDetails = (alert: any) => {
 
             {/* Date & Location */}
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <Calendar className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   <h3 className="font-medium text-gray-900 dark:text-white">
@@ -489,7 +491,7 @@ const AlertDetails = (alert: any) => {
                 </p>
               </div>
 
-              <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+              <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
                 <div className="flex items-center gap-3 mb-2">
                   <MapPin className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   <h3 className="font-medium text-gray-900 dark:text-white">
@@ -501,7 +503,7 @@ const AlertDetails = (alert: any) => {
             </div>
 
             {/* Involved Persons */}
-            <div className="lg:p-4 p-2 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="lg:p-4 p-2 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <Users className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-medium text-gray-900 dark:text-white">
@@ -550,7 +552,7 @@ const AlertDetails = (alert: any) => {
             </div>
 
             {/* Alert Content */}
-            <div className="p-4 bg-gray-100  dark:bg-slate-800 rounded-xl">
+            <div className="p-4 bg-white shadow-md  dark:bg-slate-800 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <AlertCircle className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-medium text-gray-900 dark:text-white">
@@ -580,7 +582,7 @@ const AlertDetails = (alert: any) => {
                 <div className="bg-white dark:bg-slate-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto relative">
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-md dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -637,7 +639,7 @@ const AlertDetails = (alert: any) => {
             )}
             {/* Attachments */}
             {al.files && al.files.length > 0 && (
-              <div className="p-4 bg-gray-100 dark:bg-slate-800 rounded-xl">
+              <div className="p-4 bg-white shadow-md dark:bg-slate-800 rounded-xl">
                 <div className="flex items-center gap-3 mb-4">
                   <Paperclip className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                   <h3 className="font-medium text-gray-900 dark:text-white">
@@ -663,7 +665,7 @@ const AlertDetails = (alert: any) => {
                           onClick={() => handleFileClick(file)}
                           className="block cursor-pointer"
                         >
-                          <div className="aspect-square bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
+                          <div className="aspect-square bg-white shadow-md dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600">
                             {/* Image Preview */}
                             {isImage && (
                               <div
@@ -714,8 +716,8 @@ const AlertDetails = (alert: any) => {
               <DialogTrigger asChild>
                 <div
                   onClick={handleOpenChat}
-                  className={`px-10 absolute bottom-0 right-0 rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
-              bg-transparent border-t-2 border-l-2 border-blue-600 text-blue-600 items-center`}
+                  className={`px-10 absolute bg-blue-700 bottom-0 right-0 rounded-br-md rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
+               border-t-2 border-l-2 border-blue-600 text-white items-center`}
                 >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />
@@ -746,136 +748,228 @@ const AlertDetails = (alert: any) => {
             </Dialog>
           </div>
         </div>
-        {al.conlusions &&
-          al.conlusions.map((con: any, index: any) => (
-            <div key={index}>
-              {" "}
-              {con.createdBy.role === "ANALYSTE" ? (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-green-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="flex flex-col space-y-4">
-                    {/* Analyst Info */}
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-slate-700 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-green-600 dark:text-green-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Analyste
-                        </p>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {con.createdBy.name} {con.createdBy.prenom}
-                        </p>
-                      </div>
+         {al.conlusions &&
+                  al.conlusions.map((con: any, index: any) => (
+                    <div key={index}>
+                      {" "}
+                      {con.createdBy.role === "ANALYSTE" ? (
+                        <div>
+                          {con.analysteValidation === "APPROVED" ? (
+                            <div className="relative">                      
+                              <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                                {/* Header with analyst info and actions */}
+                                <div className="flex items-start justify-between gap-4 mb-5">
+                                  <div className="flex items-center gap-3">
+                                    <div className="relative">
+                                      <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                                        <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                      </div>
+                                      
+                                    </div>
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        Analyste
+                                      </p>
+                                      <p className="font-semibold text-gray-900 dark:text-white">
+                                        {con.createdBy.name} {con.createdBy.prenom}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+        
+                                {/* Status badges */}
+                                <div className="flex flex-wrap items-center gap-3 mb-5">
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`h-2.5 w-2.5 rounded-full ${
+                                        al.recevable === "RECEVALBE"
+                                          ? "bg-green-500"
+                                          : "bg-gray-400"
+                                      }`}
+                                    />
+                                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                                      {al.recevable === "RECEVALBE"
+                                        ? "Recevable"
+                                        : "Non Recevable"}
+                                    </span>
+                                  </div>
+        
+                                  <div className="flex items-center gap-2">
+                                    
+                                    <span
+                                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                                        getStatusStyles(con.analysteValidation)
+                                          .className
+                                      }`}
+                                    >
+                                      {getStatusStyles(con.analysteValidation).label}
+                                    </span>
+                                  </div>
+                                </div>
+        
+                                {/* Content */}
+                                <div className="mb-5">
+                                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                                    Commentaire
+                                  </h3>
+                                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                      {con?.content || "Aucun commentaire fourni"}
+                                    </p>
+                                  </div>
+                                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                      {con?.content1}
+                                    </p>
+                                  </div>
+                                </div>
+        
+                                {/* Footer */}
+                                <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      Validé le {formatFrenchDate(con.createdAt)}
+                                    </span>
+                                  </div>
+                                  <div className={``}>
+                                    {con.valider ? (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                            V
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Valider</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    ) : (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                            A
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Attente de validation</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border bg-blue-100 shadow-xl">
+                              {/* Header with analyst info and actions */}
+                              <div className="flex items-start justify-between gap-4 mb-5">
+                                <div className="flex items-center gap-3">
+                                  <div className="relative">
+                                    <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                                      <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                      Analyste
+                                    </p>
+                                    <p className="font-semibold text-gray-900 dark:text-white">
+                                      {con.createdBy.name} {con.createdBy.prenom}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+        
+                              {/* Status badges */}
+                              <div className="flex flex-wrap items-center gap-3 mb-5">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className={`h-2.5 w-2.5 rounded-full ${
+                                      al.recevable === "RECEVALBE"
+                                        ? "bg-green-500"
+                                        : "bg-gray-400"
+                                    }`}
+                                  />
+                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                                    {al.recevable === "RECEVALBE"
+                                      ? "Recevable"
+                                      : "Non Recevable"}
+                                  </span>
+                                </div>
+        
+                                <div className="flex items-center gap-2">
+                                  
+                                  <span
+                                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                                      getStatusStyles(con.analysteValidation).className
+                                    }`}
+                                  >
+                                    {getStatusStyles(con.analysteValidation).label}
+                                  </span>
+                                </div>
+                              </div>
+        
+                              {/* Content */}
+                              <div className="mb-5">
+                                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                                  Commentaire
+                                </h3>
+                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    {con?.content || "Aucun commentaire fourni"}
+                                  </p>
+                                </div>
+                                <div className="prose prose-sm dark:prose-invert max-w-none">
+                                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    {con?.content1}
+                                  </p>
+                                </div>
+                              </div>
+        
+                              {/* Footer */}
+                              <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    Validé le {formatFrenchDate(con.createdAt)}
+                                  </span>
+                                </div>
+                                <div className={``}>
+                                  {con.valider ? (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                          V
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Valider</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ) : (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                          A
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Attente de validation</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <JustifCard justif={con} />
+                      )}
                     </div>
-
-                    {/* Decision Status */}
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          getStatusStyles(al.analysteValidation).className
-                        }`}
-                      >
-                        {getStatusStyles(al.analysteValidation).label}
-                      </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Statut
-                      </span>
-                    </div>
-
-                    {/* Conclusion */}
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                        Commentaire
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {con?.content}
-                      </p>
-                    </div>
-                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        Validé le: {formatFrenchDate(con.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border-l-4 border-blue-500 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <div className="flex flex-col space-y-4">
-                    {/* Section Responsable */}
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Responsable
-                        </p>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {con.createdBy.name} {con.createdBy.prenom}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Statut de Décision */}
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          getStatusStyles(al.responsableValidation).className
-                        }`}
-                      >
-                        {getStatusStyles(al.responsableValidation).label}
-                      </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        Statut
-                      </span>
-                    </div>
-                    {/* Commentaire */}
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                        Commentaire
-                      </p>
-                      <p className="text-gray-700 dark:text-gray-300">
-                        {con?.content}
-                      </p>
-                    </div>
-
-                    {/* Date de Validation */}
-                    <div className="pt-2 border-t border-gray-100 dark:border-slate-700">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        Validé le: {formatFrenchDate(con.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+                  ))}
 
         {/* Print Button */}
         <div className="flex justify-end mt-4">

@@ -167,7 +167,7 @@ export default function UsernameLogin() {
             password: values.password,
             redirect: false,
           });
-  
+          router.refresh()
           if (res?.error) {
             toast.error(res.error);
           } else {
@@ -384,14 +384,19 @@ export default function UsernameLogin() {
                 {password ? (
                  <div className="max-w-md w-full p-6">
                  <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                   <div className="text-center pb-8">
-                     <div className="mt-5">
+                   <div className="text-center pb-8 flex items-center justify-center">
+                     <div className=" w-full flex flex-col items-center justify-center">
+                     <Link
+                          href="/"
+                          className="lg:flex"
+                          prefetch={false}
+                        >
+                          <img src="/logo.png" alt="" className="w-56 h-auto" />
+                        </Link>
                        <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
-                         Définir votre mot de passe
+                       Définir votre mot de passe
                        </h3>
-                       <p className="text-gray-600 dark:text-gray-300 mt-2">
-                         Veuillez créer un nouveau mot de passe pour votre compte
-                       </p>
+                       
                      </div>
                    </div>
                    <Form {...form}>

@@ -16,7 +16,7 @@ export default function JustifCard(justif: any) {
   const [selectedFile, setSelectedFile] = useState<any | null>(null);
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+    <div className="bg-purple-100 inverted-radius2 dark:bg-slate-900 p-6 rounded-xl border  dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
       {/* User Info */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div className="flex items-center gap-3">

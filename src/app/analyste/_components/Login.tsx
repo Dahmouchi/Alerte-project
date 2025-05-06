@@ -245,7 +245,7 @@ export default function UsernameLogin() {
   return (
     <div className="w-full p-2">
       {isTwoFactor ? (
-          <div className="min-h-screen overflow-hidden flex items-center justify-center ">
+        <div className="min-h-screen overflow-hidden flex items-center justify-center ">
           {user.twoFactorSecret ? (
             <Card className="w-full max-w-md bg-white dark:bg-slate-800 p-8 shadow-lg rounded-lg">
               <div className="flex items-center justify-center ">
@@ -408,16 +408,21 @@ export default function UsernameLogin() {
             {password ? (
               <div className="max-w-md w-full p-6">
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                  <div className="text-center pb-8">
-                    <div className="mt-5">
-                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
-                        Définir votre mot de passe
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-300 mt-2">
-                        Veuillez créer un nouveau mot de passe pour votre compte
-                      </p>
-                    </div>
-                  </div>
+                <div className="text-center pb-8 flex items-center justify-center">
+                     <div className=" w-full flex flex-col items-center justify-center">
+                     <Link
+                          href="/"
+                          className="lg:flex"
+                          prefetch={false}
+                        >
+                          <img src="/logo.png" alt="" className="w-56 h-auto" />
+                        </Link>
+                       <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
+                       Définir votre mot de passe
+                       </h3>
+                       
+                     </div>
+                   </div>
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
@@ -516,96 +521,91 @@ export default function UsernameLogin() {
             ) : (
               <div className="max-w-md w-full p-6">
                 {/* Original login form */}
-                  {/* Sign Up Form */}
-                  <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                    <div className="pb-8">
-                      <div className="mt-5 w-full flex items-center justify-center ">
-                        <Link
-                          href="/"
-                          className="lg:flex"
-                          prefetch={false}
-                        >
-                          <img src="/logo.png" alt="" className="w-56 h-auto" />
-                        </Link>
-                        </div>
-                        <div className="w-full flex items-center justify-center mt-4">
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                          <div className="text-xs text-gray-500 text-center w-full">
-                            Espace Analyste{" "}
-                          </div>
-
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                        </div>
-                      
+                {/* Sign Up Form */}
+                <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
+                  <div className="pb-8">
+                    <div className="mt-5 w-full flex items-center justify-center ">
+                      <Link href="/" className="lg:flex" prefetch={false}>
+                        <img src="/logo.png" alt="" className="w-56 h-auto" />
+                      </Link>
                     </div>
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8  w-full "
-                      >
-                        <FormField
-                          control={form.control}
-                          name="username"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Identifiant</FormLabel>
-                              <FormControl>
+                    <div className="w-full flex items-center justify-center mt-4">
+                      <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                      <div className="text-xs text-gray-500 text-center w-full">
+                        Espace Analyste{" "}
+                      </div>
+
+                      <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                    </div>
+                  </div>
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-8  w-full "
+                    >
+                      <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Identifiant</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="dark:bg-slate-900"
+                                placeholder="Entrez votre identifiant"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mot de passe</FormLabel>
+                            <FormControl>
+                              <div className="relative">
                                 <Input
                                   className="dark:bg-slate-900"
-                                  placeholder="Entrez votre identifiant"
+                                  type={isView ? "text" : "password"}
+                                  id="password"
+                                  placeholder="Entrez votre mot de passe"
                                   {...field}
                                 />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="password"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Mot de passe</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input
-                                    className="dark:bg-slate-900"
-                                    type={isView ? "text" : "password"}
-                                    id="password"
-                                    placeholder="Entrez votre mot de passe"
-                                    {...field}
+                                {isView ? (
+                                  <Eye
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => {
+                                      setIsView(!isView);
+                                    }}
                                   />
-                                  {isView ? (
-                                    <Eye
-                                      className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                      onClick={() => {
-                                        setIsView(!isView);
-                                      }}
-                                    />
-                                  ) : (
-                                    <EyeOff
-                                      className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                      onClick={() => setIsView(!isView)}
-                                    />
-                                  )}
-                                </div>
-                              </FormControl>
+                                ) : (
+                                  <EyeOff
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => setIsView(!isView)}
+                                  />
+                                )}
+                              </div>
+                            </FormControl>
 
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <div className="w-full flex items-center justify-start">
-                          <Button
-                            type="submit"
-                            className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
-                          >
-                            Soumettre
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="w-full flex items-center justify-start">
+                        <Button
+                          type="submit"
+                          className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                        >
+                          Soumettre
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
               </div>
             )}
           </div>
