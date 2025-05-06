@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { User, Calendar, FileText, X } from "lucide-react";
 import { format, toZonedTime } from "date-fns-tz";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
-
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 export default function JustifCard(justif: any) {
   const formatFrenchDate = (isoString: any) => {
     const parisTime = toZonedTime(isoString, "Europe/Paris");
@@ -14,7 +16,7 @@ export default function JustifCard(justif: any) {
     });
   };
   const [selectedFile, setSelectedFile] = useState<any | null>(null);
-
+  const [open, setOpen] = useState(false)
   return (
     <div className="bg-purple-100 inverted-radius2 dark:bg-slate-900 p-6 rounded-xl border  dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
       {/* User Info */}
@@ -56,7 +58,11 @@ export default function JustifCard(justif: any) {
               {justif.justif.files.map((file: any, index: number) => (
                 <li key={index}>
                   <button
-                    onClick={() => setSelectedFile(file)}
+                  
+                    onClick={() =>{
+                      setSelectedFile(file)
+                      setOpen(true)
+                    }}
                     className="text-sm text-blue-600 hover:underline flex items-center gap-1"
                   >
                     <FileText className="w-4 h-4" />
@@ -69,10 +75,46 @@ export default function JustifCard(justif: any) {
         )}
 
         {selectedFile && (
-          <FileModal
-            file={selectedFile}
-            onClose={() => setSelectedFile(null)}
-          />
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+             
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-4xl">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto">
+                <DialogTitle>
+                Le fichier
+                </DialogTitle>
+
+                <div className="flex justify-center">
+                  {selectedFile.url.endsWith(".pdf") ? (
+                    <iframe
+                      src={selectedFile.url}
+                      className="w-full h-[70vh] border rounded"
+                      title={`File Preview`}
+                    />
+                  ) : (
+                    <img
+                      src={selectedFile.url}
+                      alt="Preview"
+                      className="max-w-full max-h-[70vh] object-contain"
+                    />
+                  )}
+                </div>
+
+                <div className="mt-4 flex justify-end">
+                  <a
+                    href={selectedFile.url}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                  >
+                    Télécharger
+                  </a>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </>
 
