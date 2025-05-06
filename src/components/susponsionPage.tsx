@@ -15,7 +15,7 @@ const SusponsionPage = async (role: any) => {
   const session = await getServerSession(authOptions);
   return (
     <div>
-      <Header session={session} />
+      <Header />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700">
           {/* Header with warning icon */}
