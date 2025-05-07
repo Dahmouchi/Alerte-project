@@ -33,13 +33,13 @@ export function AnalystResponseForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor="analystResponse" className="block mb-2">
-          Your Response
+          Traitement
         </Label>
         <Textarea
           id="analystResponse"
           value={response}
           onChange={(e) => setResponse(e.target.value)}
-          placeholder="Enter your response to the user's justification..."
+          placeholder="Entrez votre réponse..."
           required
           minLength={10}
           className="min-h-[120px]"
@@ -54,11 +54,11 @@ export function AnalystResponseForm({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            Cancel
+            Annuler
           </Button>
         )}
         <Button type="submit" disabled={isSubmitting || !response.trim()}>
-          {isSubmitting ? "Submitting..." : "Submit Response"}
+          {isSubmitting ? "Enregistrement..." : "Enregistrer"}
         </Button>
       </div>
     </form>

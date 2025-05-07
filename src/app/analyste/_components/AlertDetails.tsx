@@ -94,6 +94,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import AnnulerCloture from "./anullerCloture";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -224,6 +226,7 @@ const AlertDetails = (alert: any) => {
   const [selectedAnalyst, setSelectedAnalyst] = useState<string>(
     al.assignedAnalyst?.id || ""
   );
+  const [response, setResponse] = useState("");
   const [recevable, setRecevable] = useState<any>(al.recevable);
   const contentRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -369,9 +372,9 @@ const AlertDetails = (alert: any) => {
   const sendDemande = async () => {
     if (session) {
       try {
-        if (decision === "APPROVED") {
+        if (decision === "APPROVED" && response) {
           setSelectedAnalyst(session.user.id);
-          const ocp = await saveDemande(session.user.id, al.id);
+          const ocp = await saveDemande(session.user.id, al.id,response);
           if (ocp) {
             setJustification("");
             setJustification1("");
@@ -379,7 +382,7 @@ const AlertDetails = (alert: any) => {
             router.refresh();
           }
         } else {
-          toast.info("check the cloture");
+          toast.info("check the cloture et ecrire votre response");
         }
       } catch (error) {
         console.error("Erreur lors de l'attribution de l'alerte:", error);
@@ -424,9 +427,10 @@ const AlertDetails = (alert: any) => {
       toast.error("Erreur lors de l'attribution de l'alerte");
     }
   };
-  const allConclusionsApproved = al?.conlusions?.every(
-    (conclusion: any) => conclusion.valider === true
-  );
+  const allConclusionsApproved =
+  al?.conlusions?.every((conclusion: any) => conclusion.valider === true) &&
+  al?.conlusions?.length > 0 &&
+  al.conlusions[al.conlusions.length - 1].createdById === al.createdById;
 
   const canRequestClosure =
     al.analysteValidation === "INFORMATIONS_MANQUANTES" &&
@@ -453,7 +457,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4 p-2">
         <div
           ref={contentRef}
-          className=" relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
+          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -925,8 +929,8 @@ const AlertDetails = (alert: any) => {
               <DialogTrigger asChild>
               <div
                   onClick={handleOpenChat}
-                  className={`px-10 absolute bg-blue-700 bottom-0 right-0 rounded-br-md rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
-               border-t-2 border-l-2 border-blue-600 text-white items-center`}
+                  className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold lg:py-2 py-1 cursor-pointer transition-all duration-300
+               border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-lg text-xs`}
                 >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />
@@ -1327,7 +1331,7 @@ const AlertDetails = (alert: any) => {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                  A
+                                  NV
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -1506,7 +1510,7 @@ const AlertDetails = (alert: any) => {
             className={`space-y-4 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl ${
               canRequestClosure
                 ? "border-blue-500 bg-blue-50 border-2"
-                : "border-gray-300 bg-white shadow-xs border border"
+                : "border-gray-300 bg-white shadow-xs border "
             }`}
           >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -1514,13 +1518,28 @@ const AlertDetails = (alert: any) => {
             </h3>
 
             {!allConclusionsApproved && (
+              <>
               <p className="text-red-600 text-sm">
                 Toutes les validations doivent être approuvées avant de demander
                 la clôture.
-              </p>
+              </p></>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-100">
+            <div className="grid grid-cols-1 gap-3 opacity-100">
+            <div>
+        <Label htmlFor="analystResponse" className="block mb-2">
+          Message de clôture
+        </Label>
+        <Textarea
+          id="analystResponse"
+          value={response}
+          onChange={(e) => setResponse(e.target.value)}
+          placeholder="Entrez le message de clôture qui apparaitra au soumissionnaire d'alerte..."
+          required
+          minLength={10}
+          className="min-h-[120px] bg-white"
+        />
+      </div>
               <div
                 className={`${
                   decision === "APPROVED"

@@ -572,7 +572,7 @@ const handleFileClick = (file: any) => {
                   </h3>
                   <div className="prose prose-sm dark:prose-invert max-w-none">
                     <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      Votre alerte a été clôturée
+                      {con?.content}
                     </p>
                   </div>
                 </div>

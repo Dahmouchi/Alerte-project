@@ -122,40 +122,42 @@ export default function UsernameLogin() {
   };
 
   /* Validate OTP Code */
-  const handleOtpChange = useCallback(async (value: string) => {
-    setValue(value);
-    
-    // Automatically verify when 6 digits are entered
-    if (value.length === 6) {
-      setLoading(true);
-      try {
-        if (!session?.user?.id || !secret) return;
-  
-        const response = await axios.post(`/api/2fa/verify`, {
-          secret,
-          token: value,
-          userId: session.user.id,
-        });
-  
-        if (response.data.success) {
-          toast.success("Code verified");
-          await update({ twoFactorVerified: true });
-          router.push("/admin/dashboard/overview");
-        } else {
-          toast.error("Invalid verification code");
-          setInvalidOtp(true);
-          setValue(""); // Clear the input on failure
-        }
-      } catch (error) {
-        console.error("Verification error:", error);
-        toast.error("An error occurred during verification");
-        setValue(""); // Clear the input on error
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, [secret, session, update, router]);
+  const handleOtpChange = useCallback(
+    async (value: string) => {
+      setValue(value);
 
+      // Automatically verify when 6 digits are entered
+      if (value.length === 6) {
+        setLoading(true);
+        try {
+          if (!session?.user?.id || !secret) return;
+
+          const response = await axios.post(`/api/2fa/verify`, {
+            secret,
+            token: value,
+            userId: session.user.id,
+          });
+
+          if (response.data.success) {
+            toast.success("Code verified");
+            await update({ twoFactorVerified: true });
+            router.push("/admin/dashboard/overview");
+          } else {
+            toast.error("Invalid verification code");
+            setInvalidOtp(true);
+            setValue(""); // Clear the input on failure
+          }
+        } catch (error) {
+          console.error("Verification error:", error);
+          toast.error("An error occurred during verification");
+          setValue(""); // Clear the input on error
+        } finally {
+          setLoading(false);
+        }
+      }
+    },
+    [secret, session, update, router]
+  );
 
   /* Handle Login */
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -207,8 +209,8 @@ export default function UsernameLogin() {
                 <InputOTP
                   maxLength={6}
                   value={value}
-                  onChange={handleOtpChange}  // This will trigger on each change
-                  >
+                  onChange={handleOtpChange} // This will trigger on each change
+                >
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={0}
@@ -240,110 +242,119 @@ export default function UsernameLogin() {
                   </InputOTPGroup>
                 </InputOTP>
                 {/* OTP Input */}
-                
               </div>
             </Card>
           ) : (
-              <div className="container mx-auto flex justify-center w-full">
-            <Card className="bg-white p-8 shadow-lg dark:bg-slate-800 rounded-lg max-w-4xl w-full">
-              <div className="flex flex-col items-center space-y-6">
-                {/* Logo */}
-                <div className="flex items-center gap-4">
-                  <Image
-                    src={"/logo.png"}
-                    alt="logo"
-                    width={300}
-                    height={50}
-                    className="dark:invert"
-                  />
-                </div>
-          
-                {/* QR Code and Instructions */}
-                <div className="flex lg:flex-row flex-col items-center gap-8 w-full">
-                  
-                    <div className="flex flex-col items-center">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-slate-100">Setup Instructions</h3>
-                      <ul className="list-none space-y-3 text-gray-700 dark:text-slate-300">
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">1.</span>
-                          <span>Scan the QR Code with your Authenticator app (Google Authenticator, Authy, etc.)</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">2.</span>
-                          <span>Or manually enter this secret key into your authenticator app</span>
-                        </li>
-                        <li className="flex items-start">
-                          <span className="font-bold mr-2">3.</span>
-                          <span>Enter the 6-digit code from your app below</span>
-                        </li>
-                      </ul>
-                      {secret && (
-                        <div className="mt-4 w-full">
-                          <p className="text-sm text-gray-600 dark:text-slate-300 mb-1">Secret Key:</p>
-                          <div className="flex items-center gap-2">
-                            <code className="bg-gray-100 dark:bg-slate-700 px-3 py-2 rounded text-sm font-mono break-all">
-                              {secret}
-                            </code>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(secret);
-                                // Add toast or notification here
-                              }}
-                              className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-                              title="Copy to clipboard"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  
-          
-                  {/* Steps and OTP Input */}
-                  <div className="flex-1">
-                    <div className="space-y-4">
+            <div className="container mx-auto flex justify-center w-full">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
+                <div className="flex flex-col items-center space-y-6">
+                  {/* Message de bienvenue */}
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">
+                      Authentification à Deux Facteurs
+                    </h1>
+                  </div>
+
+                  {/* Étapes pour télécharger Google Authenticator */}
+                  <div className="w-full bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                    <ol className="list-decimal list-inside text-sm text-gray-700 dark:text-slate-300 space-y-1">
+                      <li>
+                        Ouvrez l&apos;App Store (iOS) ou le Play Store (Android)
+                      </li>
+                      <li>Recherchez &quot;Google Authenticator&quot;</li>
+                      <li>Téléchargez et installez l&apos;application</li>
+                      <li>
+                        Ouvrez l&apos;application et appuyez sur &quot;+&quot;
+                      </li>
+                      <li>Choisissez &quot;Scanner un code QR&quot;</li>
+                    </ol>
+                  </div>
+
+                  {/* Section QR Code */}
+                  <div className="flex flex-col items-center w-full">
                     {qrImage && (
-                      <img
-                      src={qrImage}
-                      alt="2FA QR Code"
-                      className="rounded-lg border-2 border-gray-200 dark:border-slate-600 p-2 w-48 h-48"
-                    />
+                      <div className="mb-2 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
+                        <img
+                          src={qrImage}
+                          alt="Code QR pour 2FA"
+                          className="w-36 h-36"
+                        />
+                      </div>
                     )}
-          
-                      <div className="space-y-4">
-                        <div className="flex flex-col items-center lg:items-start">
-                          <label htmlFor="otp" className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-                            Verification Code
-                          </label>
-                          <InputOTP
-                            maxLength={6}
-                            value={value}
-                            onChange={handleOtpChange}  // This will trigger on each change
-                            >
-                            <InputOTPGroup>
-                              {[...Array(6)].map((_, index) => (
-                                <InputOTPSlot
-                                  key={index}
-                                  index={index}
-                                  className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
-                                />
-                              ))}
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </div>
-          
-                       
+                  </div>
+
+                  {/* Clé secrète */}
+                  {secret && (
+                    <div className="w-full">
+                      <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">
+                        Ou entrez cette clé secrète manuellement :
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
+                          {secret}
+                        </code>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(secret)}
+                          className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
+                          title="Copier dans le presse-papier"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect
+                              x="9"
+                              y="9"
+                              width="13"
+                              height="13"
+                              rx="2"
+                              ry="2"
+                            ></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </button>
                       </div>
                     </div>
+                  )}
+
+                  {/* Champ de saisie du code de vérification */}
+                  <div className="w-full space-y-2">
+                    <label
+                      htmlFor="otp"
+                      className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300"
+                    >
+                      Code de Vérification
+                    </label>
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={6}
+                        value={value}
+                        onChange={handleOtpChange}
+                      >
+                        <InputOTPGroup>
+                          {[...Array(6)].map((_, index) => (
+                            <InputOTPSlot
+                              key={index}
+                              index={index}
+                              className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+                            />
+                          ))}
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
                   </div>
+
+                  {/* Bouton de soumission */}
                 </div>
               </div>
-            </Card>
-          </div>
+            </div>
           )}
         </div>
       ) : (
@@ -354,26 +365,21 @@ export default function UsernameLogin() {
               <div className="max-w-md w-full p-6">
                 {/* Sign Up Form */}
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                <div className="pb-8">
-                      <div className="mt-5 w-full flex items-center justify-center ">
-                        <Link
-                          href="/"
-                          className="lg:flex"
-                          prefetch={false}
-                        >
-                          <img src="/logo.png" alt="" className="w-56 h-auto" />
-                        </Link>
-                        </div>
-                        <div className="w-full flex items-center justify-center mt-4">
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                          <div className="text-xs text-gray-500 text-center w-full">
-                            Espace Administration{" "}
-                          </div>
-
-                          <div className="border-b-[1px] border border-gray-500 w-full"></div>
-                        </div>
-                      
+                  <div className="pb-8">
+                    <div className="mt-5 w-full flex items-center justify-center ">
+                      <Link href="/" className="lg:flex" prefetch={false}>
+                        <img src="/logo.png" alt="" className="w-56 h-auto" />
+                      </Link>
                     </div>
+                    <div className="w-full flex items-center justify-center mt-4">
+                      <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                      <div className="text-xs text-gray-500 text-center w-full">
+                        Espace Administration{" "}
+                      </div>
+
+                      <div className="border-b-[1px] border border-gray-500 w-full"></div>
+                    </div>
+                  </div>
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}
@@ -401,8 +407,8 @@ export default function UsernameLogin() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                              <FormLabel>Mot de passe</FormLabel>
-                              <FormControl>
+                            <FormLabel>Mot de passe</FormLabel>
+                            <FormControl>
                               <div className="relative">
                                 <Input
                                   className="dark:bg-slate-900"
@@ -441,7 +447,6 @@ export default function UsernameLogin() {
                       </div>
                     </form>
                   </Form>
-                  
                 </div>
               </div>
             </div>

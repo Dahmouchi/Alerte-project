@@ -289,91 +289,118 @@ export default function UsernameLogin() {
             </Card>
           ) : (
             <div className="container mx-auto flex justify-center w-full">
-            <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
-              <div className="flex flex-col items-center space-y-6">
-                {/* Welcome message */}
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">Two-Factor Authentication</h1>
-                  <p className="text-gray-600 dark:text-slate-300">Secure your account with 2FA</p>
-                </div>
-          
-                {/* QR Code Section */}
-                <div className="flex flex-col items-center w-full">
-                  {qrImage && (
-                    <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
-                      <img
-                        src={qrImage}
-                        alt="2FA QR Code"
-                        className="w-48 h-48"
-                      />
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
+                  <div className="flex flex-col items-center space-y-6">
+                    {/* Message de bienvenue */}
+                    <div className="text-center">
+                      <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">
+                        Authentification à Deux Facteurs
+                      </h1>
                     </div>
-                  )}
-                  <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
-                    Scan this QR code with your authenticator app
-                  </p>
-                </div>
-          
-                {/* Secret Key */}
-                {secret && (
-                  <div className="w-full">
-                    <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">Or enter this secret key manually:</p>
-                    <div className="flex items-center gap-2">
-                      <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
-                        {secret}
-                      </code>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(secret)}
-                        className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-                        title="Copy to clipboard"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                      </button>
+
+                    {/* Étapes pour télécharger Google Authenticator */}
+                    <div className="w-full bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                      <ol className="list-decimal list-inside text-sm text-gray-700 dark:text-slate-300 space-y-1">
+                        <li>
+                          Ouvrez l&apos;App Store (iOS) ou le Play Store
+                          (Android)
+                        </li>
+                        <li>Recherchez &quot;Google Authenticator&quot;</li>
+                        <li>Téléchargez et installez l&apos;application</li>
+                        <li>
+                          Ouvrez l&apos;application et appuyez sur &quot;+&quot;
+                        </li>
+                        <li>Choisissez &quot;Scanner un code QR&quot;</li>
+                      </ol>
                     </div>
-                  </div>
-                )}
-          
-                {/* Verification Code Input */}
-                <div className="w-full space-y-2">
-                  <label htmlFor="otp" className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300">
-                    Verification Code
-                  </label>
-                  <div className="flex justify-center">
-                    <InputOTP
-                      maxLength={6}
-                      value={value}
-                      onChange={handleOtpChange}
-                    >
-                      <InputOTPGroup>
-                        {[...Array(6)].map((_, index) => (
-                          <InputOTPSlot
-                            key={index}
-                            index={index}
-                            className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+
+                    {/* Section QR Code */}
+                    <div className="flex flex-col items-center w-full">
+                      {qrImage && (
+                        <div className="mb-2 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
+                          <img
+                            src={qrImage}
+                            alt="Code QR pour 2FA"
+                            className="w-36 h-36"
                           />
-                        ))}
-                      </InputOTPGroup>
-                    </InputOTP>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Clé secrète */}
+                    {secret && (
+                      <div className="w-full">
+                        <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">
+                          Ou entrez cette clé secrète manuellement :
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
+                            {secret}
+                          </code>
+                          <button
+                            onClick={() =>
+                              navigator.clipboard.writeText(secret)
+                            }
+                            className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
+                            title="Copier dans le presse-papier"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <rect
+                                x="9"
+                                y="9"
+                                width="13"
+                                height="13"
+                                rx="2"
+                                ry="2"
+                              ></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Champ de saisie du code de vérification */}
+                    <div className="w-full space-y-2">
+                      <label
+                        htmlFor="otp"
+                        className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300"
+                      >
+                        Code de Vérification
+                      </label>
+                      <div className="flex justify-center">
+                        <InputOTP
+                          maxLength={6}
+                          value={value}
+                          onChange={handleOtpChange}
+                        >
+                          <InputOTPGroup>
+                            {[...Array(6)].map((_, index) => (
+                              <InputOTPSlot
+                                key={index}
+                                index={index}
+                                className="border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 hover:border-gray-400 dark:hover:border-slate-500 transition-colors"
+                              />
+                            ))}
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </div>
+                    </div>
+
+                    {/* Bouton de soumission */}
                   </div>
                 </div>
-          
-                {/* Submit Button */}
-                
               </div>
-            </div>
-          </div>
           )}
         </div>
       ) : (

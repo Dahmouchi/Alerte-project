@@ -92,7 +92,11 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
+  session: {
+    strategy: "jwt",
+    maxAge: 10 * 60 * 60, // 10 hours in seconds
+    updateAge: 60 * 60,   // optional: refresh token every 1 hour
+  },  
   callbacks: {
     async signIn({ user }) {
       const dbUser = await prisma.user.findUnique({

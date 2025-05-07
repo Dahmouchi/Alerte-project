@@ -602,7 +602,7 @@ export async function saveReponse(
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function saveDemande(userId: string, alertId: string) {
+export async function saveDemande(userId: string, alertId: string,response:string) {
   try {
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
@@ -614,7 +614,7 @@ export async function saveDemande(userId: string, alertId: string) {
     });
     const conclusion = await prisma.conclusion.create({
       data: {
-        content:`Demande de clôture de l'alerte ${updatedAlert.code}`,
+        content:response,
         alertId,
         analysteValidation:"APPROVED",
         createdById: userId,

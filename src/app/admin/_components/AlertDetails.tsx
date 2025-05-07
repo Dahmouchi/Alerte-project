@@ -258,7 +258,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
-          className="relative border pb-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
+          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -716,9 +716,9 @@ const AlertDetails = (alert: any) => {
               <DialogTrigger asChild>
                 <div
                   onClick={handleOpenChat}
-                  className={`px-10 absolute bg-blue-700 bottom-0 right-0 rounded-br-md rounded-tl-md flex gap-1 font-semibold py-2 cursor-pointer transition-all duration-300
-               border-t-2 border-l-2 border-blue-600 text-white items-center`}
-                >
+                  className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold lg:py-2 py-1 cursor-pointer transition-all duration-300
+                    border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-lg text-xs`}
+                     >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />
                   {/* Notification badge - only show if unreadCount > 0 */}
@@ -848,7 +848,7 @@ const AlertDetails = (alert: any) => {
                                       <Tooltip>
                                         <TooltipTrigger asChild>
                                           <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                            A
+                                            NV
                                           </div>
                                         </TooltipTrigger>
                                         <TooltipContent>

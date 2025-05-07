@@ -301,37 +301,46 @@ export default function UsernameLogin() {
             <div className="container mx-auto flex justify-center w-full">
               <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
                 <div className="flex flex-col items-center space-y-6">
-                  {/* Welcome message */}
+                  {/* Message de bienvenue */}
                   <div className="text-center">
                     <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">
-                      Two-Factor Authentication
+                      Authentification à Deux Facteurs
                     </h1>
-                    <p className="text-gray-600 dark:text-slate-300">
-                      Secure your account with 2FA
-                    </p>
                   </div>
 
-                  {/* QR Code Section */}
+                  {/* Étapes pour télécharger Google Authenticator */}
+                  <div className="w-full bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                    <ol className="list-decimal list-inside text-sm text-gray-700 dark:text-slate-300 space-y-1">
+                      <li>
+                        Ouvrez l&apos;App Store (iOS) ou le Play Store (Android)
+                      </li>
+                      <li>Recherchez &quot;Google Authenticator&quot;</li>
+                      <li>Téléchargez et installez l&apos;application</li>
+                      <li>
+                        Ouvrez l&apos;application et appuyez sur &quot;+&quot;
+                      </li>
+                      <li>Choisissez &quot;Scanner un code QR&quot;</li>
+                    </ol>
+                  </div>
+
+                  {/* Section QR Code */}
                   <div className="flex flex-col items-center w-full">
                     {qrImage && (
-                      <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
+                      <div className="mb-2 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
                         <img
                           src={qrImage}
-                          alt="2FA QR Code"
-                          className="w-48 h-48"
+                          alt="Code QR pour 2FA"
+                          className="w-36 h-36"
                         />
                       </div>
                     )}
-                    <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
-                      Scan this QR code with your authenticator app
-                    </p>
                   </div>
 
-                  {/* Secret Key */}
+                  {/* Clé secrète */}
                   {secret && (
                     <div className="w-full">
                       <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">
-                        Or enter this secret key manually:
+                        Ou entrez cette clé secrète manuellement :
                       </p>
                       <div className="flex items-center gap-2">
                         <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
@@ -340,7 +349,7 @@ export default function UsernameLogin() {
                         <button
                           onClick={() => navigator.clipboard.writeText(secret)}
                           className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-                          title="Copy to clipboard"
+                          title="Copier dans le presse-papier"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -368,13 +377,13 @@ export default function UsernameLogin() {
                     </div>
                   )}
 
-                  {/* Verification Code Input */}
+                  {/* Champ de saisie du code de vérification */}
                   <div className="w-full space-y-2">
                     <label
                       htmlFor="otp"
                       className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300"
                     >
-                      Verification Code
+                      Code de Vérification
                     </label>
                     <div className="flex justify-center">
                       <InputOTP
@@ -395,7 +404,7 @@ export default function UsernameLogin() {
                     </div>
                   </div>
 
-                  {/* Submit Button */}
+                  {/* Bouton de soumission */}
                 </div>
               </div>
             </div>
@@ -408,21 +417,16 @@ export default function UsernameLogin() {
             {password ? (
               <div className="max-w-md w-full p-6">
                 <div className="bg-white dark:bg-slate-800 p-10 rounded-lg shadow-lg">
-                <div className="text-center pb-8 flex items-center justify-center">
-                     <div className=" w-full flex flex-col items-center justify-center">
-                     <Link
-                          href="/"
-                          className="lg:flex"
-                          prefetch={false}
-                        >
-                          <img src="/logo.png" alt="" className="w-56 h-auto" />
-                        </Link>
-                       <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
-                       Définir votre mot de passe
-                       </h3>
-                       
-                     </div>
-                   </div>
+                  <div className="text-center pb-8 flex items-center justify-center">
+                    <div className=" w-full flex flex-col items-center justify-center">
+                      <Link href="/" className="lg:flex" prefetch={false}>
+                        <img src="/logo.png" alt="" className="w-56 h-auto" />
+                      </Link>
+                      <h3 className="text-gray-800 dark:text-white text-xl font-semibold sm:text-2xl">
+                        Définir votre mot de passe
+                      </h3>
+                    </div>
+                  </div>
                   <Form {...form}>
                     <form
                       onSubmit={form.handleSubmit(onSubmit)}

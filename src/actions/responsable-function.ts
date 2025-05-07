@@ -74,7 +74,7 @@ export async function responsableValidation(
   }
   let conclusinSet :string
   if(validationStatus === "APPROVED"){
-    conclusinSet = "Votre alerte a été clôturée."
+    conclusinSet = content
   }else{
     conclusinSet = content
   }

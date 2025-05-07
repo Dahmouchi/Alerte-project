@@ -88,6 +88,8 @@ const Header = () => {
   const pathname = usePathname();
   const lastSegment = pathname.split("/").filter(Boolean).pop() || "Home"; // Extract last segment
   const { data: session, update } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+
   const router = useRouter()
   const page = navMain.find(
     (cat) => cat.url === lastSegment
@@ -204,7 +206,7 @@ const Header = () => {
   <div className="lg:pr-10 w-1/2 flex items-center justify-end gap-4">
     {/* Dashboard Switcher - Only show if user has both roles */}
     {(session?.user.role === "ADMIN_RESPONSABLE") && (
-  <DropdownMenu>
+  <DropdownMenu >
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" className="gap-2 px-3 hover:bg-slate-100 dark:hover:bg-slate-800">
         <LayoutDashboard className="h-4 w-4" />
@@ -236,7 +238,7 @@ const Header = () => {
     )}
     
     <DarkModeSwitcher />
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -277,7 +279,10 @@ const Header = () => {
                   displayedNotifications.map((notification) => (
                     <div
                       key={notification.id}
-                      onClick={() => red(notification.id, notification.relatedId)}
+                      onClick={() =>{
+                        setIsOpen(false)
+                        red(notification.id, notification.relatedId)
+                      }}
                       className={`flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-accent ${
                         !notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                       }`}

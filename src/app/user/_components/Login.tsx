@@ -311,37 +311,47 @@ export default function UsernameLogin() {
               <div className="container mx-auto flex justify-center w-full">
                 <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg max-w-lg w-full">
                   <div className="flex flex-col items-center space-y-6">
-                    {/* Welcome message */}
+                    {/* Message de bienvenue */}
                     <div className="text-center">
                       <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">
-                        Two-Factor Authentication
+                        Authentification à Deux Facteurs
                       </h1>
-                      <p className="text-gray-600 dark:text-slate-300">
-                        Secure your account with 2FA
-                      </p>
                     </div>
 
-                    {/* QR Code Section */}
+                    {/* Étapes pour télécharger Google Authenticator */}
+                    <div className="w-full bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                      <ol className="list-decimal list-inside text-sm text-gray-700 dark:text-slate-300 space-y-1">
+                        <li>
+                          Ouvrez l&apos;App Store (iOS) ou le Play Store
+                          (Android)
+                        </li>
+                        <li>Recherchez &quot;Google Authenticator&quot;</li>
+                        <li>Téléchargez et installez l&apos;application</li>
+                        <li>
+                          Ouvrez l&apos;application et appuyez sur &quot;+&quot;
+                        </li>
+                        <li>Choisissez &quot;Scanner un code QR&quot;</li>
+                      </ol>
+                    </div>
+
+                    {/* Section QR Code */}
                     <div className="flex flex-col items-center w-full">
                       {qrImage && (
-                        <div className="mb-4 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
+                        <div className="mb-2 p-2 bg-white rounded border border-gray-200 dark:border-slate-600">
                           <img
                             src={qrImage}
-                            alt="2FA QR Code"
-                            className="w-48 h-48"
+                            alt="Code QR pour 2FA"
+                            className="w-36 h-36"
                           />
                         </div>
                       )}
-                      <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
-                        Scan this QR code with your authenticator app
-                      </p>
                     </div>
 
-                    {/* Secret Key */}
+                    {/* Clé secrète */}
                     {secret && (
                       <div className="w-full">
                         <p className="text-sm text-gray-600 dark:text-slate-300 mb-1 text-center">
-                          Or enter this secret key manually:
+                          Ou entrez cette clé secrète manuellement :
                         </p>
                         <div className="flex items-center gap-2">
                           <code className="bg-gray-100 dark:bg-slate-700 px-4 py-2 rounded text-xs font-mono break-all flex-1">
@@ -352,7 +362,7 @@ export default function UsernameLogin() {
                               navigator.clipboard.writeText(secret)
                             }
                             className="p-2 rounded-md bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors"
-                            title="Copy to clipboard"
+                            title="Copier dans le presse-papier"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -380,13 +390,13 @@ export default function UsernameLogin() {
                       </div>
                     )}
 
-                    {/* Verification Code Input */}
+                    {/* Champ de saisie du code de vérification */}
                     <div className="w-full space-y-2">
                       <label
                         htmlFor="otp"
                         className="block text-sm text-center font-medium text-gray-700 dark:text-slate-300"
                       >
-                        Verification Code
+                        Code de Vérification
                       </label>
                       <div className="flex justify-center">
                         <InputOTP
@@ -407,7 +417,7 @@ export default function UsernameLogin() {
                       </div>
                     </div>
 
-                    {/* Submit Button */}
+                    {/* Bouton de soumission */}
                   </div>
                 </div>
               </div>
@@ -416,50 +426,214 @@ export default function UsernameLogin() {
         ) : (
           <div className="min-h-screen overflow-hidden flex items-center justify-center ">
             <div className="lg:w-1/3 space-y-2 bg-white shadow-lg border dark:bg-slate-800 rounded-xl p-4">
-            <div className="mt-5 w-full flex items-center justify-center ">
-              <Link href="/" className="lg:flex" prefetch={false}>
-                <img src="/logo.png" alt="" className="w-56 h-auto" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-1">
-              <Button
-                onClick={() => setIsLogin(true)}
-                className={`w-full rounded-l-full py-3   cursor-pointer ${
-                  isLogin
-                    ? "bg-blue-700  hover:bg-blue-800 text-white "
-                    : "bg-white border text-blue-800 hover:bg-blue-100 hover:text-blue-700"
-                }`}
-              >
-                S&apos;identifier
-              </Button>
-              <Button
-                onClick={() => setIsLogin(false)}
-                className={`w-full rounded-r-full py-3  cursor-pointer ${
-                  !isLogin
-                    ? "bg-blue-700 text-white hover:bg-blue-800"
-                    : "bg-white border text-blue-800 hover:bg-blue-100 hover:text-blue-800"
-                }`}
-              >
-                Inscription
-              </Button>
-            </div>
-            {!isLogin ? (
-              <div>
-                <Form {...formRegister}>
+              <div className="mt-5 w-full flex items-center justify-center ">
+                <Link href="/" className="lg:flex" prefetch={false}>
+                  <img src="/logo.png" alt="" className="w-56 h-auto" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                <Button
+                  onClick={() => setIsLogin(true)}
+                  className={`w-full rounded-l-full py-3   cursor-pointer ${
+                    isLogin
+                      ? "bg-blue-700  hover:bg-blue-800 text-white "
+                      : "bg-white border text-blue-800 hover:bg-blue-100 hover:text-blue-700"
+                  }`}
+                >
+                  S&apos;identifier
+                </Button>
+                <Button
+                  onClick={() => setIsLogin(false)}
+                  className={`w-full rounded-r-full py-3  cursor-pointer ${
+                    !isLogin
+                      ? "bg-blue-700 text-white hover:bg-blue-800"
+                      : "bg-white border text-blue-800 hover:bg-blue-100 hover:text-blue-800"
+                  }`}
+                >
+                  Inscription
+                </Button>
+              </div>
+              {!isLogin ? (
+                <div>
+                  <Form {...formRegister}>
+                    <form
+                      onSubmit={formRegister.handleSubmit(onSubmitR)}
+                      className="space-y-6 w-full p-8"
+                    >
+                      {/* Username Field */}
+                      <FormField
+                        control={formRegister.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Identifiant</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Créez un identifiant"
+                                {...field}
+                                className="dark:bg-slate-900"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Password Field */}
+                      {/* Password Field */}
+                      <FormField
+                        control={formRegister.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mot de passe</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input
+                                  className="dark:bg-slate-900"
+                                  type={isView ? "text" : "password"}
+                                  id="password"
+                                  placeholder="Entrez votre mot de passe"
+                                  {...field}
+                                />
+                                {isView ? (
+                                  <Eye
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => {
+                                      setIsView(!isView);
+                                    }}
+                                  />
+                                ) : (
+                                  <EyeOff
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => setIsView(!isView)}
+                                  />
+                                )}
+                              </div>
+                            </FormControl>
+                            {formRegister.getValues("password").length > 0 && (
+                              <div className="mt-1 text-xs text-gray-600">
+                                <p
+                                  className={
+                                    formRegister.watch("password")?.length >= 8
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }
+                                >
+                                  • Minimum 8 caractères
+                                </p>
+                                <p
+                                  className={
+                                    /[A-Z]/.test(
+                                      formRegister.watch("password") || ""
+                                    )
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }
+                                >
+                                  • Une lettre majuscule
+                                </p>
+                                <p
+                                  className={
+                                    /[0-9]/.test(
+                                      formRegister.watch("password") || ""
+                                    )
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }
+                                >
+                                  • Un chiffre
+                                </p>
+                                <p
+                                  className={
+                                    /[@$!%*?&]/.test(
+                                      formRegister.watch("password") || ""
+                                    )
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }
+                                >
+                                  • Un caractère spécial (@$!%*?&)
+                                </p>
+                              </div>
+                            )}
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Confirm Password Field */}
+                      <FormField
+                        control={formRegister.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirmez le mot de passe</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input
+                                  className="dark:bg-slate-900"
+                                  type={isView ? "text" : "password"}
+                                  id="password"
+                                  placeholder="Confirmer votre mot de passe"
+                                  {...field}
+                                />
+                                {isView ? (
+                                  <Eye
+                                    className="absolute right-4 top-3 z-10 cursor-pointer text-gray-500 w-4 h-4"
+                                    onClick={() => {
+                                      setIsView(!isView);
+                                    }}
+                                  />
+                                ) : (
+                                  <EyeOff
+                                    className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
+                                    onClick={() => setIsView(!isView)}
+                                  />
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Submit Button */}
+                      <Button
+                        type="submit"
+                        className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                      >
+                        S&apos;inscrire
+                      </Button>
+                      <div className="mt-4 text-sm text-slate-600 text-center dark:text-slate-300">
+                        <p>
+                          Vous avez déjà un compte ?{" "}
+                          <span
+                            onClick={() => setIsLogin(true)}
+                            className="text-black hover:underline font-semibold dark:text-slate-200 cursor-pointer"
+                          >
+                            Connectez-vous ici
+                          </span>
+                        </p>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              ) : (
+                <Form {...form}>
                   <form
-                    onSubmit={formRegister.handleSubmit(onSubmitR)}
-                    className="space-y-6 w-full p-8"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8  w-full p-8 dark:bg-slate-800"
                   >
-                    {/* Username Field */}
                     <FormField
-                      control={formRegister.control}
+                      control={form.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Identifiant</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Créez un identifiant"
+                              placeholder="Entrez votre identifiant"
                               {...field}
                               className="dark:bg-slate-900"
                             />
@@ -468,11 +642,8 @@ export default function UsernameLogin() {
                         </FormItem>
                       )}
                     />
-
-                    {/* Password Field */}
-                    {/* Password Field */}
                     <FormField
-                      control={formRegister.control}
+                      control={form.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
@@ -501,195 +672,34 @@ export default function UsernameLogin() {
                               )}
                             </div>
                           </FormControl>
-                          {formRegister.getValues("password").length > 0 && (
-                            <div className="mt-1 text-xs text-gray-600">
-                              <p
-                                className={
-                                  formRegister.watch("password")?.length >= 8
-                                    ? "text-green-500"
-                                    : "text-red-500"
-                                }
-                              >
-                                • Minimum 8 caractères
-                              </p>
-                              <p
-                                className={
-                                  /[A-Z]/.test(
-                                    formRegister.watch("password") || ""
-                                  )
-                                    ? "text-green-500"
-                                    : "text-red-500"
-                                }
-                              >
-                                • Une lettre majuscule
-                              </p>
-                              <p
-                                className={
-                                  /[0-9]/.test(
-                                    formRegister.watch("password") || ""
-                                  )
-                                    ? "text-green-500"
-                                    : "text-red-500"
-                                }
-                              >
-                                • Un chiffre
-                              </p>
-                              <p
-                                className={
-                                  /[@$!%*?&]/.test(
-                                    formRegister.watch("password") || ""
-                                  )
-                                    ? "text-green-500"
-                                    : "text-red-500"
-                                }
-                              >
-                                • Un caractère spécial (@$!%*?&)
-                              </p>
-                            </div>
-                          )}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-                    {/* Confirm Password Field */}
-                    <FormField
-                      control={formRegister.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirmez le mot de passe</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input
-                                className="dark:bg-slate-900"
-                                type={isView ? "text" : "password"}
-                                id="password"
-                                placeholder="Confirmer votre mot de passe"
-                                {...field}
-                              />
-                              {isView ? (
-                                <Eye
-                                  className="absolute right-4 top-3 z-10 cursor-pointer text-gray-500 w-4 h-4"
-                                  onClick={() => {
-                                    setIsView(!isView);
-                                  }}
-                                />
-                              ) : (
-                                <EyeOff
-                                  className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                  onClick={() => setIsView(!isView)}
-                                />
-                              )}
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
-                    >
-                      S&apos;inscrire
-                    </Button>
-                    <div className="mt-4 text-sm text-slate-600 text-center dark:text-slate-300">
+                    <div className="w-full flex items-center justify-start">
+                      <Button
+                        type="submit"
+                        className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
+                      >
+                        Soumettre
+                      </Button>
+                    </div>
+                    <div className="mt-4 text-sm text-slate-600 dark:text-slate-300 text-center">
                       <p>
-                        Vous avez déjà un compte ?{" "}
+                        Vous n&apos;avez pas encore de compte ?{" "}
                         <span
-                          onClick={() => setIsLogin(true)}
-                          className="text-black hover:underline font-semibold dark:text-slate-200 cursor-pointer"
+                          onClick={() => setIsLogin(false)}
+                          className="text-blue-700 dark:text-white hover:underline font-semibold cursor-pointer"
                         >
-                          Connectez-vous ici
+                          Inscrivez-vous
                         </span>
                       </p>
                     </div>
                   </form>
                 </Form>
-              </div>
-            ) : (
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-8  w-full p-8 dark:bg-slate-800"
-                >
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Identifiant</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Entrez votre identifiant"
-                            {...field}
-                            className="dark:bg-slate-900"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mot de passe</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              className="dark:bg-slate-900"
-                              type={isView ? "text" : "password"}
-                              id="password"
-                              placeholder="Entrez votre mot de passe"
-                              {...field}
-                            />
-                            {isView ? (
-                              <Eye
-                                className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                onClick={() => {
-                                  setIsView(!isView);
-                                }}
-                              />
-                            ) : (
-                              <EyeOff
-                                className="absolute right-4 top-3 w-4 h-4 z-10 cursor-pointer text-gray-500"
-                                onClick={() => setIsView(!isView)}
-                              />
-                            )}
-                          </div>
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="w-full flex items-center justify-start">
-                    <Button
-                      type="submit"
-                      className="w-full rounded-full py-3 bg-blue-700 text-white hover:bg-blue-500 cursor-pointer"
-                    >
-                      Soumettre
-                    </Button>
-                  </div>
-                  <div className="mt-4 text-sm text-slate-600 dark:text-slate-300 text-center">
-                    <p>
-                      Vous n&apos;avez pas encore de compte ?{" "}
-                      <span
-                        onClick={() => setIsLogin(false)}
-                        className="text-blue-700 dark:text-white hover:underline font-semibold cursor-pointer"
-                      >
-                        Inscrivez-vous
-                      </span>
-                    </p>
-                  </div>
-                </form>
-              </Form>
-            )}
-          </div>
+              )}
+            </div>
           </div>
         )}
       </div>

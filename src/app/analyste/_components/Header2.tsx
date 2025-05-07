@@ -97,6 +97,7 @@ const Header = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Filter unread notifications or limit to 5
   const displayedNotifications = showAll
@@ -191,7 +192,7 @@ const Header = () => {
         <DarkModeSwitcher />
 
         {/* Notification Dropdown */}
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -236,8 +237,10 @@ const Header = () => {
                     displayedNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        onClick={() =>
+                        onClick={() =>{
+                          setIsOpen(false)
                           red(notification.id, notification.relatedId)
+                        }                         
                         }
                         className={`flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-accent ${
                           !notification.read

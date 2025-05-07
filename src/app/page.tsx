@@ -77,7 +77,7 @@ const HeroSection = () => {
   <div className="container mx-auto lg:py-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center lg:mt-8">
           {/* Left column */}
-          <div className="flex flex-col w-full lg:p-10 p-4">
+          <div className="flex flex-col w-full lg:p-10 p-4 place-items-center">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -184,7 +184,7 @@ const HeroSection = () => {
           </div>
 
           {/* Right column - Video Player */}
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-full place-items-center">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
