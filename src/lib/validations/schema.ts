@@ -14,7 +14,12 @@ export const userStatus = [
   "RESPONSABLE",
   "ADMIN_RESPONSABLE",
 ] as const; // Adjust based on actual statuses
-
+export const conclusionSchema = z.object({
+  id: z.string(), // instead of z.string().cuid()
+  content: z.string(),
+  createdAt: z.date(),
+  createdBy: z.lazy(() => userSchema), // to avoid circular dependency
+});
 // Define Zod Schema for Alert
 export const alertSchema = z.object({
   id: z.string().uuid(),
@@ -23,11 +28,14 @@ export const alertSchema = z.object({
   title: z.string().nullable(),
   conclusion: z.string().nullable(),
   type: z.string().default("text"),
+  conlusions: z.array(conclusionSchema).default([]),
   status: z.enum(alertStatuses).default("EN_COURS_TRAITEMENT"),
   createdAt: z.date().default(new Date()),
   createdById: z.string(),
 
 });
+
+
 
 // TypeScript Type for Alert
 export type AlertType = z.infer<typeof alertSchema>;

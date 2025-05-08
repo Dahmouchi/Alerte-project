@@ -33,11 +33,13 @@ export function DataTableRowActions<TData>({
     React.useState<boolean>(false);
   const task = userSchema.parse(row.original);
   const {data:session} = useSession();
+  const [isOpen, setIsOpen] = React.useState(false);
+
   const handleEditClick = () => {
-    setDialogContent(<EditDialog user={task} />);
+    setDialogContent(<EditDialog user={task} onClose={() => setIsOpen(false)}/>);
   };
   return (
-    <Dialog>
+         <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

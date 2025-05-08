@@ -716,8 +716,8 @@ const AlertDetails = (alert: any) => {
               <DialogTrigger asChild>
                 <div
                   onClick={handleOpenChat}
-                  className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold lg:py-2 py-1 cursor-pointer transition-all duration-300
-                    border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-lg text-xs`}
+                  className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold  py-1 cursor-pointer transition-all duration-300
+                    border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-sm text-xs`}
                      >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />

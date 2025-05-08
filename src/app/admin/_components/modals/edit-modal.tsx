@@ -43,31 +43,38 @@ const formSchema = z.object({
   statut: z.boolean().default(true), // Added statut field
 });
 
-const EditDialog = (user: any) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+type EditDialogProps = {
+  user: any;
+  onClose: () => void;
+};
+
+const EditDialog = ({ user, onClose }: EditDialogProps) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user.user.name || "",
-      prenom: user.user.prenom || "",
-      email: user.user.email || "",
-      username: user.user.username,
-      role: user.user.role,
-      statut: user.user.statut, // Default to active
+      name: user.name || "",
+      prenom: user.prenom || "",
+      email: user.email || "",
+      username: user.username,
+      role: user.role,
+      statut: user.statut, // Default to active
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await axios.patch(`/api/users/${user.user.id}`, values);
+      const response = await axios.patch(`/api/users/${user.id}`, values);
 
       if (response.status === 200) {
         toast.success("Utilisateur ajouté avec succès");
         form.reset();
+        onClose();
         router.refresh(); // Refresh the page to show new user
+
       } else {
         throw new Error("Erreur lors de l'ajout");
       }
@@ -161,7 +168,7 @@ const EditDialog = (user: any) => {
               )}
             />
 
-            {session?.user.role !== "ADMIN" && (
+            {(session?.user.role === "ADMIN" || session?.user.role === "ADMIN_RESPONSABLE")  && (
               <div className="grid grid-cols-2 gap-4">
                 {/* Role Dropdown */}
                 <FormField
