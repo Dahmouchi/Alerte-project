@@ -607,7 +607,6 @@ export async function saveDemande(userId: string, alertId: string,response:strin
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
       data: {
-        status: "TRAITE",
         analysteValidation: "APPROVED",
         responsableValidation: "PENDING",
       },

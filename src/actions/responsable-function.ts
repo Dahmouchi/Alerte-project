@@ -124,3 +124,74 @@ export async function responsableValidation(
     throw new Error("Failed to process responsable validation");
   }
 }
+
+export async function valideCon(
+  conId:string,
+  userId: string,
+  alertId: string,
+  validationStatus: UserAlertStatus, // Assuming this is your enum type
+  content: string
+) {
+  let statusToSet: AlertStatus;
+  
+  if (validationStatus === "APPROVED") {
+    statusToSet = "TRAITE";
+  } else if (validationStatus === "DECLINED") {
+    statusToSet = "REJETE";
+  } else if (validationStatus === "INFORMATIONS_MANQUANTES") {
+    statusToSet = "INFORMATIONS_MANQUANTES";
+  }else{
+    throw new Error("Statut de validation non valide.");
+  }
+  let conclusinSet :string
+  if(validationStatus === "APPROVED"){
+    conclusinSet = content
+  }else{
+    conclusinSet = content
+  }
+  try {
+    // Update the alert status
+    const updatedAlert = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        responsableValidation: "APPROVED",
+        involved:true,
+        status: statusToSet,
+        conclusion:conclusinSet,
+        updatedAt: new Date(),
+      },
+    });
+    const updatedConclusion = await prisma.conclusion.update({
+      where: { id: conId },
+      data: {
+        valider:true,
+        updatedAt: new Date(),
+      },
+    });
+    if(userId){
+      await prisma.notification.create({
+        data:{
+          userId:updatedAlert.createdById,
+          title:"Messages informatifs",
+          message:`Alerte ${updatedAlert.code} traitée. Veuillez consulter la nouvelle réponse.`,
+          type:"SYSTEM",
+          relatedId:updatedAlert.code,
+        }
+      })
+    }
+    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+    socket.emit("notifyUser");
+    // Create history record
+    await createHistoryRecord(
+      alertId,
+      userId,
+      "RESPONSABLE_VALIDATION",
+      `Responsable validation `
+    );
+
+    return updatedAlert;
+  } catch (error) {
+    console.error("Error in responsable validation:", error);
+    throw new Error("Failed to process responsable validation");
+  }
+}

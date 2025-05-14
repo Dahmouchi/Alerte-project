@@ -17,6 +17,14 @@ const Dashboard = async () => {
         step: 2,
       },
       orderBy: { createdAt: "desc" },
+      include: {
+         persons: true,
+         conlusions:{
+          include:{
+            createdBy:true,
+          }
+         },
+       },
     });
   }
   return (

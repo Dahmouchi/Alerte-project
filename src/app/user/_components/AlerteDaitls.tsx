@@ -521,9 +521,9 @@ const handleFileClick = (file: any) => {
       {al.conlusions &&
         al.responsableValidation !== "PENDING" &&
         al.conlusions.map((con: any, index: any) => (
-          <div key={index}>
+          con.valider && <div key={index}>
             {" "}
-            {con.createdBy.role === "ANALYSTE" ? (
+            {con.createdBy.role === "ANALYSTE"  ? (
               <div>
                 {con.analysteValidation === "APPROVED"?
                 <div className="bg-green-50 inverted-radius2 my-2 dark:bg-slate-850 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
@@ -669,6 +669,7 @@ const handleFileClick = (file: any) => {
               <JustifCard justif={con} />
             )}
           </div>
+        
         ))}
      
       {al.status === "INFORMATIONS_MANQUANTES" && al.involved && (

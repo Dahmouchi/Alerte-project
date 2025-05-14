@@ -49,7 +49,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import {
@@ -80,6 +79,7 @@ import {
   removeResponsableAssignment,
   ResponsableAssign,
   responsableValidation,
+  valideCon,
 } from "@/actions/responsable-function";
 import JustifCard from "@/app/user/_components/justifCard";
 import {
@@ -89,6 +89,7 @@ import {
 } from "@/components/ui/tooltip";
 import AnnulerCloture from "@/app/analyste/_components/anullerCloture";
 import AdditionalModalComponent from "@/app/analyste/_components/conclusionTwo";
+import ValidateButton from "./ValidateButton";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -269,8 +270,7 @@ const AlertDetails = (alert: any) => {
     setIsOpen(true);
   };
 
-  // Handle assigning alert
-  const sendConclusion = async () => {
+  const validerConclusion = async (id: any) => {
     if (!session) {
       toast.error("Vous devez être connecté pour cette action");
       return;
@@ -298,17 +298,7 @@ const AlertDetails = (alert: any) => {
 
       setSelectedAnalyst(session.user.id);
 
-      const ocp = await responsableValidation(
-        session.user.id,
-        al.id,
-        al.analysteValidation,
-        latestConclusion.content // Send the conclusion content
-      );
-
-      if (ocp) {
-        toast.success("Alerte validée avec succès!");
-        router.refresh();
-      }
+      toast.info(id);
     } catch (error) {
       console.error("Erreur lors de la validation de l'alerte:", error);
       toast.error("Erreur lors de la validation de l'alerte");
@@ -831,11 +821,11 @@ const AlertDetails = (alert: any) => {
             )}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
-              <div
+                <div
                   onClick={handleOpenChat}
                   className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold  py-1 cursor-pointer transition-all duration-300
                     border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-sm text-xs`}
-                     >
+                >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />
                   {/* Notification badge - only show if unreadCount > 0 */}
@@ -876,13 +866,13 @@ const AlertDetails = (alert: any) => {
                       {!con.valider && (
                         <>
                           <div className="absolute top-2 right-2 z-50 rounded-full bg-green-100 p-1">
-                          <AnnulerCloture
-                            task={con}
-                            alerte={al}
-                            onClose={() =>
-                              setIsAdditionalModalOpen(!isAdditionalModalOpen)
-                            }
-                          />
+                            <AnnulerCloture
+                              task={con}
+                              alerte={al}
+                              onClose={() =>
+                                setIsAdditionalModalOpen(!isAdditionalModalOpen)
+                              }
+                            />
                           </div>
                         </>
                       )}
@@ -971,7 +961,7 @@ const AlertDetails = (alert: any) => {
                               Validé le {formatFrenchDate(con.createdAt)}
                             </span>
                           </div>
-                          <div className={``}>
+                          <div className={`flex items-center gap-2`}>
                             {con.valider ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -994,6 +984,19 @@ const AlertDetails = (alert: any) => {
                                   <p>Attente de validation</p>
                                 </TooltipContent>
                               </Tooltip>
+                            )}
+                            {selectedAnalyst === session?.user.id &&
+                            con.valider ? (
+                              <Button
+                                variant="default"
+                                onClick={() => toast(con.conen)}
+                                className="gap-2 bg-emerald-600 hover:bg-emerald-600"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                                Validée
+                              </Button>
+                            ) : (
+                              <ValidateButton con={con} al={al} />
                             )}
                           </div>
                         </div>
@@ -1084,7 +1087,7 @@ const AlertDetails = (alert: any) => {
                             Validé le {formatFrenchDate(con.createdAt)}
                           </span>
                         </div>
-                        <div className={``}>
+                        <div className={`flex items-center gap-2`}>
                           {con.valider ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -1100,13 +1103,28 @@ const AlertDetails = (alert: any) => {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                  A
+                                  NV
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Attente de validation</p>
                               </TooltipContent>
                             </Tooltip>
+                          )}
+                          {(selectedAnalyst === session?.user.id && al.status !== "TRAITE") && (
+                            <div className="flex justify-end">
+                              {con.valider ? (
+                                <Button
+                                  variant="default"
+                                  className="gap-2 bg-emerald-600 hover:bg-emerald-600"
+                                >
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  Validée
+                                </Button>
+                              ) : (
+                                <ValidateButton con={con} al={al} />
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1118,17 +1136,15 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
-        {/* Print Button */}
+        {/* Print Button 
         {selectedAnalyst === session?.user.id && al.conlusions.length > 0 && (
           <div className="relative border lg:p-6 p-4 rounded-lg shadow-md mt-6 bg-card">
-            {/* Title Badge */}
             <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
               <h3 className="text-sm font-semibold text-white">
                 Traitement d&apos;alertes
               </h3>
             </div>
 
-            {/* Status Sticker */}
             {al.responsableValidation === "PENDING" ? (
               <Badge
                 variant="outline"
@@ -1147,7 +1163,6 @@ const AlertDetails = (alert: any) => {
               </Badge>
             )}
 
-            {/* Content */}
             <div className="mt-4 space-y-4">
               <p className="text-sm text-muted-foreground">
                 Cette section vous permet de valider les alertes après analyse.
@@ -1194,7 +1209,7 @@ const AlertDetails = (alert: any) => {
                           className="bg-blue-600 hover:bg-blue-800"
                           onClick={() => {
                             // Add your validation logic here
-                            sendConclusion();
+                            validerConclusion(123);
                             setOpen(false);
                           }}
                         >
@@ -1207,7 +1222,7 @@ const AlertDetails = (alert: any) => {
               </div>
             </div>
           </div>
-        )}{" "}
+        )}*/}
         <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button
             onClick={() => reactToPrintFn()}

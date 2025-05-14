@@ -17,6 +17,7 @@ export const userStatus = [
 export const conclusionSchema = z.object({
   id: z.string(), // instead of z.string().cuid()
   content: z.string(),
+  valider:z.boolean(),
   createdAt: z.date(),
   createdBy: z.lazy(() => userSchema), // to avoid circular dependency
 });

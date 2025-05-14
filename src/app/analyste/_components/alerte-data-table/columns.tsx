@@ -110,11 +110,37 @@ export const columns: ColumnDef<AlertType>[] = [
         (status) => status.value === row.getValue("responsableValidation")
       );
       const analysteValidation = row.getValue("analysteValidation");
+      const conclusions = row.original.conlusions || []; // Fixed typo from conlusions to conclusions
 
-      if (!status) {
+      // Check if any conclusion is not validated
+      const hasUnvalidatedConclusions = conclusions.some(
+        (conclusion) => !conclusion.valider
+      );
+
+      // Get the latest conclusion
+      const latestConclusion = conclusions
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+      const showPing = latestConclusion?.createdBy?.role === "USER";
+
+      if (!status || showPing) {
         return null;
       }
-
+      if (analysteValidation === "APPROVED" && latestConclusion.valider) {
+        return null;
+      }
+      // Show "Validation manquante" if there are unvalidated conclusions
+      if (hasUnvalidatedConclusions && conclusions.length > 1) {
+        return (
+          <div className="flex w-[150px] items-center px-2 py-1 justify-center bg-orange-500 text-white">
+            <span className="font-medium text-xs">Validation manquante</span>
+          </div>
+        );
+      }
       if (analysteValidation !== "PENDING") {
         return (
           <div

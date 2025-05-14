@@ -374,7 +374,7 @@ const AlertDetails = (alert: any) => {
       try {
         if (decision === "APPROVED" && response) {
           setSelectedAnalyst(session.user.id);
-          const ocp = await saveDemande(session.user.id, al.id,response);
+          const ocp = await saveDemande(session.user.id, al.id, response);
           if (ocp) {
             setJustification("");
             setJustification1("");
@@ -428,9 +428,9 @@ const AlertDetails = (alert: any) => {
     }
   };
   const allConclusionsApproved =
-  al?.conlusions?.every((conclusion: any) => conclusion.valider === true) &&
-  al?.conlusions?.length > 0 &&
-  al.conlusions[al.conlusions.length - 1].createdById === al.createdById;
+    al?.conlusions?.every((conclusion: any) => conclusion.valider === true) &&
+    al?.conlusions?.length > 0 &&
+    al.conlusions[al.conlusions.length - 1].createdById === al.createdById;
 
   const canRequestClosure =
     al.analysteValidation === "INFORMATIONS_MANQUANTES" &&
@@ -464,7 +464,7 @@ const AlertDetails = (alert: any) => {
               Détails de l&apos;alerte
             </h3>
           </div>
- {al.criticite > 0 && (
+          {al.criticite > 0 && (
             <div className="flex items-center lg:justify-start gap-2 px-2  mt-4 justify-between space-y-2">
               <h2 className="lg:text-2xl lg:font-bold font-semibold text-lg tracking-tight">
                 Alerte criticité
@@ -927,7 +927,7 @@ const AlertDetails = (alert: any) => {
             )}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
-              <div
+                <div
                   onClick={handleOpenChat}
                   className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold  py-1 cursor-pointer transition-all duration-300
                border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-sm text-xs`}
@@ -1217,136 +1217,138 @@ const AlertDetails = (alert: any) => {
               {" "}
               {con.createdBy.role === "ANALYSTE" ? (
                 <div className="relative">
-                {!con.valider && (
-                  <>
-                    <div className="absolute top-2 right-2 z-50 rounded-full bg-green-100 p-1">
-                    <AnnulerCloture
-                      task={con}
-                      alerte={al}
-                      onClose={() =>
-                        setIsAdditionalModalOpen(!isAdditionalModalOpen)
-                      }
-                    />
-                    </div>
-                  </>
-                )}
+                  {!con.valider && con.analysteValidation === "APPROVED" && (
+                    <>
+                      <div className="absolute top-2 right-2 z-50 rounded-full bg-green-100 p-1">
+                        <AnnulerCloture
+                          task={con}
+                          alerte={al}
+                          onClose={() =>
+                            setIsAdditionalModalOpen(!isAdditionalModalOpen)
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
                   {con.analysteValidation === "APPROVED" ? (
                     <div>
-                    <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
-                      <div className="flex items-start justify-between gap-4 mb-5">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
-                              <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                                <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                              </div>
+                              {con.createdBy.id === session?.user.id &&
+                                !con.valider && (
+                                  <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
+                                    <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                                  </div>
+                                )}
                             </div>
-                            {con.createdBy.id === session?.user.id &&
-                              !con.valider && (
-                                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
-                                  <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-                                </div>
-                              )}
+                            <div>
+                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Analyste
+                              </p>
+                              <p className="font-semibold text-gray-900 dark:text-white">
+                                {con.createdBy.name} {con.createdBy.prenom}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                              Analyste
-                            </p>
-                            <p className="font-semibold text-gray-900 dark:text-white">
-                              {con.createdBy.name} {con.createdBy.prenom}
+                        </div>
+
+                        {/* Status badges */}
+                        <div className="flex flex-wrap items-center gap-3 mb-5">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                al.recevable === "RECEVALBE"
+                                  ? "bg-green-500"
+                                  : "bg-gray-400"
+                              }`}
+                            />
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-xs border dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                              {al.recevable === "RECEVALBE"
+                                ? "Recevable"
+                                : "Non Recevable"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                getStatusStyles(con.analysteValidation).dotColor
+                              }`}
+                            />
+                            <span
+                              className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                                getStatusStyles(con.analysteValidation)
+                                  .className
+                              }`}
+                            >
+                              {getStatusStyles(con.analysteValidation).label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="mb-5">
+                          <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                            Commentaire
+                          </h3>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content || "Aucun commentaire fourni"}
                             </p>
                           </div>
-                        </div>  
-                      </div>
-
-                      {/* Status badges */}
-                      <div className="flex flex-wrap items-center gap-3 mb-5">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-2.5 w-2.5 rounded-full ${
-                              al.recevable === "RECEVALBE"
-                                ? "bg-green-500"
-                                : "bg-gray-400"
-                            }`}
-                          />
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-xs border dark:bg-slate-700 px-2.5 py-1 rounded-full">
-                            {al.recevable === "RECEVALBE"
-                              ? "Recevable"
-                              : "Non Recevable"}
-                          </span>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content1}
+                            </p>
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-2.5 w-2.5 rounded-full ${
-                              getStatusStyles(con.analysteValidation).dotColor
-                            }`}
-                          />
-                          <span
-                            className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                              getStatusStyles(con.analysteValidation).className
-                            }`}
-                          >
-                            {getStatusStyles(con.analysteValidation).label}
-                          </span>
+                        {/* Footer */}
+                        <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              Validé le {formatFrenchDate(con.createdAt)}
+                            </span>
+                          </div>
+                          <div className={``}>
+                            {con.valider ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    V
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Validée</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    NV
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Attente de validation</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
                         </div>
                       </div>
-
-                      {/* Content */}
-                      <div className="mb-5">
-                        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                          Commentaire
-                        </h3>
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {con?.content || "Aucun commentaire fourni"}
-                          </p>
-                        </div>
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {con?.content1}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            Validé le {formatFrenchDate(con.createdAt)}
-                          </span>
-                        </div>
-                        <div className={``}>
-                          {con.valider ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                  V
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Validée</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                  NV
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Attente de validation</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                        </div>
-                      </div>
-                    </div>
                     </div>
                   ) : (
                     <div className="relative">
                       {con.createdBy.id === session?.user.id &&
-                        !con.valider && (
+                        !con.valider &&
+                        al.status !== "APPROVED" && (
                           <>
                             <div className="absolute top-2 right-2 z-50">
                               <div className="bg-slate-200  rounded-full p-1 flex items-center justify-center shadow-md cursor-pointer">
@@ -1370,7 +1372,6 @@ const AlertDetails = (alert: any) => {
                             </div>
                           </>
                         )}
-
                       <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border bg-blue-100 shadow-xl">
                         {/* Header with analyst info and actions */}
                         <div className="flex items-start justify-between gap-4 mb-5">
@@ -1472,7 +1473,7 @@ const AlertDetails = (alert: any) => {
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                    A
+                                    NV
                                   </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -1491,7 +1492,7 @@ const AlertDetails = (alert: any) => {
               )}
             </div>
           ))}
-        {!al.involved && al.responsableValidation !== "PENDING" && (
+        {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
           <div className="w-full mx-auto">
             <div className="space-y-6  bg-white shadow-lg dark:bg-gray-800 rounded-lg p-4 border">
               {/* Decision Section */}
@@ -1505,124 +1506,101 @@ const AlertDetails = (alert: any) => {
             </div>
           </div>
         )}
-        {al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
-          <div
-            className={`space-y-4 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl ${
-              canRequestClosure
-                ? "border-blue-500 bg-blue-50 border-2"
-                : "border-gray-300 bg-white shadow-xs border "
-            }`}
-          >
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Clôture
-            </h3>
+        {selectedAnalyst === session?.user.id &&
+          al.analysteValidation === "INFORMATIONS_MANQUANTES" && (
+            <div
+              className={`space-y-4 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl border-blue-500 bg-blue-50 border-2`}
+            >
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Clôture
+              </h3>
 
-            {!allConclusionsApproved && (
-              <>
-              <p className="text-red-600 text-sm">
-                Toutes les validations doivent être approuvées avant de demander
-                la clôture.
-              </p></>
-            )}
-
-            <div className="grid grid-cols-1 gap-3 opacity-100">
-            <div>
-        <Label htmlFor="analystResponse" className="block mb-2">
-          Message de clôture
-        </Label>
-        <Textarea
-          id="analystResponse"
-          value={response}
-          onChange={(e) => setResponse(e.target.value)}
-          placeholder="Entrez le message de clôture qui apparaitra au soumissionnaire d'alerte..."
-          required
-          minLength={10}
-          className="min-h-[120px] bg-white"
-        />
-      </div>
-              <div
-                className={`${
-                  decision === "APPROVED"
-                    ? "border-green-500 border-2"
-                    : "border"
-                } flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
-              >
-                <div className="flex items-center h-5">
-                  <input
-                    type="checkbox"
-                    checked={decision === "APPROVED"}
-                    onChange={handleToggleApproval}
-                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                    disabled={!canRequestClosure}
+              <div className="grid grid-cols-1 gap-3 opacity-100">
+                <div>
+                  <Label htmlFor="analystResponse" className="block mb-2">
+                    Message de clôture
+                  </Label>
+                  <Textarea
+                    id="analystResponse"
+                    value={response}
+                    onChange={(e) => setResponse(e.target.value)}
+                    placeholder="Entrez le message de clôture qui apparaitra au soumissionnaire d'alerte..."
+                    required
+                    minLength={10}
+                    className="min-h-[120px] bg-white"
                   />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <label
-                    htmlFor="approval-checkbox"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <div className="ml-3 text-sm">
-                      <div className="font-medium text-gray-900 dark:text-white flex items-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
-                        Demande de clôture
+                <div
+                  className={`border-green-500 border-2 flex items-start space-x-4 p-4 rounded-lg bg-white dark:bg-gray-900`}
+                >
+                  <div className="flex items-center h-5">
+                    <input
+                      type="checkbox"
+                      checked={decision === "APPROVED"}
+                      onChange={handleToggleApproval}
+                      className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <label
+                      htmlFor="approval-checkbox"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <div className="ml-3 text-sm">
+                        <div className="font-medium text-gray-900 dark:text-white flex items-center">
+                          <CheckCircle2 className="w-5 h-5 text-green-500 mr-2" />
+                          Demande de clôture
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                          Cochez pour demander la clôture
+                        </p>
                       </div>
-                      <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        {decision === "APPROVED"
-                          ? "Clôture approuvée (cliquez pour annuler)"
-                          : "Cochez pour demander la clôture"}
-                      </p>
-                    </div>
-                  </label>
+                    </label>
+                  </div>
                 </div>
+
+                {/* Confirmation Dialog */}
+                <AlertDialog
+                  open={showConfirmDialog}
+                  onOpenChange={setShowConfirmDialog}
+                >
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Confirmer la demande de clôture
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir effectuer cette demande de
+                        clôture ?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          setDecision("APPROVED");
+                          setShowConfirmDialog(false);
+                        }}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Confirmer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
 
-              {/* Confirmation Dialog */}
-              <AlertDialog
-                open={showConfirmDialog}
-                onOpenChange={setShowConfirmDialog}
-              >
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Confirmer la demande de clôture
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Êtes-vous sûr de vouloir effectuer cette demande de
-                      clôture ?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => {
-                        setDecision("APPROVED");
-                        setShowConfirmDialog(false);
-                      }}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      Confirmer
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <div className="flex justify-end">
+                <button
+                  onClick={sendDemande}
+                  className={`inline-flex items-center px-4 py-2.5 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500`}
+                >
+                  <Save className="w-5 h-5 mr-2" />
+                  Envoyer la demande
+                </button>
+              </div>
             </div>
-
-            <div className="flex justify-end">
-              <button
-                onClick={sendDemande}
-                disabled={!canRequestClosure}
-                className={`inline-flex items-center px-4 py-2.5 text-white font-medium rounded-lg shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  canRequestClosure
-                    ? "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
-              >
-                <Save className="w-5 h-5 mr-2" />
-                Envoyer la demande
-              </button>
-            </div>
-          </div>
-        )}
+          )}
         {/* Print Button */}
         <div className="flex justify-end mt-4" ref={messagesEndRef}>
           <Button

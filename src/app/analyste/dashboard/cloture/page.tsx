@@ -17,6 +17,7 @@ const Dashboard = async () => {
       where: { 
         assignedAnalystId:session.user.id,
         step: 2,
+        status:"TRAITE",
         NOT:{
           analysteValidation:"PENDING",
         }

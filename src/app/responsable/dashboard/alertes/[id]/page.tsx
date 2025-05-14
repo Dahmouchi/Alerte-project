@@ -13,7 +13,7 @@ const Alert = async (params: any) => {
     include: {
       conlusions:{
         orderBy:{
-          createdAt:"asc",
+          updatedAt:"asc",
         },
         include:{
           createdBy:true,

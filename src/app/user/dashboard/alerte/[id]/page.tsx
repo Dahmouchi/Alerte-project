@@ -10,7 +10,7 @@ export default async function Update(params:any) {
           files:true,
           conlusions:{
             orderBy:{
-              createdAt:"asc",
+              updatedAt:"asc",
             },
             include:{
               createdBy:true,

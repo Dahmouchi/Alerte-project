@@ -20,7 +20,11 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const columns: ColumnDef<AlertType>[] = [
   {
@@ -106,54 +110,107 @@ export const columns: ColumnDef<AlertType>[] = [
         (status) => status.value === row.getValue("analysteValidation")
       );
 
-      if (!status) {
-        return null;
-      }
+      if (!status) return null;
+
+      const conclusions = row.original.conlusions || [];
+
+      // Get the latest conclusion
+      const latestConclusion = conclusions
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+      const showPing = latestConclusion?.createdBy?.role === "USER";
 
       return (
         <div
-          className={`flex w-[150px] items-center px-2 py-1 rounded-md ${status.color}`}
+          className={`relative flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
         >
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium text-xs">{status.label}</span>
+
+          {showPing && (
+            <span className="absolute -right-1 -top-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          )}
         </div>
       );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
     },
   },
   {
     accessorKey: "responsableValidation",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Validation" className="flex items-center justify-center" />
+      <DataTableColumnHeader
+        column={column}
+        title="Validation"
+        className="flex items-center justify-center"
+      />
     ),
     cell: ({ row }) => {
-      const criticity = responsable_alert.find(
-        (option) => option.value === row.getValue("responsableValidation")
+      const status = responsable_alert.find(
+        (status) => status.value === row.getValue("responsableValidation")
       );
-      const status = row.getValue("analysteValidation");
+      const analysteValidation = row.getValue("analysteValidation");
+      const conclusions = row.original.conlusions || []; // Fixed typo from conlusions to conclusions
 
-      if (!criticity || status === "PENDING") {
-        return <div className="text-gray-400"></div>;
+      // Check if any conclusion is not validated
+      const hasUnvalidatedConclusions = conclusions.some(
+        (conclusion) => !conclusion.valider
+      );
+
+      // Get the latest conclusion
+      const latestConclusion = conclusions
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+      const showPing = latestConclusion?.createdBy?.role === "USER";
+
+      if (!status || showPing) {
+        return null;
+      }
+      if (analysteValidation === "APPROVED" && latestConclusion.valider) {
+        return null;
       }
 
-      return (
-        <div
-            className={`flex w-[150px] items-center px-2 py-1 justify-center ${criticity.className}`}
-          >
-            <span className="font-medium text-xs">{criticity.label}</span>
+      // Show "Validation manquante" if there are unvalidated conclusions
+      if (hasUnvalidatedConclusions && conclusions.length > 1) {
+        return (
+          <div className="flex w-[150px] items-center px-2 py-1 justify-center bg-orange-500 text-white">
+            <span className="font-medium text-xs">Validation manquante</span>
           </div>
-      );
+        );
+      }
+
+      if (analysteValidation !== "PENDING") {
+        return (
+          <div
+            className={`flex w-[150px] items-center px-2 py-1 justify-center ${status.className}`}
+          >
+            <span className="font-medium text-xs">{status.label}</span>
+          </div>
+        );
+      }
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
   },
+
   {
     accessorKey: "criticite",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Criticité" className="flex items-center justify-center"/>
+      <DataTableColumnHeader
+        column={column}
+        title="Criticité"
+        className="flex items-center justify-center"
+      />
     ),
     cell: ({ row }) => {
       const criticity = criticity_options.find(
@@ -185,27 +242,27 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
-   {
-          accessorKey: "createdAt",
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Date de création" />
-          ),
-          cell: ({ row }) => {
-            const field = row.getValue("createdAt") as string;
-            const date = new Date(field);
-            return (
-              <div>
-                {date.toLocaleString("fr-FR", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-            );
-          },
-        },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date de création" />
+    ),
+    cell: ({ row }) => {
+      const field = row.getValue("createdAt") as string;
+      const date = new Date(field);
+      return (
+        <div>
+          {date.toLocaleString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "assignedResponsableId",
     header: ({ column }) => (
@@ -214,8 +271,7 @@ export const columns: ColumnDef<AlertType>[] = [
     cell: ({ row }) => {
       const criticity = row.getValue("assignedResponsableId");
       const status = row.getValue("analysteValidation");
-      if (status === "PENDING")
-        return <div></div>
+      if (status === "PENDING") return <div></div>;
       return (
         <div className="flex items-center w-[100px]">
           <div className={`flex items-center px-3 py-1 rounded-full w-full`}>

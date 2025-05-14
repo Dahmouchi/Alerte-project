@@ -19,7 +19,8 @@ const Dashboard = async () => {
         step: 2,
         NOT:{
           responsableValidation:"PENDING",
-        }
+        },
+        status:"TRAITE",
        },
       orderBy: { createdAt: "desc" },
     });
