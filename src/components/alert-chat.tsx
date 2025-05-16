@@ -116,11 +116,11 @@ export function AlertChat({ alertId }: { alertId: string }) {
         <Input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Ecrire votre message..."
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
         />
         <Button onClick={sendMessage} disabled={!newMessage.trim()}>
-          Send
+          Envoyer
         </Button>
       </div>
     </div>
