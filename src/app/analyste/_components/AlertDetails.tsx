@@ -457,7 +457,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4 p-2">
         <div
           ref={contentRef}
-          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
+          className=" relative border pb-12 pt-12 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -472,7 +472,7 @@ const AlertDetails = (alert: any) => {
               <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-2 mt-4">
             {/* Status and Action Bar */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
               {/* Status Badge */}
@@ -1346,9 +1346,7 @@ const AlertDetails = (alert: any) => {
                     </div>
                   ) : (
                     <div className="relative">
-                      {con.createdBy.id === session?.user.id &&
-                        !con.valider &&
-                        al.status !== "APPROVED" && (
+                      {con.createdBy.id === session?.user.id && !con.valider && al.status !== "TRAITE" && (
                           <>
                             <div className="absolute top-2 right-2 z-50">
                               <div className="bg-slate-200  rounded-full p-1 flex items-center justify-center shadow-md cursor-pointer">

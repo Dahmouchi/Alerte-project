@@ -17,13 +17,13 @@ const Dashboard = async () => {
       where: { step: 2 },
       orderBy: { createdAt: "desc" },
       include: {
-         persons: true,
-         conlusions:{
-          include:{
-            createdBy:true,
-          }
-         },
-       },
+        persons: true,
+        conlusions: {
+          include: {
+            createdBy: true,
+          },
+        },
+      },
     });
   }
   return (
@@ -45,14 +45,14 @@ const Dashboard = async () => {
           </p>
         </div>
       </div>
-      <div className="relative w-full overflow-hidden mt-4">
-        <ScrollArea className="w-full rounded-md border">
+      <ScrollArea className=" relative w-full rounded-md border ">
+        <div className="relative w-full overflow-hidden mt-4">
           <Shell className="p-0 sm:p-4">
             <DataTable data={alerts || []} columns={columns} />
           </Shell>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 };

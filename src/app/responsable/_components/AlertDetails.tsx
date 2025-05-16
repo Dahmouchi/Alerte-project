@@ -22,6 +22,7 @@ import {
   FileAudio,
   FilePenLine,
   FileVideo,
+  Lock,
   MapPin,
   MessageCircle,
   MessageCircleMore,
@@ -360,9 +361,9 @@ const AlertDetails = (alert: any) => {
               <CriticalityBadge level={al.criticite as 1 | 2 | 3 | 4} />
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-2 mt-4">
             {/* Status and Action Bar */}
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-white shadow-md dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 shadow-xs">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 p-4 bg-white shadow-md dark:bg-slate-800 dark:bg-slate-850 rounded-lg border border-gray-200 dark:border-slate-700 ">
               {/* Status Badge */}
               {status && (
                 <div
@@ -378,71 +379,100 @@ const AlertDetails = (alert: any) => {
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 {selectedAnalyst === session?.user.id ? (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-800/20"
-                      >
-                        <CheckCheck className="h-4 w-4" />
-                        <span>Attribuée à moi</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Souhaitez-vous céder l&apos;alerte?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Cette action transférera la responsabilité de cette
-                          alerte à un autre analyste.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={removeAnalyste}
-                          className="bg-blue-600 hover:bg-blue-700"
+                  // Check if one of the conclusions is validated
+                  al.conlusions.some(
+                    (conclusion: { valider: boolean }) =>
+                      conclusion.valider === true
+                  ) ? (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                      <Lock className="h-4 w-4" />
+                      <span className="text-xs">
+                        Vous ne pouvez pas céder cette alerte après validation
+                        d&apos;une conclusion
+                      </span>
+                    </div>
+                  ) : (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="gap-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-800/20"
                         >
-                          Confirmer
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                          <CheckCheck className="h-4 w-4" />
+                          <span>Attribuée à moi</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Souhaitez-vous céder l&apos;alerte ?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Cette action transférera la responsabilité de cette
+                            alerte à un autre analyste.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={removeAnalyste}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Confirmer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )
                 ) : selectedAnalyst === "" ? (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
-                        <UserPlus className="h-4 w-4" />
-                        <span>Prendre en charge</span>
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Prendre en charge cette alerte?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Vous serez désigné comme responsable de cette alerte.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={assignAlert}
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          Confirmer
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  // Only allow assignment if no validated conclusion exists
+                  !al.conlusions.some(
+                    (conclusion: { valider: boolean }) =>
+                      conclusion.valider === true
+                  ) ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                          <UserPlus className="h-4 w-4" />
+                          <span>Prendre en charge</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Prendre en charge cette alerte ?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Vous serez désigné comme responsable de cette
+                            alerte.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={assignAlert}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Confirmer
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                      <Lock className="h-4 w-4" />
+                      <span>
+                        Cette alerte ne peut pas être reprise car une conclusion
+                        a été validée
+                      </span>
+                    </div>
+                  )
                 ) : (
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
                     <User className="h-4 w-4" />
                     <span>
-                      Attribuée à {al.assignedResponsable?.name}{" "}
-                      {al.assignedResponsable?.prenom}
+                      Attribuée à {al.assignedAnalyst?.name}{" "}
+                      {al.assignedAnalyst?.prenom}
                     </span>
                   </div>
                 )}
@@ -1111,21 +1141,22 @@ const AlertDetails = (alert: any) => {
                               </TooltipContent>
                             </Tooltip>
                           )}
-                          {(selectedAnalyst === session?.user.id && al.status !== "TRAITE") && (
-                            <div className="flex justify-end">
-                              {con.valider ? (
-                                <Button
-                                  variant="default"
-                                  className="gap-2 bg-emerald-600 hover:bg-emerald-600"
-                                >
-                                  <CheckCircle2 className="h-4 w-4" />
-                                  Validée
-                                </Button>
-                              ) : (
-                                <ValidateButton con={con} al={al} />
-                              )}
-                            </div>
-                          )}
+                          {selectedAnalyst === session?.user.id &&
+                            al.status !== "TRAITE" && (
+                              <div className="flex justify-end">
+                                {con.valider ? (
+                                  <Button
+                                    variant="default"
+                                    className="gap-2 bg-emerald-600 hover:bg-emerald-600"
+                                  >
+                                    <CheckCircle2 className="h-4 w-4" />
+                                    Validée
+                                  </Button>
+                                ) : (
+                                  <ValidateButton con={con} al={al} />
+                                )}
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>

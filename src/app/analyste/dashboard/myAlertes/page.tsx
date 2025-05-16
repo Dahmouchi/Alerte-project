@@ -15,7 +15,14 @@ const Dashboard = async () => {
   if (session) {
     alerts = await prisma.alert.findMany({
       where: { assignedAnalystId: session.user.id },
-      include: { persons: true },
+      include: {
+         persons: true,
+         conlusions:{
+          include:{
+            createdBy:true,
+          }
+         },
+       },
     });
   }
   return (
@@ -36,7 +43,7 @@ const Dashboard = async () => {
           </p>
         </div>
       </div>
-      <div className="relative w-full overflow-hidden mt-4">
+      <div className="relative w-full overflow-hidden mt-4 ">
         <ScrollArea className="w-full rounded-md border">
           <Shell className="p-0 sm:p-4">
             <DataTable data={alerts || []} columns={columns} />

@@ -9,6 +9,7 @@ import { DataTableRowActions } from "./data-table-row-actions";
 import { AlertType } from "@/lib/validations/schema";
 import {
   analyste_alert_status_options,
+  criticity_options,
   label_options,
   responsable_alert,
 } from "@/components/filters";
@@ -155,7 +156,45 @@ export const columns: ColumnDef<AlertType>[] = [
       return value.includes(row.getValue(id));
     },
   },
+{
+    accessorKey: "criticite",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Criticité"
+        className="flex items-center justify-center"
+      />
+    ),
+    cell: ({ row }) => {
+      const criticity = criticity_options.find(
+        (option) => option.value === Number(row.getValue("criticite"))
+      );
+      const status = row.getValue("analysteValidation");
 
+      if (!criticity || status === "PENDING") {
+        return <div className="text-gray-400"></div>;
+      }
+      if (status === "DECLINED") {
+        return <div className="font-bold text-center">—</div>;
+      }
+
+      return (
+        <div className="flex items-center w-[100px]">
+          <div
+            className={`flex items-center px-3 py-1 rounded-full w-full ${criticity.color}`}
+          >
+            {criticity.icon && (
+              <criticity.icon className="mr-2 h-4 w-4 flex-shrink-0" />
+            )}
+            <span className="text-xs font-medium">{criticity.label}</span>
+          </div>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (

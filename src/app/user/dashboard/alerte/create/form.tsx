@@ -161,7 +161,7 @@ const highlightMatch = (text: string, search: string) => {
     return <Captcha setIsCaptchaVerified={setIsCaptchaVerified} />;
   }
   return (
-    <div className="mx-auto lg:p-4">
+    <div className="mx-auto p-4">
       {step === 1 && (
         <div>
           <div className="lg:p-6  mx-auto">

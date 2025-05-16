@@ -95,7 +95,7 @@ export const columns: ColumnDef<AlertType>[] = [
       );
     },
   },
-  {
+{
     accessorKey: "analysteValidation",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Traitement" />
@@ -105,18 +105,91 @@ export const columns: ColumnDef<AlertType>[] = [
         (status) => status.value === row.getValue("analysteValidation")
       );
 
-      if (!status) {
-        return null;
-      }
+      if (!status) return null;
+
+      const conclusions = row.original.conlusions || [];
+
+      // Get the latest conclusion
+      const latestConclusion = conclusions
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+      const showPing = latestConclusion?.createdBy?.role === "USER";
 
       return (
         <div
-          className={`flex w-[170px] items-center px-2 py-1 rounded-md ${status.color}`}
+          className={`relative flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
         >
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium text-xs">{status.label}</span>
+
+          {showPing && (
+            <span className="absolute -right-1 -top-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+          )}
         </div>
       );
+    },
+  },
+  {
+    accessorKey: "responsableValidation",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Validation"
+        className="flex items-center justify-center"
+      />
+    ),
+    cell: ({ row }) => {
+      const status = responsable_alert.find(
+        (status) => status.value === row.getValue("responsableValidation")
+      );
+      const analysteValidation = row.getValue("analysteValidation");
+      const conclusions = row.original.conlusions || []; // Fixed typo from conlusions to conclusions
+
+      // Check if any conclusion is not validated
+      const hasUnvalidatedConclusions = conclusions.some(
+        (conclusion) => !conclusion.valider
+      );
+
+      // Get the latest conclusion
+      const latestConclusion = conclusions
+        .slice()
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
+      const showPing = latestConclusion?.createdBy?.role === "USER";
+
+      if (!status || showPing) {
+        return null;
+      }
+      if (analysteValidation === "APPROVED" && latestConclusion.valider) {
+        return null;
+      }
+      // Show "Validation manquante" if there are unvalidated conclusions
+      if (hasUnvalidatedConclusions && conclusions.length > 1) {
+        return (
+          <div className="flex w-[150px] items-center px-2 py-1 justify-center bg-orange-500 text-white">
+            <span className="font-medium text-xs">Validation manquante</span>
+          </div>
+        );
+      }
+      if (analysteValidation !== "PENDING") {
+        return (
+          <div
+            className={`flex w-[150px] items-center px-2 py-1 justify-center ${status.className}`}
+          >
+            <span className="font-medium text-xs">{status.label}</span>
+          </div>
+        );
+      }
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
@@ -173,39 +246,6 @@ export const columns: ColumnDef<AlertType>[] = [
           })}
         </div>
       );
-    },
-  },
-  {
-    accessorKey: "responsableValidation",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Validation"
-        className="flex items-center justify-center"
-      />
-    ),
-    cell: ({ row }) => {
-      const status = responsable_alert.find(
-        (status) => status.value === row.getValue("responsableValidation")
-      );
-      const analysteValidation = row.getValue("analysteValidation");
-
-      if (!status) {
-        return null;
-      }
-
-      if (analysteValidation !== "PENDING") {
-        return (
-          <div
-            className={`flex w-[150px] items-center px-2 py-1 justify-center ${status.className}`}
-          >
-            <span className="font-medium text-xs">{status.label}</span>
-          </div>
-        );
-      }
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
     },
   },
   {

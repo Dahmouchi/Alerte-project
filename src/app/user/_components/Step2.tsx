@@ -258,7 +258,7 @@ const Step2 = (alert: { alert: any }) => {
   useEffect(() => {
     console.log("files : ", audio);
   }, [audio]);
-  
+
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 6, // Now allows files up to 6MB
@@ -420,7 +420,7 @@ const Step2 = (alert: { alert: any }) => {
                         )}
                       />
 
-                      <div className="grid lg:grid-cols-12 grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         <div className="col-span-6">
                           <FormField
                             control={form.control}
@@ -478,7 +478,7 @@ const Step2 = (alert: { alert: any }) => {
                           />
                         </div>
                       </div>
-                      <div className="py-2 space-y-2 flex lg:items-center justify-between lg:flex-row flex-col">
+                      <div className="py-2 space-y-2 flex justify-between [@media(min-width:1250px)]:flex-row [@media(max-width:1250px)]:flex-col [@media(max-width:729px)]:flex-col">
                         <div>
                           <h2
                             className={`text-sm font-medium ${
@@ -653,7 +653,7 @@ const Step2 = (alert: { alert: any }) => {
                     </div>
 
                     <div className="space-y-4  border-[1px] p-4 rounded-xl shadow dark:bg-slate-700">
-                      <div className="space-y-2 flex lg:items-center justify-between lg:flex-row flex-col">
+                      <div className="py-2 space-y-2 flex justify-between [@media(min-width:1250px)]:flex-row [@media(max-width:1250px)]:flex-col [@media(max-width:729px)]:flex-col">
                         <div>
                           <h1 className="font-semibold text-sm">
                             Mode de Signalement{" "}
@@ -965,7 +965,7 @@ const Step2 = (alert: { alert: any }) => {
           </div>
         )}
         {steps === 2 && (
-          <div className="lg:p-4 space-y-6">
+          <div className="p-4 space-y-6">
             {/* Success Banner - Improved Design */}
             <section className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl shadow-lg overflow-hidden">
               <div className="max-w-screen-xl px-6 py-8 mx-auto lg:py-12">
