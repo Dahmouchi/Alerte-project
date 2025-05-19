@@ -96,6 +96,7 @@ export async function updateAlert(
         category: selectedCategory,
         type,
         status: "EN_COURS_TRAITEMENT",
+        createdAt:new Date(),
       },
     });
 

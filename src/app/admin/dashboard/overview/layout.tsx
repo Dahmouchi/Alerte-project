@@ -9,6 +9,8 @@ import {
 import prisma from "@/lib/prisma";
 import { AlertTriangle, CheckCircle, Rows, Users } from "lucide-react";
 import React from "react";
+import Chart2 from "./@chart2/page";
+import RadarChart from "./@radar_chart/page";
 
 export default async function OverViewLayout({
   sales,
@@ -124,6 +126,13 @@ export default async function OverViewLayout({
             {/* sales arallel routes */}
             {sales}
           </div>
+          <div className="col-span-4 md:col-span-3">
+            {/* sales arallel routes */}
+           <Chart2 />
+          </div>
+           <div className="col-span-4">
+            <RadarChart />
+           </div>
         </div>
       </div>
     </PageContainer>
