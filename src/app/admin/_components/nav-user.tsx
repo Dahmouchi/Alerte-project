@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
@@ -18,11 +19,28 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "next-auth/react";
+import { UserInfo } from "@/actions/user";
+import { useEffect, useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const [userInfo, setUserInfo] = useState<any>();
   const { data: user } = useSession();
 
+  useEffect(() => {
+    if (user) {
+      const fetchUserInfo = async () => {
+        try {
+          const userin = await UserInfo(user.user.id);
+          setUserInfo(userin);
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
+        }
+      };
+
+      fetchUserInfo();
+    }
+  }, [user]);
   return (
     <>
       <SidebarMenu>
@@ -34,11 +52,14 @@ export function NavUser() {
                 className="data-[state=open]:bg-sidebar-accent cursor-pointer data-[state=open]:text-sidebar-accent-foreground dark:bg-slate-700"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user?.user.image || "/profile.png"} alt={"user.name"} />
+                  <AvatarImage
+                    src={user?.user.image || "/profile.png"}
+                    alt={"user.name"}
+                  />
                 </Avatar>
                 <div className=" flex-1 text-left text-sm leading-tight hidden lg:grid">
                   <span className="truncate font-semibold">
-                    {user?.user.name || "Utilisateur"}
+                    {userInfo?.name || "Responsable"} {userInfo?.prenom || ""}
                   </span>
                   <span className="truncate text-xs">
                     {user?.user.email || "vous êtes connecté"}
@@ -56,15 +77,17 @@ export function NavUser() {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                   
-                    <AvatarFallback className="rounded-lg">   {user?.user.username?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {" "}
+                      {user?.user.username?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {user?.user.name || "Utilisateur"}
+                      {userInfo?.name || "Responsable"} {userInfo?.prenom || ""}
                     </span>
                     <span className="truncate text-xs">
-                      {user?.user.email || "vous êtes connecté"}
+                      {userInfo?.email || "vous êtes connecté"}
                     </span>
                   </div>
                 </div>

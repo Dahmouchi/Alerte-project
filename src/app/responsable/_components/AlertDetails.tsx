@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -346,7 +347,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4 p-2">
         <div
           ref={contentRef}
-          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
+          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50  dark:bg-slate-900"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -906,7 +907,7 @@ const AlertDetails = (alert: any) => {
                           </div>
                         </>
                       )}
-                      <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                      <div className="bg-green-50  inverted-radius2 p-6 dark:bg-green-600/15 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
                         {/* Header with analyst info and actions */}
                         <div className="flex items-start justify-between gap-4 mb-5">
                           <div className="flex items-center gap-3">
@@ -1028,6 +1029,120 @@ const AlertDetails = (alert: any) => {
                             ) : (
                               <ValidateButton con={con} al={al} />
                             )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : con.analysteValidation === "DECLINED" ? (
+                    <div className="relative">
+                      <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border dark:bg-red-600/15 bg-red-100 shadow-xl">
+                        {/* Header with analyst info and actions */}
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="h-11 w-11 rounded-full bg-red-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-red-100 dark:ring-slate-600">
+                                <User className="h-5 w-5 text-red-600 dark:text-red-400" />
+                              </div>
+                              {con.createdBy.id === session?.user.id &&
+                                !con.valider && (
+                                  <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-1 rounded-full shadow-xs border border-gray-100 dark:border-slate-700">
+                                    <Pencil className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                                  </div>
+                                )}
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Analyste
+                              </p>
+                              <p className="font-semibold text-gray-900 dark:text-white">
+                                {con.createdBy.name} {con.createdBy.prenom}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Status badges */}
+                        <div className="flex flex-wrap items-center gap-3 mb-5">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                al.recevable === "RECEVALBE"
+                                  ? "bg-green-500"
+                                  : "bg-red-400"
+                              }`}
+                            />
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-xs border dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                              {al.recevable === "RECEVALBE"
+                                ? "Recevable"
+                                : "Non Recevable"}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Content */}
+                        <div className="mb-5">
+                          <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                            Commentaire
+                          </h3>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content || "Aucun commentaire fourni"}
+                            </p>
+                          </div>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content1}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              Validé le {formatFrenchDate(con.createdAt)}
+                            </span>
+                          </div>
+                          <div className={` flex items-center gap-2`}>
+                            {con.valider ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    V
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Valider</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    NV
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Attente de validation</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                            {selectedAnalyst === session?.user.id &&
+                              al.status !== "TRAITE" && (
+                                <div className="flex justify-end">
+                                  {con.valider ? (
+                                    <Button
+                                      variant="default"
+                                      className="gap-2 bg-emerald-600 hover:bg-emerald-600"
+                                    >
+                                      <CheckCircle2 className="h-4 w-4" />
+                                      Validée
+                                    </Button>
+                                  ) : (
+                                    <ValidateButton con={con} al={al} />
+                                  )}
+                                </div>
+                              )}
                           </div>
                         </div>
                       </div>

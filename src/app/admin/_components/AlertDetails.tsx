@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { admin_alert_status_options } from "@/components/filters";
@@ -45,7 +46,11 @@ import { markMessagesAsRead } from "@/hooks/markMessagesAsRead";
 import { AssignAlertAdmin } from "@/actions/alertActions";
 import { useSession } from "next-auth/react";
 import JustifCard from "@/app/user/_components/justifCard";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 const categories = [
   {
     title: "Corruption et atteintes à la probité",
@@ -150,7 +155,7 @@ const AlertDetails = (alert: any) => {
   const [isOpenChat, setIsOpenChat] = useState(false);
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const handleFileClick = (file: any) => {
     setSelectedFile(file);
     setIsModalOpen(true);
@@ -258,7 +263,7 @@ const AlertDetails = (alert: any) => {
       <div className="space-y-3 mt-4">
         <div
           ref={contentRef}
-          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50"
+          className=" relative border pb-12 pt-8 lg:pb-12 lg:p-6 p-2 rounded-lg shadow-md bg-blue-50 dark:bg-slate-900"
         >
           <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 rounded-md shadow-sm">
             <h3 className="text-sm font-semibold text-white">
@@ -718,7 +723,7 @@ const AlertDetails = (alert: any) => {
                   onClick={handleOpenChat}
                   className={`lg:px-10 px-5 absolute bg-blue-700 top-0 right-0 rounded-tr-md rounded-bl-md flex gap-1 font-semibold  py-1 cursor-pointer transition-all duration-300
                     border-t-2 border-l-2 border-blue-600 text-white items-center lg:text-sm text-xs`}
-                     >
+                >
                   Chat Alerte
                   <MessageCircleMore className="w-5 h-5" />
                   {/* Notification badge - only show if unreadCount > 0 */}
@@ -748,228 +753,316 @@ const AlertDetails = (alert: any) => {
             </Dialog>
           </div>
         </div>
-         {al.conlusions &&
-                  al.conlusions.map((con: any, index: any) => (
-                    <div key={index}>
-                      {" "}
-                      {con.createdBy.role === "ANALYSTE" ? (
-                        <div>
-                          {con.analysteValidation === "APPROVED" ? (
-                            <div className="relative">                      
-                              <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
-                                {/* Header with analyst info and actions */}
-                                <div className="flex items-start justify-between gap-4 mb-5">
-                                  <div className="flex items-center gap-3">
-                                    <div className="relative">
-                                      <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
-                                        <User className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                      </div>
-                                      
-                                    </div>
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                        Analyste
-                                      </p>
-                                      <p className="font-semibold text-gray-900 dark:text-white">
-                                        {con.createdBy.name} {con.createdBy.prenom}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-        
-                                {/* Status badges */}
-                                <div className="flex flex-wrap items-center gap-3 mb-5">
-                                  <div className="flex items-center gap-2">
-                                    <div
-                                      className={`h-2.5 w-2.5 rounded-full ${
-                                        al.recevable === "RECEVALBE"
-                                          ? "bg-green-500"
-                                          : "bg-gray-400"
-                                      }`}
-                                    />
-                                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
-                                      {al.recevable === "RECEVALBE"
-                                        ? "Recevable"
-                                        : "Non Recevable"}
-                                    </span>
-                                  </div>
-        
-                                  <div className="flex items-center gap-2">
-                                    
-                                    <span
-                                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                                        getStatusStyles(con.analysteValidation)
-                                          .className
-                                      }`}
-                                    >
-                                      {getStatusStyles(con.analysteValidation).label}
-                                    </span>
-                                  </div>
-                                </div>
-        
-                                {/* Content */}
-                                <div className="mb-5">
-                                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                                    Commentaire
-                                  </h3>
-                                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                      {con?.content || "Aucun commentaire fourni"}
-                                    </p>
-                                  </div>
-                                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                      {con?.content1}
-                                    </p>
-                                  </div>
-                                </div>
-        
-                                {/* Footer */}
-                                <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      Validé le {formatFrenchDate(con.createdAt)}
-                                    </span>
-                                  </div>
-                                  <div className={``}>
-                                    {con.valider ? (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                            V
-                                          </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>Valider</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    ) : (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                            NV
-                                          </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>Attente de validation</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    )}
-                                  </div>
-                                </div>
+        {al.conlusions &&
+          al.conlusions.map((con: any, index: any) => (
+            <div key={index}>
+              {" "}
+              {con.createdBy.role === "ANALYSTE" ? (
+                <div>
+                  {con.analysteValidation === "APPROVED" ? (
+                    <div className="relative">
+                      <div className="bg-green-50 dark:bg-slate-850 inverted-radius2 p-6 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 group">
+                        {/* Header with analyst info and actions */}
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                                <User className="h-5 w-5 text-green-600 dark:text-green-400" />
                               </div>
                             </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Analyste
+                              </p>
+                              <p className="font-semibold text-gray-900 dark:text-white">
+                                {con.createdBy.name} {con.createdBy.prenom}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Status badges */}
+                        <div className="flex flex-wrap items-center gap-3 mb-5">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                al.recevable === "RECEVALBE"
+                                  ? "bg-green-500"
+                                  : "bg-gray-400"
+                              }`}
+                            />
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                              {al.recevable === "RECEVALBE"
+                                ? "Recevable"
+                                : "Non Recevable"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                                getStatusStyles(con.analysteValidation)
+                                  .className
+                              }`}
+                            >
+                              {getStatusStyles(con.analysteValidation).label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="mb-5">
+                          <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                            Commentaire
+                          </h3>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content || "Aucun commentaire fourni"}
+                            </p>
+                          </div>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content1}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              Validé le {formatFrenchDate(con.createdAt)}
+                            </span>
+                          </div>
+                          <div className={``}>
+                            {con.valider ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    V
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Valider</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    NV
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Attente de validation</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : con.analysteValidation === "DECLINED" ? (
+                    <div className="relative">
+                      <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border bg-red-100 dark:bg-red-600/15 shadow-xl">
+                        {/* Header with analyst info and actions */}
+                        <div className="flex items-start justify-between gap-4 mb-5">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <div className="h-11 w-11 rounded-full bg-red-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-red-100 dark:ring-slate-600">
+                                <User className="h-5 w-5 text-red-600 dark:text-red-400" />
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Analyste
+                              </p>
+                              <p className="font-semibold text-gray-900 dark:text-white">
+                                {con.createdBy.name} {con.createdBy.prenom}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Status badges */}
+                        <div className="flex flex-wrap items-center gap-3 mb-5">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`h-2.5 w-2.5 rounded-full ${
+                                al.recevable === "RECEVALBE"
+                                  ? "bg-green-500"
+                                  : "bg-red-400"
+                              }`}
+                            />
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-xs border dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                              {al.recevable === "RECEVALBE"
+                                ? "Recevable"
+                                : "Non Recevable"}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Content */}
+                        <div className="mb-5">
+                          <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                            Commentaire
+                          </h3>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content || "Aucun commentaire fourni"}
+                            </p>
+                          </div>
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {con?.content1}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              Validé le {formatFrenchDate(con.createdAt)}
+                            </span>
+                          </div>
+                          <div className={` flex items-center gap-2`}>
+                            {con.valider ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    V
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Valider</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                    NV
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Attente de validation</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border dark:bg-blue-600/15 bg-blue-100 shadow-xl">
+                      {/* Header with analyst info and actions */}
+                      <div className="flex items-start justify-between gap-4 mb-5">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
+                              <User className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Analyste
+                            </p>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {con.createdBy.name} {con.createdBy.prenom}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status badges */}
+                      <div className="flex flex-wrap items-center gap-3 mb-5">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-2.5 w-2.5 rounded-full ${
+                              al.recevable === "RECEVALBE"
+                                ? "bg-green-500"
+                                : "bg-gray-400"
+                            }`}
+                          />
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
+                            {al.recevable === "RECEVALBE"
+                              ? "Recevable"
+                              : "Non Recevable"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                              getStatusStyles(con.analysteValidation).className
+                            }`}
+                          >
+                            {getStatusStyles(con.analysteValidation).label}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="mb-5">
+                        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                          Commentaire
+                        </h3>
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {con?.content || "Aucun commentaire fourni"}
+                          </p>
+                        </div>
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {con?.content1}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Validé le {formatFrenchDate(con.createdAt)}
+                          </span>
+                        </div>
+                        <div className={``}>
+                          {con.valider ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                  V
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Valider</p>
+                              </TooltipContent>
+                            </Tooltip>
                           ) : (
-                            <div className="inverted-radius2 z-30 relative p-6 transition-all duration-200 group border bg-blue-100 shadow-xl">
-                              {/* Header with analyst info and actions */}
-                              <div className="flex items-start justify-between gap-4 mb-5">
-                                <div className="flex items-center gap-3">
-                                  <div className="relative">
-                                    <div className="h-11 w-11 rounded-full bg-green-50 dark:bg-slate-700 flex items-center justify-center ring-2 ring-green-100 dark:ring-slate-600">
-                                      <User className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                    </div>
-                                    
-                                  </div>
-                                  <div>
-                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                      Analyste
-                                    </p>
-                                    <p className="font-semibold text-gray-900 dark:text-white">
-                                      {con.createdBy.name} {con.createdBy.prenom}
-                                    </p>
-                                  </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
+                                  A
                                 </div>
-                              </div>
-        
-                              {/* Status badges */}
-                              <div className="flex flex-wrap items-center gap-3 mb-5">
-                                <div className="flex items-center gap-2">
-                                  <div
-                                    className={`h-2.5 w-2.5 rounded-full ${
-                                      al.recevable === "RECEVALBE"
-                                        ? "bg-green-500"
-                                        : "bg-gray-400"
-                                    }`}
-                                  />
-                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300 bg-white shadow-md dark:bg-slate-700 px-2.5 py-1 rounded-full">
-                                    {al.recevable === "RECEVALBE"
-                                      ? "Recevable"
-                                      : "Non Recevable"}
-                                  </span>
-                                </div>
-        
-                                <div className="flex items-center gap-2">
-                                  
-                                  <span
-                                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                                      getStatusStyles(con.analysteValidation).className
-                                    }`}
-                                  >
-                                    {getStatusStyles(con.analysteValidation).label}
-                                  </span>
-                                </div>
-                              </div>
-        
-                              {/* Content */}
-                              <div className="mb-5">
-                                <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                                  Commentaire
-                                </h3>
-                                <div className="prose prose-sm dark:prose-invert max-w-none">
-                                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    {con?.content || "Aucun commentaire fourni"}
-                                  </p>
-                                </div>
-                                <div className="prose prose-sm dark:prose-invert max-w-none">
-                                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    {con?.content1}
-                                  </p>
-                                </div>
-                              </div>
-        
-                              {/* Footer */}
-                              <div className="pt-4 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between w-full">
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    Validé le {formatFrenchDate(con.createdAt)}
-                                  </span>
-                                </div>
-                                <div className={``}>
-                                  {con.valider ? (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div className="bg-emerald-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                          V
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>Valider</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  ) : (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div className="bg-red-700 cursor-pointer text-white rounded-full w-6 h-6 font-semibold flex items-center justify-center text-xs">
-                                          A
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>Attente de validation</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Attente de validation</p>
+                              </TooltipContent>
+                            </Tooltip>
                           )}
                         </div>
-                      ) : (
-                        <JustifCard justif={con} />
-                      )}
+                      </div>
                     </div>
-                  ))}
+                  )}
+                </div>
+              ) : (
+                <JustifCard justif={con} />
+              )}
+            </div>
+          ))}
 
         {/* Print Button */}
         <div className="flex justify-end mt-4">

@@ -171,6 +171,8 @@ export async function UserInfo(userId: string) {
       where: { id: userId },
       select: {
         id: true,
+        name:true,
+        prenom:true,
         username: true,
         email: true,
         role: true,

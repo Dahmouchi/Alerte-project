@@ -515,7 +515,7 @@ export async function saveConclusion(
           alertId,
           createdById: userId,
           content1,
-          analysteValidation: decision,
+          analysteValidation: "DECLINED",
         },
       });
       const res = await prisma.alert.update({
