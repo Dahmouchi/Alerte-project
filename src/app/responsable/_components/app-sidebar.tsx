@@ -67,7 +67,7 @@ const datas = {
     },
     {
       title: "Settings",
-      url: "/admin/dashboard/settings",
+      url: "/responsable/dashboard/settings",
       icon: Settings2,
       
     },

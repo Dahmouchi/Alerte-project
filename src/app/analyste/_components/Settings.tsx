@@ -52,8 +52,8 @@ export default function SettingsPage(user: any) {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: {
-      name: user.user.name,
-      prenom: user.user.prenom,
+      name: user.user.name || "",
+      prenom: user.user.prenom || "",
       username: user?.user?.name || "",
       email: user?.user?.email || "",
       twoFactorEnabled: user?.user?.twoFactorEnabled,
