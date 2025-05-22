@@ -16,20 +16,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useTheme } from "next-themes";
 import DarkModeSwitcher from "@/components/DarkModeSwitcher";
-import { User } from "@prisma/client";
 import ResetPassword from "@/components/ResetPassword";
+import { updateUser } from "@/actions/user";
 
 // Form schema
 const settingsFormSchema = z.object({
+  name: z.string().min(2, {
+    message: "nom must be at least 2 characters.",
+  }),
+  prenom: z.string().min(2, {
+    message: "prenom must be at least 2 characters.",
+  }),
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
@@ -44,12 +47,13 @@ const settingsFormSchema = z.object({
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 export default function SettingsPage(user: any) {
-  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: {
+      name: user.user.name,
+      prenom: user.user.prenom,
       username: user?.user?.name || "",
       email: user?.user?.email || "",
       twoFactorEnabled: user?.user?.twoFactorEnabled,
@@ -62,9 +66,17 @@ export default function SettingsPage(user: any) {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const result = await updateUser(
+        user.user.username,
+        data.name,
+        data.prenom,
+        data.email
+      );
 
-      toast.success("Settings updated successfully");
+      if (result) {
+        setIsLoading(false);
+        toast.success(result);
+      }
     } catch (error) {
       toast.error("There was an error updating your settings.");
     } finally {
@@ -92,12 +104,25 @@ export default function SettingsPage(user: any) {
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nom d&apos;utilisateur</FormLabel>
+                    <FormLabel>Nom</FormLabel>
                     <FormControl>
-                      <Input placeholder="Votre nom d'utilisateur" {...field} />
+                      <Input placeholder="Votre nom " {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="prenom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prenom</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Votre nom Prenom" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,8 +144,6 @@ export default function SettingsPage(user: any) {
               />
             </CardContent>
           </Card>
-
-          
 
           <div className="flex justify-end">
             <Button type="submit" disabled={isLoading}>
@@ -151,7 +174,7 @@ export default function SettingsPage(user: any) {
             </div>
           </CardContent>
         </Card>
-        <ResetPassword id={session?.user.id} />
+        <ResetPassword id={user?.user.id} />
       </div>
     </div>
   );

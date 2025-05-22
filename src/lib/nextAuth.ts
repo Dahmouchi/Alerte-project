@@ -42,8 +42,9 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user.id,
+          name:user.name  || "",
+          prenom:user.prenom  || "",
           email: user.email,
-          name: user.name,
           username: user.username, // Ensure username is returned
           role: user.role,
           twoFactorEnabled: user.twoFactorEnabled,
@@ -83,6 +84,8 @@ export const authOptions: NextAuthOptions = {
         const twoFactorVerified = false;
   return {
           id: user.id,
+          name:user.name  || "",
+          prenom:user.prenom || "",
           username: user.username,
           role: user.role,
           twoFactorEnabled: user.twoFactorEnabled,
@@ -113,6 +116,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user,trigger,session }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name || "";
+        token.prenom = user.prenom  || "";
         token.username = user.username;
         token.twoFactorEnabled = user.twoFactorEnabled ?? false;
         token.twoFactorVerified = user.twoFactorVerified || false;
@@ -127,6 +132,8 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.prenom = token.prenom;
       session.user.username = token.username;
       session.user.twoFactorEnabled = token.twoFactorEnabled;
       session.user.twoFactorVerified = token.twoFactorVerified;

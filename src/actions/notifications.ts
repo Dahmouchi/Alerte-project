@@ -73,7 +73,6 @@ export async function sendAlertNotification(alertId: string, message: string) {
     socket.emit("notifyUser");
 
 
-    console.log(`Successfully sent notifications to ${users.length} users.`);
   } catch (error) {
     console.error("Error sending notifications:", error);
   } finally {

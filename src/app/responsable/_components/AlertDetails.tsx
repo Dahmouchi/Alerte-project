@@ -212,7 +212,6 @@ const AlertDetails = (alert: any) => {
     setIsModalOpen(true);
   };
   useEffect(() => {
-    console.log(al);
     const fetchAnalysts = async () => {
       try {
         router.refresh();

@@ -150,7 +150,6 @@ const highlightMatch = (text: string, search: string) => {
         router.push(`/user/dashboard/alerte/create/${alertId}`);
       }
     }
-
     setStep(step + 1);
   };
   const sortedCategories = [...filteredCategories].sort((a, b) =>

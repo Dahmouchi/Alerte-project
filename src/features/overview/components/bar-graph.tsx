@@ -41,8 +41,6 @@ interface ChartDataItem {
 
 export function BarGraph() {
   const { data: alerts } = useAlerts();
-  console.log("char", alerts);
-
   // Process data to group alerts by date
   const chartData = React.useMemo<ChartDataItem[]>(() => {
     if (!alerts) return [];
@@ -145,19 +143,11 @@ export function BarGraph() {
             }}
           >
             <defs>
-              <linearGradient id="fillBar" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0%"
-                  stopColor="var(--primary)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--primary)"
-                  stopOpacity={0.2}
-                />
-              </linearGradient>
-            </defs>
+          <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0000FF" stopOpacity={1} />
+            <stop offset="100%" stopColor="#0000CD" stopOpacity={1} />
+          </linearGradient>
+        </defs>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
@@ -191,7 +181,7 @@ export function BarGraph() {
             />
             <Bar
               dataKey={activeChart}
-              fill="url(#fillBar)"
+              fill="url(#barGradient)"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

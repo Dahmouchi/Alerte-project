@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import PageContainer from "@/components/layout/page-container";
 import {
   Card,
@@ -126,13 +127,13 @@ export default async function OverViewLayout({
             {/* sales arallel routes */}
             {sales}
           </div>
-          <div className="col-span-4 md:col-span-3">
-            {/* sales arallel routes */}
+          {/*<div className="col-span-4 md:col-span-3">
+             sales arallel routes 
            <Chart2 />
           </div>
            <div className="col-span-4">
             <RadarChart />
-           </div>
+           </div>*/}
         </div>
       </div>
     </PageContainer>

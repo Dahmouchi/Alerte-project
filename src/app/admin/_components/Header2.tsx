@@ -171,12 +171,10 @@ const Header = () => {
   };
   const handleDashboardSwitch = async (path: string) => {
     try {
-      console.log("old result", session);
       // First update the session
       await update({
         twoFactorVerified: false,
       });
-      console.log("new result", session);
       // Then redirect
       router.push(path);
     } catch (error) {

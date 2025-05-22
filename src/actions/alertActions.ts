@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { nanoid } from "nanoid"; // Generate unique codes
-import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getFileUrl, uploadFile } from "@/lib/cloudeFlare";
 import { AlertHistory, RecevalbeStatus, UserAlertStatus } from "@prisma/client";
@@ -11,6 +10,8 @@ import { sendAlertNotification } from "./notifications";
 import sendEmail from "./sendemail";
 import { ElevenLabsClient } from 'elevenlabs';
 import sharp from 'sharp';
+
+import prisma from "@/lib/prisma";
 
 export async function createAlerte(
   category: string,

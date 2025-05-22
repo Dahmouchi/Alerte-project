@@ -92,7 +92,6 @@ export default function UsernameLogin() {
   });
 
   async function onSubmitR(values: z.infer<typeof formSchemaRegister>) {
-    console.log(values);
     try {
       const response = await axios.post("/api/auth/register", {
         username: values.username,
@@ -126,8 +125,6 @@ export default function UsernameLogin() {
     setUserInfoLoading(true);
     try {
       const userData = await UserInfo(session.user.id);
-      console.log(userData);
-
       if (!userData.twoFactorSecret && !userData.qrSecret) {
         await get2faQrCode();
       } else if (!userData.twoFactorSecret && userData.qrSecret) {

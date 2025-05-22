@@ -301,7 +301,29 @@ export async function GetUserByUsername(userId: string) {
     throw new Error("Failed to retrieve user info");
   }
 }
+export async function updateUser(userId: string,name:string,prenom:string,email:string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: userId }
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
 
+  // Update the password in the database
+    await prisma.user.update({
+      where: { username:userId },
+      data: { name,
+        prenom,email,
+       },
+    });
+
+    return "user updated successfully.";
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    throw new Error("Failed to retrieve user info");
+  }
+}
 export async function UpdatePassword(userId: string,password:string) {
   try {
     const user = await prisma.user.findUnique({

@@ -13,7 +13,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions)
-  console.log(session)
   if (!session?.user ||( session.user.twoFactorEnabled && !session.user.twoFactorVerified) ) {
     redirect("/user/login")
   } 

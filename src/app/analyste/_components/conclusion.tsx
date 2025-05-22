@@ -88,11 +88,9 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
       criticity: alerte.criticite ? Number(alerte.criticite) : 1, 
     },
   });
-  console.log("task", alerte.recevable);
   const [isOpen, setIsOpen] = useState(false);
 
   async function onSubmit(values: ConclusionSchemaType) {
-   console.log(values);
       try{
         await updateConclusion(task.id,values.commentaire,values.criticity,alerte.id)
         toast.success("alerte modified");

@@ -48,10 +48,8 @@ const TwoFactorModal = () => {
       );
       if (response.data.verified) {
         // 2FA Enabled successfully
-        console.log(response.data);
         toast.success("code verify");
       } else {
-        console.log(response.data);
         toast.error("code non vérify");
         setInvalidOtp(true);
       }

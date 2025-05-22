@@ -255,10 +255,6 @@ const Step2 = (alert: { alert: any }) => {
     setPersons(persons.filter((_, i) => i !== index));
   };
 
-  useEffect(() => {
-    console.log("files : ", audio);
-  }, [audio]);
-
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 6, // Now allows files up to 6MB
@@ -273,8 +269,6 @@ const Step2 = (alert: { alert: any }) => {
           toast.error("Vous devez ajouter au moins une personne !");
           return; // Stop function execution
         }
-
-        console.log(values);
         const filesToPass = files ?? [];
         const audioPass = audio;
         setLoading(true);

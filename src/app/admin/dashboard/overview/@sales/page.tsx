@@ -13,6 +13,6 @@ export default async function Sales() {
   take: 10, // Limit to 10 alerts
   });
 
-  await delay(3000);
+  await delay(2000);
   return <RecentSales alerts={alerts}/>;
 }

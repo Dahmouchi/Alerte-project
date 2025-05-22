@@ -76,7 +76,6 @@ export default function UsernameLogin() {
     setLoading(true);
     try {
       const userData = await UserInfo(session.user.id);
-      console.log(userData);
       if (!userData.twoFactorSecret && !userData.qrSecret) {
         await get2faQrCode();
       } else if (!userData.twoFactorSecret && userData.qrSecret) {
@@ -101,7 +100,6 @@ export default function UsernameLogin() {
   /* useEffect to Fetch User Data */
   useEffect(() => {
     if (session) {
-      console.log(session);
       fetchUserInfo();
     }
   }, [session]); // Add session as a dependency

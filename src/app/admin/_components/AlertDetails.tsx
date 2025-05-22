@@ -169,7 +169,6 @@ const AlertDetails = (alert: any) => {
   );
   // Fetch analysts from API
   useEffect(() => {
-    console.log(al);
     const fetchAnalysts = async () => {
       try {
         const response = await GetAnalyste(); // Adjust API route

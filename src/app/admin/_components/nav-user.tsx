@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
@@ -19,28 +18,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "next-auth/react";
-import { UserInfo } from "@/actions/user";
-import { useEffect, useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const [userInfo, setUserInfo] = useState<any>();
   const { data: user } = useSession();
 
-  useEffect(() => {
-    if (user) {
-      const fetchUserInfo = async () => {
-        try {
-          const userin = await UserInfo(user.user.id);
-          setUserInfo(userin);
-        } catch (error) {
-          console.error("Failed to fetch user info:", error);
-        }
-      };
-
-      fetchUserInfo();
-    }
-  }, [user]);
   return (
     <>
       <SidebarMenu>
@@ -59,7 +41,7 @@ export function NavUser() {
                 </Avatar>
                 <div className=" flex-1 text-left text-sm leading-tight hidden lg:grid">
                   <span className="truncate font-semibold">
-                    {userInfo?.name || "Responsable"} {userInfo?.prenom || ""}
+                    {user?.user?.name || "Responsable"} {user?.user?.prenom || ""}
                   </span>
                   <span className="truncate text-xs">
                     {user?.user.email || "vous êtes connecté"}
@@ -84,10 +66,10 @@ export function NavUser() {
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      {userInfo?.name || "Responsable"} {userInfo?.prenom || ""}
+                      {user?.user?.name || "Responsable"} {user?.user?.prenom || ""}
                     </span>
                     <span className="truncate text-xs">
-                      {userInfo?.email || "vous êtes connecté"}
+                      {user?.user?.email || "vous êtes connecté"}
                     </span>
                   </div>
                 </div>

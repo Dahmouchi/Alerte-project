@@ -54,7 +54,7 @@ export async function RecentSales(alerts: any) {
                 </p>
               </div>
               <div
-                className={`ml-auto font-medium text-xs px-2 py-1 rounded text-white
+                className={`ml-auto font-medium text-[10px] px-2 py-1 rounded text-white
                   ${
                     sale.adminStatus === "PENDING"
                       ? "bg-yellow-500"

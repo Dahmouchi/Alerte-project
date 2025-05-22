@@ -77,7 +77,7 @@ const ResetPassword =  (id: any)=> {
   };
 
   return (
-    <div className="w-full mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="w-full mx-auto p-6 bg-white border dark:bg-gray-950 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">
         Modifier le mot de passe
       </h2>
@@ -176,7 +176,7 @@ const ResetPassword =  (id: any)=> {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center justify-center px-6 py-2.5 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="flex items-center justify-center px-6 py-2.5 bg-primary hover:bg-primary-dark text-white dark:text-slate-800 font-medium rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
