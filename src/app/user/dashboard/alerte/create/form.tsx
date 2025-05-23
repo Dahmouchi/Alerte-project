@@ -14,97 +14,8 @@ import {
 import { useRouter } from "next/navigation";
 import Captcha from "../../../_components/Captcha";
 import { createAlerte } from "@/actions/alertActions";
+import { categories } from "@/constants/data";
 
-const categories = [
-  {
-    title: "Corruption et atteintes à la probité",
-    value: "corruption",
-    description:
-      "Actes de corruption impliquant des pots-de-vin, des abus de pouvoir ou des relations inappropriées avec des fournisseurs.",
-    icon: "🔒",
-    exemple: [
-      "Un fonctionnaire acceptant un pot-de-vin pour accorder un marché public.",
-      "Un employé détournant des fonds en échange d’un traitement de faveur.",
-    ],
-  },
-  {
-    title: "Vol, fraude fiscale",
-    value: "fraude",
-    description:
-      "Infractions financières impliquant des fraudes fiscales, abus de confiance et détournement de fonds.",
-    icon: "💰",
-    exemple: [
-      "Une entreprise dissimulant des revenus pour éviter de payer des impôts.",
-      "Un employé détournant de l'argent de la caisse de l'entreprise.",
-    ],
-  },
-  {
-    title: "Abus de bien social",
-    value: "abus",
-    description:
-      "Utilisation abusive des ressources d'une entreprise à des fins personnelles, conflits d'intérêts et prises illégales d'intérêts.",
-    icon: "⚖️",
-    exemple: [
-      "Un dirigeant utilisant les fonds de l’entreprise pour des dépenses personnelles.",
-      "Un employé favorisant une entreprise appartenant à un proche dans un appel d’offres.",
-    ],
-  },
-  {
-    title: "Blanchiment d’argent",
-    value: "blanchiment",
-    description:
-      "Processus visant à dissimuler l'origine illicite de fonds en les intégrant dans l'économie légale.",
-    icon: "💸",
-    exemple: [
-      "Un commerçant déclarant de faux revenus pour justifier des fonds d’origine criminelle.",
-      "Une entreprise servant de façade pour dissimuler de l'argent provenant d'activités illégales.",
-    ],
-  },
-  {
-    title: "Manipulation de cours",
-    value: "manipulation",
-    description:
-      "Pratiques illégales influençant artificiellement le prix des actions ou des actifs financiers.",
-    icon: "📉",
-    exemple: [
-      "Un investisseur diffusant de fausses informations pour faire grimper le prix d’une action.",
-      "Une entreprise annonçant de faux résultats financiers pour attirer des investisseurs.",
-    ],
-  },
-  {
-    title: "Discrimination et harcèlement",
-    value: "discrimination",
-    description:
-      "Actes de discrimination fondés sur le sexe, l'origine, la religion, ainsi que les comportements de harcèlement moral ou sexuel.",
-    icon: "🚫",
-    exemple: [
-      "Un employeur refusant d’embaucher une personne en raison de son origine.",
-      "Un supérieur harcelant un employé avec des remarques déplacées.",
-    ],
-  },
-  {
-    title: "Environnement et droits humains",
-    value: "environnement",
-    description:
-      "Infractions environnementales et violations des droits humains telles que la pollution et l'exploitation abusive.",
-    icon: "🌍",
-    exemple: [
-      "Une usine rejetant des déchets toxiques dans une rivière sans respecter les normes.",
-      "Une entreprise exploitant illégalement des travailleurs sans respecter leurs droits.",
-    ],
-  },
-  {
-    title: "Autre crime",
-    value: "autre",
-    description:
-      "Toutes autres infractions criminelles ne relevant pas des catégories précédentes.",
-    icon: "⚠️",
-    exemple: [
-      "Une organisation impliquée dans un trafic illégal d’objets volés.",
-      "Une fraude aux assurances où une personne simule un accident pour obtenir un remboursement.",
-    ],
-  },
-];
 
 export default function AlertForm({ userId }: { userId: string }) {
   const [step, setStep] = useState(1);
@@ -272,7 +183,7 @@ const highlightMatch = (text: string, search: string) => {
                             onClick={handleNext}
                             className=" text-white shadow-lg hidden rounded-full bg-blue-700 py-2 lg:px-14 cursor-pointer lg:flex items-center justify-center font-semibold"
                           >
-                            {step < 4 ? "Next" : "Submit"}
+                            {step < 4 ? "Suivant" : "Soumettre"}
                           </div>
                      
                     </div> )}
@@ -283,7 +194,7 @@ const highlightMatch = (text: string, search: string) => {
                             onClick={handleNext}
                             className=" text-white shadow-lg rounded-full bg-blue-700 py-3 lg:px-14 cursor-pointer flex items-center justify-center font-semibold"
                           >
-                            {step < 4 ? "Next" : "Submit"}
+                            {step < 4 ? "Suivant" : "Soumettre"}
                           </div>
                     )}
                     </div>

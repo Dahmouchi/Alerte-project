@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { RefreshCwIcon, Volume2 } from "lucide-react";
 import React, { useState } from "react";
@@ -28,7 +28,7 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
   function handleCaptchaCheck() {
     if (userInput === captcha) {
       setValid(true);
-      setIsCaptchaVerified(true)
+      setIsCaptchaVerified(true);
       toast.success("CAPTCHA vérifié ✅");
     } else {
       toast.error("Code incorrect. Veuillez réessayer.");
@@ -44,41 +44,51 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
 
   return (
     <div className="">
-      <div>
+      <div className="flex flex-col-reverse lg:flex-col">
         <Card className="mb-6 dark:bg-slate-700">
           <CardContent className="p-6 ">
-            <h2 className="text-lg font-semibold mb-3">Consigne de sécurité</h2>
+            <h2 className="text-2xl font-bold mb-3">Consignes de sécurité</h2>
             <p className="text-gray-700 mb-2">
-              Préserver la confidentialité de votre identité et des informations
-              contenues dans votre alerte est d&aposune importance capitale.
+              <span className="font-bold">CompliVox</span> est une plateforme de signalement confidentielle conçue
+              pour garantir votre anonymat et la protection de vos données,
+              conformément à la loi 09-08 relative à la protection des données à
+              caractère personnel et aux lois internationales.
             </p>
-            <ul className="list-disc pl-6 text-gray-600 dark:text-gray-100 text-sm">
+             <p className="text-gray-700 mb-2">
+                Pour renforcer la sécurité de votre démarche, nous vous
+                recommandons de suivre ces quelques conseils simples :{" "}
+              </p>
+            <ul className="list-disc pl-6 text-gray-600 dark:text-gray-100">
+             
               <li>
-                N&apos;indiquez aucune information personnelle si vous souhaitez
-                rester anonyme.
+               Naviguez en toute sécurité : vérifiez que l&apos;icône 🔒 de connexion sécurisée est visible dans votre navigateur.
               </li>
               <li>
-                Vérifiez que vous utilisez une connexion sécurisée (cadenas
-                visible).
+               Protégez votre anonymat : si vous souhaitez rester anonyme, ne mentionnez pas d&apos;éléments permettant de vous identifier (nom, adresse, e-mail personnel, etc.).
               </li>
-              <li>Ajoutez le lien vers le serveur BKMS® dans vos favoris.</li>
+              <li>Utilisez un accès privé : privilégiez une connexion Internet personnelle et un appareil non partagé pour éviter toute trace.</li>
               <li>
-                Évitez d&pos;utiliser un réseau d&pos;entreprise car il peut
-                être tracé.
+                Accédez à CompliVox directement : enregistrez le lien de la plateforme dans vos favoris afin d&apos;éviter les redirections non fiables.
               </li>
+             
             </ul>
+             <p className="text-gray-700 mt-6">
+                 <span className="font-bold">CompliVox</span> est conçu pour vous offrir un espace d&apos;expression fiable, confidentiel et sécurisé. Chaque alerte transmise est traitée dans le strict respect de la réglementation en vigueur.
+              </p>
           </CardContent>
         </Card>
-      </div>
+     
       <Card className="w-full  dark:bg-slate-700">
-        <CardHeader>       
-          <h2 className="text-lg font-semibold mb-4">Question de sécurité</h2>
-        </CardHeader>
         <CardContent className="lg:grid-cols-3 grid-cols-1 grid  gap-4">
           <div className="col-span-2">
-            <p className="text-gray-600 mb-4 dark:text-gray-100 ">
-              Afin de protéger le système contre toute attaque électronique,
-              veuillez saisir dans la zone de texte la suite de caractères.
+             <h2 className="text-2xl font-bold mb-4">Question de sécurité</h2>
+            <p className="text-gray-600 mb-2 dark:text-gray-100 ">
+              Afin de protéger la plateforme contre toute tentative d&apos;accès
+              automatisé ou malveillant,
+            </p>
+             <p className="text-gray-600 mb-4 dark:text-gray-100 ">
+              Merci de saisir la suite de caractères
+              affichée dans la zone ci-dessous.
             </p>
           </div>
           <div>
@@ -101,18 +111,17 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
                     {captcha}
                   </div>
                   <div className="flex gap-2 w-full">
-                    
-                  <Button onClick={refreshCaptcha} variant="outline">
-                    <RefreshCwIcon className="mr-2 h-4 w-4" /> Refresh
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={playCaptchaAudio}
-                  >
-                    <Volume2 />
-                    Écouter le code
-                  </Button>
+                    <Button onClick={refreshCaptcha} variant="outline">
+                      <RefreshCwIcon className="mr-2 h-4 w-4" /> Refresh
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={playCaptchaAudio}
+                    >
+                      <Volume2 />
+                      Écouter le code
+                    </Button>
                   </div>
                 </div>
                 <div>
@@ -128,15 +137,16 @@ const Captcha = ({ setIsCaptchaVerified }: CaptchaProps) => {
                 </div>
                 <Button
                   onClick={handleCaptchaCheck}
-                  className="w-full bg-blue-700 text-white cursor-pointer"
+                  className="w-full bg-blue-700 text-white hover:bg-blue-800 cursor-pointer"
                 >
-                  Submit
+                  Soumettre
                 </Button>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
+       </div>
     </div>
   );
 };

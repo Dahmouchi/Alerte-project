@@ -12,6 +12,116 @@ export type Product = {
   updated_at: string;
 };
 
+export const categories = [
+  {
+    title: "Corruption ou avantage indu",
+    value: "corruption",
+    description:
+      "Actes visant à influencer une décision, un traitement ou une situation professionnelle en échange d’un bénéfice personnel.",
+    icon: "🔒",
+    exemple: [
+      "Versement d’un avantage pour faciliter une attribution.",
+      "Intervention pour favoriser un tiers.",
+    ],
+  },
+  {
+    title: "Blanchiment d’argent et financement du terrorisme",
+    value: "blanchiment",
+    description:
+      "Tout montage, opération ou dissimulation ayant pour but de légitimer des fonds d’origine illicite ou de soutenir une activité criminelle.",
+    icon: "💵​",
+    exemple: [
+      "Transfert de fonds via des entités intermédiaires.",
+      "Montage destiné à masquer l’origine de capitaux.",
+    ],
+  },
+  {
+    title: "Discrimination, harcèlement ou comportement déplacé",
+    value: "discrimination",
+    description:
+      "Tout propos ou comportement portant atteinte au respect, à l’inclusion ou à la dignité d’une personne.",
+    icon: "🚫",
+    exemple: [
+      "Remarques à connotation sexiste ou raciste.",
+      "Isolement d’un collaborateur, pressions répétées.",
+    ],
+  },
+  {
+    title: "Utilisation non autorisée des ressources",
+    value: "abus",
+    description:
+      "Emploi de biens, budgets, outils ou compétences de l’organisation à des fins personnelles ou sans lien avec l’activité professionnelle.",
+    icon: "⚖️",
+    exemple: [
+      "Usage privé d’un véhicule de service.",
+      "Mobilisation de personnel pour un projet personnel.",
+    ],
+  },
+  {
+    title: "Abus de marché",
+    value: "manipulation",
+    description:
+      "Comportements visant à fausser les règles normales de concurrence ou de fonctionnement des marchés.",
+    icon: "📉",
+    exemple: [
+      "Diffusion d’informations inexactes.",
+      "Manipulation de prix ou de volumes.",
+    ],
+  },
+  {
+    title: "Fraude",
+    value: "fraude",
+    description:
+      "Actes intentionnels visant à tromper, détourner ou obtenir un avantage indu, en violation des règles internes ou légales.",
+    icon: "💰",
+    exemple: [
+      "Fraude fiscale.",
+      "Falsification de documents, escroquerie, fraude identitaire.",
+    ],
+  },
+  {
+    title: "Conflit d’intérêt",
+    value: "conflit",
+    description:
+      "Situation dans laquelle un collaborateur a un intérêt personnel susceptible d’influencer ses décisions professionnelles.",
+    icon: "⚠️",
+    exemple: [
+      "Participer à un appel d’offres impliquant un proche.",
+      "Traiter un dossier où l’on a un intérêt personnel direct ou indirect.",
+    ],
+  },
+  {
+    title: "Protection des données et vie privée",
+    value: "donnees",
+    description:
+      "Manquement aux obligations légales ou internes en matière de traitement des données à caractère personnel ou de confidentialité.",
+    icon: "🔐",
+    exemple: [
+      "Accès non autorisé à des données sensibles.",
+      "Conservation illégale de fichiers, absence de consentement pour un traitement.",
+    ],
+  },
+  {
+    title: "Non-respect des règles sociales ou environnementales",
+    value: "environnement",
+    description:
+      "Actions contraires aux engagements de l’organisation en matière d’éthique sociale, de conditions de travail ou de respect de l’environnement.",
+    icon: "🌍",
+    exemple: [
+      "Pollution non déclarée.",
+      "Exposition à des risques sans protection adéquate, non-respect des normes de sécurité.",
+    ],
+  },
+  {
+    title: "Autres signalements graves ou irréguliers",
+    value: "autre",
+    description:
+      "Faits préoccupants n’entrant pas dans les catégories précédentes, mais susceptibles de porter atteinte à l’éthique ou à la légalité.",
+    icon: "🛑",
+    exemple: [],
+  },
+];
+
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems: NavItems[] = [
   {
