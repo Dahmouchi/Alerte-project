@@ -89,7 +89,7 @@ export function ChartCirculare({ alerts }: Props) {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
   }, [chartData]);
   return (
-    <Card className="flex flex-col bg-white dark:bg-slate-950">
+    <Card className="flex flex-col bg-white dark:bg-slate-950 h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Pie Chart - Donut with Text</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

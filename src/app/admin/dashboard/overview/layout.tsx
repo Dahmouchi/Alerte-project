@@ -12,6 +12,8 @@ import { AlertTriangle, CheckCircle, Rows, Users } from "lucide-react";
 import React from "react";
 import Chart2 from "./@chart2/page";
 import RadarChart from "./@radar_chart/page";
+import { AlerteChart } from "../../_components/AlertChart";
+import { CriticiteChart } from "../../_components/AlerteChart2";
 
 export default async function OverViewLayout({
   sales,
@@ -122,16 +124,21 @@ export default async function OverViewLayout({
           </Card>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <div className="col-span-4">{bar_stats}</div>
+          <div className="col-span-4">
+            <AlerteChart />
+          </div>
+
           <div className="col-span-4 md:col-span-3">
             {/* sales arallel routes */}
             {sales}
           </div>
-          {/*<div className="col-span-4 md:col-span-3">
-             sales arallel routes 
-           <Chart2 />
+          <div className="col-span-4 md:col-span-3">
+            <Chart2 />
           </div>
-           <div className="col-span-4">
+          <div className="col-span-4">
+            <CriticiteChart />
+          </div>
+          {/*<div className="col-span-4">
             <RadarChart />
            </div>*/}
         </div>

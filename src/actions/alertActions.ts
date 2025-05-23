@@ -8,17 +8,14 @@ import { AlertHistory, RecevalbeStatus, UserAlertStatus } from "@prisma/client";
 import { io } from "socket.io-client";
 import { sendAlertNotification } from "./notifications";
 import sendEmail from "./sendemail";
-import { ElevenLabsClient } from 'elevenlabs';
-import sharp from 'sharp';
+import { ElevenLabsClient } from "elevenlabs";
+import sharp from "sharp";
 
 import prisma from "@/lib/prisma";
 
-export async function createAlerte(
-  category: string,
-  createdById: string,
-){
-  try{
-    if(category || createdById ){
+export async function createAlerte(category: string, createdById: string) {
+  try {
+    if (category || createdById) {
       const newAlert = await prisma.alert.create({
         data: {
           code: nanoid(8), // Generate an 8-character unique code
@@ -30,20 +27,19 @@ export async function createAlerte(
       createHistoryRecord(
         newAlert.id,
         createdById,
-        'CREATE',
-       `L'alerte a été créée par l'utilisateur.`
-      )
-      return newAlert
-    }else{
+        "CREATE",
+        `L'alerte a été créée par l'utilisateur.`
+      );
+      return newAlert;
+    } else {
       console.error("Error category or createby:");
       throw new Error("Failed to update alert");
     }
-  }catch(error){
+  } catch (error) {
     console.error("Error updating alert:", error);
     throw new Error("Failed to update alert");
   }
 }
-
 
 export async function updateAlert(
   alertId: string,
@@ -59,19 +55,19 @@ export async function updateAlert(
 ) {
   try {
     const imageUrls: string[] = [];
-    const quality = 80
+    const quality = 80;
     if (files) {
       for (const image of files) {
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const filename = `${timestamp}-${image.name}`;
         const arrayBuffer = await image.arrayBuffer();
         const test = await sharp(arrayBuffer)
-        .resize(1200)
-        .jpeg({ quality }) // or .png({ compressionLevel: 9 })
-        .toBuffer();
-        
+          .resize(1200)
+          .jpeg({ quality }) // or .png({ compressionLevel: 9 })
+          .toBuffer();
+
         const fileContent = Buffer.from(test);
-      
+
         const uploadResponse = await uploadFile(
           fileContent,
           filename,
@@ -97,7 +93,7 @@ export async function updateAlert(
         category: selectedCategory,
         type,
         status: "EN_COURS_TRAITEMENT",
-        createdAt:new Date(),
+        createdAt: new Date(),
       },
     });
 
@@ -124,7 +120,7 @@ export async function updateAlert(
       updatedAlert.code,
       "Une nouvelle alerte a été détectée dans le système."
     );
-    
+
     createHistoryRecord(
       alertId,
       updatedAlert.createdById,
@@ -141,15 +137,15 @@ export async function updateAlert(
 }
 export const transformVoice = async (blob: Blob): Promise<Blob | undefined> => {
   const formData = new FormData();
-  formData.append('audio', blob, 'recording.webm');
+  formData.append("audio", blob, "recording.webm");
   const apiKey = process.env.ELEVENLABS_API_KEY;
-  
+
   try {
     const client = new ElevenLabsClient({ apiKey });
     const voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Your preferred voice ID
 
-    const audioBlob = new Blob([await blob.arrayBuffer()], { 
-      type: blob.type 
+    const audioBlob = new Blob([await blob.arrayBuffer()], {
+      type: blob.type,
     });
 
     const audioStream = await client.speechToSpeech.convert(voiceId, {
@@ -163,14 +159,13 @@ export const transformVoice = async (blob: Blob): Promise<Blob | undefined> => {
     for await (const chunk of audioStream) {
       chunks.push(chunk);
     }
-    
-    // Combine all chunks into a single Blob
-    const transformedBlob = new Blob(chunks, { type: 'audio/mp3' });
-    
-    return transformedBlob;
 
+    // Combine all chunks into a single Blob
+    const transformedBlob = new Blob(chunks, { type: "audio/mp3" });
+
+    return transformedBlob;
   } catch (error) {
-    console.error('ElevenLabs error:', error);
+    console.error("ElevenLabs error:", error);
     return undefined;
   }
 };
@@ -178,9 +173,9 @@ export const transformVoice = async (blob: Blob): Promise<Blob | undefined> => {
 export async function uploadAudio(audioBlob: Blob): Promise<string> {
   try {
     // Create a filename with timestamp
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `audio-recording-${timestamp}.webm`; // or .wav depending on your recorder
-    
+
     // Convert Blob to ArrayBuffer
     const arrayBuffer = await audioBlob.arrayBuffer();
     const fileContent = Buffer.from(arrayBuffer);
@@ -189,17 +184,17 @@ export async function uploadAudio(audioBlob: Blob): Promise<string> {
     const uploadResponse = await uploadFile(
       fileContent,
       filename, // Use our generated filename
-      audioBlob.type || 'audio/webm' // Fallback MIME type
+      audioBlob.type || "audio/webm" // Fallback MIME type
     );
 
     if (!uploadResponse?.Key) {
-      throw new Error('Upload failed: No key returned');
+      throw new Error("Upload failed: No key returned");
     }
 
     return getFileUrl(uploadResponse.Key);
   } catch (error) {
-    console.error('Audio upload error:', error);
-    throw new Error('Failed to upload audio');
+    console.error("Audio upload error:", error);
+    throw new Error("Failed to upload audio");
   }
 }
 export async function createHistoryRecord(
@@ -237,7 +232,12 @@ export async function saveQr(userId: string, qrSecret: string) {
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function updateConclusion(conclusionId: string, content: string,criticite:number,alertId:string) {
+export async function updateConclusion(
+  conclusionId: string,
+  content: string,
+  criticite: number,
+  alertId: string
+) {
   try {
     const updatedConclusion = await prisma.conclusion.update({
       where: { id: conclusionId },
@@ -246,14 +246,13 @@ export async function updateConclusion(conclusionId: string, content: string,cri
       },
     });
     await prisma.alert.update({
-      where:{
-         id:alertId,
-
+      where: {
+        id: alertId,
       },
-      data:{
-        criticite:criticite,
-      }
-    })
+      data: {
+        criticite: criticite,
+      },
+    });
     return updatedConclusion;
   } catch (error) {
     console.error("Error fetching user info:", error);
@@ -300,7 +299,9 @@ export async function AssignAlertAdmin(
           <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'admin vous a assigné une nouvelle alerte nécessitant votre traitement.</p>
         </div>
         
-        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${updatedAlert.code} et faire le nécessaire.</p>
+        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${
+          updatedAlert.code
+        } et faire le nécessaire.</p>
         
         <a href="https://alerte-project.vercel.app/analyste" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
       </div>
@@ -353,7 +354,9 @@ export async function AssignAlertAdmin(
                 <p style="font-size: 15px; color: #1e293b; margin: 0; font-weight: 500;">L'admin vous a assigné une nouvelle alerte nécessitant votre validation.</p>
               </div>
               
-        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${updatedAlert.code} et faire le nécessaire.</p>
+        <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">Veuillez vous connecter à votre espace pour consulter les détails de l'alerte ${
+          updatedAlert.code
+        } et faire le nécessaire.</p>
               
               <a href="https://alerte-project.vercel.app/responsable" style="display: inline-block; background-color: #4361ee; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 15px;">Accéder à mon espace</a>
             </div>
@@ -391,7 +394,9 @@ export async function AssignAlertAdmin(
       "ASSIGN_ADMIN",
       `L'admin s'est assigné cette alerte`
     );
-    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+    const socket = io(
+      "https://bizlist-notifications-server.1ulq7p.easypanel.host"
+    );
     socket.emit("notifyUser");
 
     return updatedAlert;
@@ -401,17 +406,17 @@ export async function AssignAlertAdmin(
   }
 }
 export async function updateConclusionWithAlerte(
-  conId:string,
+  conId: string,
   userId: string,
   content: string,
   alertId: string,
   recevable: RecevalbeStatus,
-  criticite: number,
+  criticite: number
 ) {
   try {
     if (recevable === "RECEVALBE") {
       const updatedAlert = await prisma.conclusion.update({
-        where:{id:conId},
+        where: { id: conId },
         data: {
           content,
         },
@@ -424,7 +429,7 @@ export async function updateConclusionWithAlerte(
           criticite: criticite,
         },
       });
-     
+
       createHistoryRecord(
         alertId,
         userId,
@@ -434,7 +439,7 @@ export async function updateConclusionWithAlerte(
       return { updatedAlert, res };
     } else {
       const updatedAlert = await prisma.conclusion.update({
-        where:{id:conId},
+        where: { id: conId },
         data: {
           content,
         },
@@ -500,7 +505,9 @@ export async function saveConclusion(
           },
         });
       }
-      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+      const socket = io(
+        "https://bizlist-notifications-server.1ulq7p.easypanel.host"
+      );
       socket.emit("notifyUser");
       createHistoryRecord(
         alertId,
@@ -544,7 +551,9 @@ export async function saveConclusion(
           },
         });
       }
-      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+      const socket = io(
+        "https://bizlist-notifications-server.1ulq7p.easypanel.host"
+      );
       socket.emit("notifyUser");
 
       return { updatedAlert, res };
@@ -558,43 +567,43 @@ export async function saveReponse(
   userId: string,
   content: string,
   alertId: string,
-  involved: boolean,
+  involved: boolean
 ) {
   try {
-   
-      const updatedAlert = await prisma.conclusion.create({
-        data: {
-          content,
-          alertId,
-          createdById: userId,
-          analysteValidation:"INFORMATIONS_MANQUANTES",
-        },
-      });
-      const res = await prisma.alert.update({
-        where: { id: alertId },
-        data: {
-          responsableValidation:"PENDING",
-        },
-      });
-      createHistoryRecord(
+    const updatedAlert = await prisma.conclusion.create({
+      data: {
+        content,
         alertId,
-        userId,
-        "SET_STATUS",
-        `L'alerte ${res.code} a été jugée non recevable par l'analyste et transmise au responsable pour information.`
+        createdById: userId,
+        analysteValidation: "INFORMATIONS_MANQUANTES",
+      },
+    });
+    const res = await prisma.alert.update({
+      where: { id: alertId },
+      data: {
+        responsableValidation: "PENDING",
+      },
+    });
+    createHistoryRecord(
+      alertId,
+      userId,
+      "SET_STATUS",
+      `L'alerte ${res.code} a été jugée non recevable par l'analyste et transmise au responsable pour information.`
+    );
+    if (res.assignedResponsableId) {
+      await prisma.notification.create({
+        data: {
+          userId: res.assignedResponsableId,
+          title: "Alerte traitée par l'analyste",
+          message: `l'alerte ${res.code} traitée et en attente de validation`,
+          type: "SYSTEM",
+          relatedId: res.code,
+        },
+      });
+
+      const socket = io(
+        "https://bizlist-notifications-server.1ulq7p.easypanel.host"
       );
-      if (res.assignedResponsableId) {
-        await prisma.notification.create({
-          data: {
-            userId: res.assignedResponsableId,
-            title: "Alerte traitée par l'analyste",
-            message:
-              `l'alerte ${res.code} traitée et en attente de validation`,
-            type: "SYSTEM",
-            relatedId: res.code,
-          },
-        });
-      
-      const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
       socket.emit("notifyUser");
 
       return { updatedAlert, res };
@@ -604,7 +613,11 @@ export async function saveReponse(
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function saveDemande(userId: string, alertId: string,response:string) {
+export async function saveDemande(
+  userId: string,
+  alertId: string,
+  response: string
+) {
   try {
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
@@ -615,9 +628,9 @@ export async function saveDemande(userId: string, alertId: string,response:strin
     });
     const conclusion = await prisma.conclusion.create({
       data: {
-        content:response,
+        content: response,
         alertId,
-        analysteValidation:"APPROVED",
+        analysteValidation: "APPROVED",
         createdById: userId,
       },
     });
@@ -626,14 +639,16 @@ export async function saveDemande(userId: string, alertId: string,response:strin
         data: {
           userId: updatedAlert.assignedResponsableId,
           title: "Alerte traitée par l'analyste",
-          message:`Demande de clôture de l'alerte ${updatedAlert.code}`,
+          message: `Demande de clôture de l'alerte ${updatedAlert.code}`,
           type: "SYSTEM",
           relatedId: updatedAlert.code,
         },
       });
     }
 
-    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
+    const socket = io(
+      "https://bizlist-notifications-server.1ulq7p.easypanel.host"
+    );
     socket.emit("notifyUser");
 
     createHistoryRecord(
@@ -648,7 +663,11 @@ export async function saveDemande(userId: string, alertId: string,response:strin
     throw new Error("Failed to retrieve user info");
   }
 }
-export async function AnnulerClo(conId:string,userId: string, alertId: string) {
+export async function AnnulerClo(
+  conId: string,
+  userId: string,
+  alertId: string
+) {
   try {
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
@@ -656,26 +675,27 @@ export async function AnnulerClo(conId:string,userId: string, alertId: string) {
         status: "EN_COURS_TRAITEMENT",
         analysteValidation: "INFORMATIONS_MANQUANTES",
         responsableValidation: "APPROVED",
-        involved:false,
+        involved: false,
       },
     });
     const conclusion = await prisma.conclusion.delete({
-      where:{id:conId}
+      where: { id: conId },
     });
-    if(updatedAlert.assignedAnalystId){
+    if (updatedAlert.assignedAnalystId) {
       await prisma.notification.create({
         data: {
           userId: updatedAlert.assignedAnalystId,
           title: "Demande de clôture Annulée",
-          message:
-            `la demande de clôture de l'alerte ${updatedAlert.code} a été annuler par le responsable`,
+          message: `la demande de clôture de l'alerte ${updatedAlert.code} a été annuler par le responsable`,
           type: "SYSTEM",
           relatedId: updatedAlert.code,
         },
       });
-    
-    const socket = io("https://bizlist-notifications-server.1ulq7p.easypanel.host");
-    socket.emit("notifyUser");
+
+      const socket = io(
+        "https://bizlist-notifications-server.1ulq7p.easypanel.host"
+      );
+      socket.emit("notifyUser");
     }
     createHistoryRecord(
       alertId,
@@ -687,5 +707,68 @@ export async function AnnulerClo(conId:string,userId: string, alertId: string) {
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw new Error("Failed to retrieve user info");
+  }
+}
+
+// app/actions/alertActions.ts
+
+// Get distinct years from alert creation dates
+export async function getAvailableYears() {
+  try {
+    const years = await prisma.$queryRaw<{ year: number }[]>`
+      SELECT DISTINCT EXTRACT(YEAR FROM "createdAt") AS year 
+      WHERE "step" = 2
+      FROM "Alert"
+      ORDER BY year DESC
+    `;
+    return years.map((item) => Math.floor(item.year));
+  } catch (error) {
+    console.error("Error fetching available years:", error);
+    return [];
+  }
+}
+
+// Get number of alerts by month for a given year
+export async function getAlertDataByYear(year: number) {
+  try {
+    const monthlyCounts = await prisma.$queryRaw<
+      { month: string; count: bigint }[]
+    >`
+      SELECT 
+        TO_CHAR("createdAt", 'Month') AS month,
+        COUNT(*) AS count
+      FROM "Alert"
+      WHERE EXTRACT(YEAR FROM "createdAt") = ${year} AND "step" = 2
+      GROUP BY TO_CHAR("createdAt", 'Month'), EXTRACT(MONTH FROM "createdAt")
+      ORDER BY EXTRACT(MONTH FROM "createdAt")
+    `;
+
+    return monthlyCounts.map((item) => ({
+      month: item.month.trim(),
+      count: Number(item.count),
+    }));
+  } catch (error) {
+    console.error("Error fetching alert data:", error);
+    return [];
+  }
+}
+
+export async function getAlerteByCriticite() {
+  try {
+    const data = await prisma.$queryRaw<{ criticite: number; count: bigint }[]>`
+  SELECT "criticite", COUNT(*) AS count
+  FROM "Alert"
+  WHERE "step" = 2
+  GROUP BY "criticite"
+  ORDER BY "criticite"
+`;
+
+    return data.map((item) => ({
+      criticite: item.criticite,
+      count: Number(item.count),
+    }));
+  } catch (error) {
+    console.error("Error fetching alert data by criticité:", error);
+    return [];
   }
 }
