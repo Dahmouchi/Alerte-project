@@ -22,7 +22,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Rechercher par ID..."
+          placeholder="Rechercher par Code..."
           value={(table.getColumn("code")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("code")?.setFilterValue(event.target.value)
@@ -36,13 +36,7 @@ export function DataTableToolbar<TData>({
             options={status_options}
           />
         )}
-       {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Statut"
-            options={status_options}
-          />
-        )}
+      
         {isFiltered && (
           <Button
             variant="ghost"

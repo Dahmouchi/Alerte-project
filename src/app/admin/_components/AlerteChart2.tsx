@@ -24,7 +24,7 @@ import { getAlerteByCriticite } from "@/actions/alertActions"
 const criticiteLabels: Record<number, string> = {
   0: "Non classé",
   1: "Faible",
-  2: "Moyenne",
+  2: "Modérée",
   3: "Élevée",
   4: "Critique",
 }
@@ -32,9 +32,9 @@ const criticiteLabels: Record<number, string> = {
 const criticiteColors: Record<number, string> = {
   0: "#94a3b8",  // Neutral - slate-400
   1: "#4ade80",  // Green - green-400
-  2: "#facc15",  // Yellow - yellow-400
-  3: "#fb923c",  // Orange - orange-400
-  4: "#f87171",  // Red - red-400
+  2: "#0096FF",  // Yellow - yellow-400
+  3: "#FFA500",  // Orange - orange-400
+  4: "#FF0000",  // Red - red-400
 }
 
 type AlerteChartItem = {
@@ -83,7 +83,7 @@ export function CriticiteChart() {
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col bg-white dark:bg-slate-950 h-full">
       <CardHeader>
         <CardTitle>Alertes par Criticité</CardTitle>
         <CardDescription>Nombre d&apos;alertes regroupées par niveau</CardDescription>

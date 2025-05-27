@@ -1,5 +1,5 @@
 import { delay } from '@/constants/mock-api';
-import { ChartCirculare } from '@/features/overview/components/chartCircualre';
+import { ChartCirculare } from '@/features/overview/components/chartCircualreCategory';
 import prisma from '@/lib/prisma';
 
 export default async function Chart2() {

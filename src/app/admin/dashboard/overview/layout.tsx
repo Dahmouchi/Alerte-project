@@ -127,16 +127,15 @@ export default async function OverViewLayout({
           <div className="col-span-4">
             <AlerteChart />
           </div>
-
           <div className="col-span-4 md:col-span-3">
             {/* sales arallel routes */}
             {sales}
           </div>
           <div className="col-span-4 md:col-span-3">
-            <Chart2 />
+            <CriticiteChart />
           </div>
           <div className="col-span-4">
-            <CriticiteChart />
+            <Chart2 />
           </div>
           {/*<div className="col-span-4">
             <RadarChart />

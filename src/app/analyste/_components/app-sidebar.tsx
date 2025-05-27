@@ -9,16 +9,20 @@ import {
   SwatchBook,
   BookMarked,
   FolderLock,
+  LogOut,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 // This is sample data.
 const datas = {
@@ -82,6 +86,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={datas.navMain} />
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>
+        <Button
+          onClick={() => signOut({ callbackUrl: "/analyste/login" })}
+          className="cursor-pointer flex justify-start w-full text-start bg-white text-slate-800 shadow-md transition-all rounded-lg duration-200 py-5 hover:bg-blue-600 dark:bg-slate-800 dark:text-white hover:text-white dark:hover:bg-gray-800"
+        >
+          <div>
+            {" "}
+            <LogOut className="w-4 h-4" />
+          </div>
+          <span>Déconnexion</span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

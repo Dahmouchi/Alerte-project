@@ -114,24 +114,46 @@ export function AlerteChart() {
       </CardHeader>
       <CardContent className="">
         {isLoading ? (
-          <div className="h-[300px] flex items-center justify-center">
+          <div className="h-[300px] w-full flex items-center justify-center">
             {availableYears.length === 0 ? (
-              "No data available"
-            ) : (
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 w-full">
                 {/* Chart Header Skeleton */}
                 <div className="flex justify-between items-center">
                   <div className="space-y-2">
-                    <Skeleton className="h-6 w-[180px]" />
-                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-4 w-full" />
                   </div>
-                  <Skeleton className="h-9 w-[120px]" />
+                  <Skeleton className="h-9 w-full" />
                 </div>
 
                 {/* Chart Area Skeleton */}
                 <div className="relative h-[300px] w-full">
-                 
+                  {/* Chart grid lines */}
+                  <div className="absolute left-12 right-3 top-0 bottom-10 flex flex-col justify-between">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-px w-full" />
+                    ))}
+                  </div>
 
+                  {/* Chart area */}
+                  <div className="absolute left-12 right-3 top-0 bottom-10">
+                    <Skeleton className="h-full w-full rounded-lg" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-4 w-full">
+                {/* Chart Header Skeleton */}
+                <div className="flex justify-between items-center w-full">
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                  <Skeleton className="h-9 w-full" />
+                </div>
+
+                {/* Chart Area Skeleton */}
+                <div className="relative h-[300px] w-full">
                   {/* Chart grid lines */}
                   <div className="absolute left-12 right-3 top-0 bottom-10 flex flex-col justify-between">
                     {[...Array(5)].map((_, i) => (

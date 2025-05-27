@@ -25,7 +25,7 @@ export async function RecentSales(alerts: any) {
     },
   });
   return (
-    <Card className="bg-white dark:bg-slate-950">
+    <Card className="bg-white dark:bg-slate-950 h-full">
     <CardHeader>
       <CardTitle>Alertes récentes</CardTitle>
       <CardDescription>
@@ -33,7 +33,7 @@ export async function RecentSales(alerts: any) {
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <ScrollArea className="h-[300px] w-full rounded-md border">
+      <ScrollArea className="h-full w-full rounded-md border">
         <div className="space-y-1 p-1">
           {alerts.alerts.map((sale: any, index: any) => (
             <div

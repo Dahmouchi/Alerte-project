@@ -58,6 +58,7 @@ export async function updateAlert(
     const quality = 80;
     if (files) {
       for (const image of files) {
+        
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const filename = `${timestamp}-${image.name}`;
         const arrayBuffer = await image.arrayBuffer();
@@ -717,7 +718,6 @@ export async function getAvailableYears() {
   try {
     const years = await prisma.$queryRaw<{ year: number }[]>`
       SELECT DISTINCT EXTRACT(YEAR FROM "createdAt") AS year 
-      WHERE "step" = 2
       FROM "Alert"
       ORDER BY year DESC
     `;
@@ -738,7 +738,7 @@ export async function getAlertDataByYear(year: number) {
         TO_CHAR("createdAt", 'Month') AS month,
         COUNT(*) AS count
       FROM "Alert"
-      WHERE EXTRACT(YEAR FROM "createdAt") = ${year} AND "step" = 2
+      WHERE EXTRACT(YEAR FROM "createdAt") = ${year}
       GROUP BY TO_CHAR("createdAt", 'Month'), EXTRACT(MONTH FROM "createdAt")
       ORDER BY EXTRACT(MONTH FROM "createdAt")
     `;

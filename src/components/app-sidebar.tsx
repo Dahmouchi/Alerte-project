@@ -8,17 +8,21 @@ import {
   Settings2,
   File,
   SendHorizonal,
+  LogOut,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
   
 } from "@/components/ui/sidebar";
 import Image from "next/image";
+import { Button } from "./ui/button";
+import { signOut } from "next-auth/react";
 
 
 // This is sample data.
@@ -79,6 +83,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={datas.navMain} />
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>
+        <Button
+          onClick={() => signOut({ callbackUrl: "/user/login" })}
+          className="cursor-pointer flex justify-start w-full text-start bg-white text-slate-800 shadow-md transition-all rounded-lg duration-200 py-5 hover:bg-blue-600 dark:bg-slate-800 dark:text-white hover:text-white dark:hover:bg-gray-800"
+        >
+          <div>
+            {" "}
+            <LogOut
+             className="w-4 h-4" />
+          </div>
+          <span>Déconnexion</span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
