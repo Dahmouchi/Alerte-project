@@ -10,10 +10,6 @@ import {
 import prisma from "@/lib/prisma";
 import { AlertTriangle, CheckCircle, Rows, Users } from "lucide-react";
 import React from "react";
-import Chart2 from "./@chart2/page";
-import RadarChart from "./@radar_chart/page";
-import { AlerteChart } from "../../_components/AlertChart";
-import { CriticiteChart } from "../../_components/AlerteChart2";
 import DashboardCharts from "../../_components/DashboardCharts";
 
 export default async function OverViewLayout({
