@@ -19,65 +19,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getAlerteByCriticite } from "@/actions/alertActions"
 
-const criticiteLabels: Record<number, string> = {
-  0: "Non classé",
-  1: "Faible",
-  2: "Modérée",
-  3: "Élevée",
-  4: "Critique",
-}
-
-const criticiteColors: Record<number, string> = {
-  0: "#94a3b8",  // Neutral - slate-400
-  1: "#4ade80",  // Green - green-400
-  2: "#0096FF",  // Yellow - yellow-400
-  3: "#FFA500",  // Orange - orange-400
-  4: "#FF0000",  // Red - red-400
-}
-
-type AlerteChartItem = {
-  label: string
-  count: number
-  fill: string
-}
-
-// Initialize with all criticity levels
-const initialData: AlerteChartItem[] = [0, 1, 2, 3, 4].map((level) => ({
-  label: criticiteLabels[level],
-  count: 0,
-  fill: criticiteColors[level],
-}))
-
-export function CriticiteChart() {
-  const [data, setData] = useState<AlerteChartItem[]>(initialData)
-
-  useEffect(() => {
-    async function fetchData() {
-      const json = await getAlerteByCriticite()
-      
-      // Create a map from the API data for easy lookup
-      const apiDataMap = new Map<number, number>()
-      json.forEach((item: { criticite: number; count: number }) => {
-        apiDataMap.set(item.criticite, item.count)
-      })
-      
-      // Update the initial data with counts from API
-      const updatedData = initialData.map(item => {
-        const level = Object.entries(criticiteLabels).find(
-          ([_, label]) => label === item.label
-        )?.[0]
-        const count = apiDataMap.get(Number(level)) || 0
-        return { ...item, count }
-      })
-      
-      setData(updatedData)
-    }
-
-    fetchData()
-  }, [])
-
+export function CriticiteChart({data}:{data:any}) {
+ 
   const chartConfig: ChartConfig = {
     // Add your chart configuration here if needed
   }
@@ -116,7 +60,7 @@ export function CriticiteChart() {
                 />
               )}
             >
-              {data.map((entry, index) => (
+              {data.map((entry:any, index:any) => (
                 <Rectangle
                   key={`bar-${index}`}
                   fill={entry.fill}

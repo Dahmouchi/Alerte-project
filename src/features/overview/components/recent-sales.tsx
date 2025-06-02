@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
 import {
   Card,
   CardHeader,
@@ -7,29 +8,17 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Eye } from "lucide-react";
-import { startOfMonth, endOfMonth } from "date-fns";
-import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export async function RecentSales(alerts: any) {
-  const startDate = startOfMonth(new Date()); // First day of the month
-  const endDate = endOfMonth(new Date()); // Last day of the month
+export function RecentSales(alerts: any) {
 
-  const alertsThisMonth = await prisma.alert.count({
-    where: {
-      createdAt: {
-        gte: startDate,
-        lt: endDate,
-      },
-    },
-  });
   return (
     <Card className="bg-white dark:bg-slate-950 h-full">
     <CardHeader>
       <CardTitle>Alertes récentes</CardTitle>
       <CardDescription>
-        Vous recevez {alertsThisMonth} alertes ce mois-ci.
+        Vous recevez {alerts.alerts.length} alertes ce mois-ci.
       </CardDescription>
     </CardHeader>
     <CardContent>

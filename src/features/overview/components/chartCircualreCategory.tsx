@@ -19,10 +19,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-type Props = {
-  alerts: { category: any }[];
-}
 const chartConfig = {
   visitors: {
     label: "Visitors",
@@ -46,40 +42,24 @@ const chartConfig = {
  
 } satisfies ChartConfig
 // Utility to assign a color for each category
-const generateCategoryColors = (categories: string[]) => {
-  const baseColors = [
-    "#347928", "#FF9B45", "#E50046", "#6439FF", "#FFC300",
-    "#00A6ED", "#A100FF", "#FF6F61", "#6D7278", "#00C49F",
-  ]
-  const colors: Record<string, string> = {}
-  categories.forEach((cat, index) => {
-    colors[cat] = baseColors[index % baseColors.length]
-  })
-  return colors
-}
 
+type Props = {
+  chartData: {
+    browser: string;
+    visitors: number;
+    fill: string;
+  }[];
+  isLoading?: boolean;
+};
 
-export function ChartCirculare({ alerts }: Props) {
-  const chartData = React.useMemo(() => {
-    const categoryCount: Record<string, number> = {}
-
-
-    alerts.forEach((alert) => {
-      categoryCount[alert.category] = (categoryCount[alert.category] || 0) + 1
-    })
-
-    const categoryColors = generateCategoryColors(Object.keys(categoryCount))
-
-    return Object.entries(categoryCount).map(([category, visitors]) => ({
-      browser: category,
-      visitors,
-      fill: categoryColors[category],
-    }))
-  }, [alerts])
-
+export function ChartCirculare({ chartData, isLoading }: Props) {
   const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [chartData])
+    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
+  }, [chartData]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Card className="flex flex-col bg-white dark:bg-slate-950 h-full">
@@ -88,7 +68,7 @@ export function ChartCirculare({ alerts }: Props) {
         <CardDescription>Répartition des alertes selon les catégories</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col lg:flex-row lg:items-center gap-2 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto lg:min-h-[220px] ">
+        <ChartContainer config={chartConfig} className="mx-auto lg:min-h-[220px]">
           <PieChart className="w-fit">
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie
@@ -123,7 +103,7 @@ export function ChartCirculare({ alerts }: Props) {
                           Alertes
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -131,9 +111,9 @@ export function ChartCirculare({ alerts }: Props) {
           </PieChart>
         </ChartContainer>
         <div className="flex flex-col gap-2 p-4">
-            <h3 className="text-sm font-medium">Légende</h3>
-            <div className="grid grid-cols-1 gap-2">
-              {chartData.map((item) => (
+          <h3 className="text-sm font-medium">Légende</h3>
+          <div className="grid grid-cols-1 gap-2">
+             {chartData.map((item) => (
                 <div key={item.browser} className="flex items-center gap-2">
                   <div 
                     className="w-4 h-4 rounded-full" 
@@ -144,8 +124,8 @@ export function ChartCirculare({ alerts }: Props) {
                   </span>
                 </div>
               ))}
-            </div>
           </div>
+        </div>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
@@ -156,5 +136,5 @@ export function ChartCirculare({ alerts }: Props) {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

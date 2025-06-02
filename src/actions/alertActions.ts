@@ -738,7 +738,7 @@ export async function getAlertDataByYear(year: number) {
         TO_CHAR("createdAt", 'Month') AS month,
         COUNT(*) AS count
       FROM "Alert"
-      WHERE EXTRACT(YEAR FROM "createdAt") = ${year}
+      WHERE EXTRACT(YEAR FROM "createdAt") = ${year} AND step = 2
       GROUP BY TO_CHAR("createdAt", 'Month'), EXTRACT(MONTH FROM "createdAt")
       ORDER BY EXTRACT(MONTH FROM "createdAt")
     `;
@@ -753,12 +753,12 @@ export async function getAlertDataByYear(year: number) {
   }
 }
 
-export async function getAlerteByCriticite() {
+export async function getAlerteByCriticite(year: number) {
   try {
     const data = await prisma.$queryRaw<{ criticite: number; count: bigint }[]>`
   SELECT "criticite", COUNT(*) AS count
   FROM "Alert"
-  WHERE "step" = 2
+  WHERE EXTRACT(YEAR FROM "createdAt") = ${year} AND step = 2
   GROUP BY "criticite"
   ORDER BY "criticite"
 `;
@@ -770,5 +770,42 @@ export async function getAlerteByCriticite() {
   } catch (error) {
     console.error("Error fetching alert data by criticité:", error);
     return [];
+  }
+}
+
+export async function getAlertsByYear(year: number) {
+  try {
+    let alerts: Awaited<ReturnType<typeof prisma.alert.findMany>> = []; // Infer type from Prisma
+
+     alerts = await prisma.alert.findMany({
+      where: { 
+        step: 2,
+       createdAt: {
+          gte: new Date(`${year}-01-01`), // Start of the year
+          lt: new Date(`${year + 1}-01-01`) // Start of next year
+        }
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return alerts;
+  } catch (error) {
+    console.error(`Error fetching alerts for year ${year}:`, error);
+    return [];
+  }
+}
+
+export async function getRecentStep2Alerts(): Promise<any[]> {
+  try {
+    const alerts = await prisma.alert.findMany({
+      where: { step: 2 },
+      include: { persons: true },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
+    
+    return alerts;
+  } catch (error) {
+    console.error("Error fetching recent step 2 alerts:", error);
+    throw new Error("Failed to fetch recent alerts");
   }
 }
