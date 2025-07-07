@@ -23,7 +23,7 @@ const VideoPlayer = () => {
       autoPlay
       muted
       preload="none"
-      poster="/login.jpg"
+      
       onPlay={() => setIsPlaying(true)}
     >
       <source src="/videoHero.mp4" type="video/mp4" />
