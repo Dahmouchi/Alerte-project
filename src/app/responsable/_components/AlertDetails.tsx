@@ -355,8 +355,7 @@ const AlertDetails = (alert: any) => {
                             Prendre en charge cette alerte ?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            Vous serez désigné comme responsable de cette
-                            alerte.
+                              Vous serez désigné comme responsable du traitement de cette alerte
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

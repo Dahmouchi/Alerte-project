@@ -175,7 +175,7 @@ export const analyste_alert_status_options = [
     },
     {
       value: "INFORMATIONS_MANQUANTES",
-      label: "Infos Manquantes",
+      label: " En cours de traitement",
       icon: HelpCircle,
       color: "text-purple-500 bg-purple-100 dark:bg-purple-900",
     }

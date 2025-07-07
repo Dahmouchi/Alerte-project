@@ -474,8 +474,8 @@ const AlertDetails = (alert: any) => {
                             Prendre en charge cette alerte?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            Vous serez désigné comme responsable de cette
-                            alerte.
+                            Vous serez désigné comme responsable du traitement
+                            de cette alerte
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -942,6 +942,37 @@ const AlertDetails = (alert: any) => {
                     </span>
                   </button>
                 </div>
+                <div className="space-y-4 p-4 border  bg-white">
+                  
+                  <p className="text-sm text-gray-600">
+                    Veuillez indiquer si cette alerte est considérée comme
+                    recevable au regard des critères définis dans la procédure
+                    interne.
+                  </p>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                     
+                      <div>
+                        <p className="font-medium">Recevable</p>
+                        <p className="text-xs text-gray-500">
+                          L&apos;alerte remplit les conditions pour faire
+                          l&apos;objet d&apos;une instruction.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <div>
+                        <p className="font-medium">Non recevable</p>
+                        <p className="text-xs text-gray-500">
+                          L&apos;alerte ne relève pas du périmètre défini (ex. :
+                          faits manifestement infondés ou hors champ).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div
                   className={`bg-white dark:bg-slate-800 p-6 rounded-b-xl   transition-shadow duration-300 ${
                     recevable === "RECEVALBE"
@@ -1324,7 +1355,7 @@ const AlertDetails = (alert: any) => {
                                 ? "Recevable"
                                 : "Non Recevable"}
                             </span>
-                          </div>             
+                          </div>
                         </div>
                         {/* Content */}
                         <div className="mb-5">
@@ -1547,7 +1578,7 @@ const AlertDetails = (alert: any) => {
               className={`space-y-4 p-6 mt-4 shadow-lg hover:shadow-xl rounded-xl border-blue-500 bg-blue-50 border-2`}
             >
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Clôture
+                Clôture de l&apos;alerte
               </h3>
 
               <div className="grid grid-cols-1 gap-3 opacity-100">
@@ -1559,7 +1590,7 @@ const AlertDetails = (alert: any) => {
                     id="analystResponse"
                     value={response}
                     onChange={(e) => setResponse(e.target.value)}
-                    placeholder="Entrez le message de clôture qui apparaitra au soumissionnaire d'alerte..."
+                    placeholder=" Rédigez ici le message qui sera transmis à la personne ayant soumis l’alerte..."
                     required
                     minLength={10}
                     className="min-h-[120px] bg-white"
@@ -1587,7 +1618,7 @@ const AlertDetails = (alert: any) => {
                           Demande de clôture
                         </div>
                         <p className="text-gray-500 dark:text-gray-400 mt-1">
-                          Cochez pour demander la clôture
+                          Cochez cette case pour initier le processus de clôture
                         </p>
                       </div>
                     </label>

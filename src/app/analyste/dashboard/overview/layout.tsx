@@ -3,7 +3,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardFooter,
 } from "@/components/ui/card";
 import { authOptions } from "@/lib/nextAuth";
@@ -52,23 +51,17 @@ export default async function OverViewLayout({
   return (
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-2">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Ravi de vous revoir 👋
-          </h2>
-        </div>
-
+        
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card] grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>Alertes de l&apos;analyste</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {analysteAlertes || 0}
               </CardTitle>
             </CardHeader>
             <CardFooter className="flex-col items-start gap-1.5 text-sm">
               <div className="line-clamp-1 flex gap-2 font-medium">
-                Nombre total des alertes assignées à vous{" "}
+                Total des alertes qui vous sont attribuées{" "}
                 <AlertCircle className="size-4" />{" "}
                 {/* Changed from Users to AlertCircle */}
               </div>
@@ -77,9 +70,7 @@ export default async function OverViewLayout({
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>
-                Nombre d&apos;Alertes Non Traitées
-              </CardDescription>
+              
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {pendingAlerts}
               </CardTitle>
@@ -94,30 +85,27 @@ export default async function OverViewLayout({
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>Nombre d&apos;Alerte Traitées</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {aprovedAlert}
               </CardTitle>
             </CardHeader>
             <CardFooter className="flex-col items-start gap-1.5 text-sm">
               <div className="line-clamp-1 flex gap-2 font-medium">
-                Alertes traitées avec succès <CheckCircle className="size-4" />
+                Alertes traitées <CheckCircle className="size-4" />
               </div>
             </CardFooter>
           </Card>
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>
-                Nombre d&apos;Alertes non acceptées{" "}
-              </CardDescription>
+              
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {totalAlerts}
               </CardTitle>
             </CardHeader>
             <CardFooter className="flex-col items-start gap-1.5 text-sm">
               <div className="line-clamp-1 flex gap-2 font-medium">
-                Le nombre total des alertes refusé <Rows className="size-4" />
+                 Nombre total des alertes non pertinentes  <Rows className="size-4" />
               </div>
             </CardFooter>
           </Card>

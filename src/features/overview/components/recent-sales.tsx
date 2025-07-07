@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 import {
   Card,
   CardHeader,
@@ -12,38 +12,39 @@ import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function RecentSales(alerts: any) {
-
   return (
     <Card className="bg-white dark:bg-slate-950 h-full">
-    <CardHeader>
-      <CardTitle>Alertes récentes</CardTitle>
-      <CardDescription>
-        Vous recevez {alerts.alerts.length} alertes ce mois-ci.
-      </CardDescription>
-    </CardHeader>
-    <CardContent>
-      <ScrollArea className="h-full w-full rounded-md border">
-        <div className="space-y-1 p-1">
-          {alerts.alerts.map((sale: any, index: any) => (
-            <div
-              key={index}
-              className="flex items-center hover:bg-slate-100 dark:hover:bg-slate-900 py-3 px-3 rounded-md"
-            >
-              <div className="space-y-1">
-                <p className="text-sm leading-none font-medium">{sale.title}</p>
-                <p className="text-muted-foreground text-sm">
-                  {
-                  sale.createdAt.toLocaleString("fr-FR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
+      <CardHeader>
+        <CardTitle>Alertes récentes</CardTitle>
+        <CardDescription>
+          Vous avez reçu {alerts.alerts.length} alertes durant les 30 derniers
+          jours
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-full w-full rounded-md border">
+          <div className="space-y-1 p-1">
+            {alerts.alerts.map((sale: any, index: any) => (
               <div
-                className={`ml-auto font-medium text-[10px] px-2 py-1 rounded text-white
+                key={index}
+                className="flex items-center hover:bg-slate-100 dark:hover:bg-slate-900 py-3 px-3 rounded-md"
+              >
+                <div className="space-y-1">
+                  <p className="text-sm leading-none font-medium">
+                    {sale.title}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    {sale.createdAt.toLocaleString("fr-FR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+                <div
+                  className={`ml-auto font-medium text-[10px] px-2 py-1 rounded text-white
                   ${
                     sale.adminStatus === "PENDING"
                       ? "bg-yellow-500"
@@ -58,19 +59,29 @@ export function RecentSales(alerts: any) {
                       : "bg-gray-500"
                   }
                 `}
-              >
-                {sale.adminStatus}
-              </div>
-              <Link href={`/analyste/dashboard/alertes/${sale.code}`}>
-                <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
-                  <Eye className="h-4 w-4" />
+                >
+                  {sale.adminStatus === "PENDING"
+                    ? "En attente"
+                    : sale.adminStatus === "ASSIGNED"
+                    ? "Assignée"
+                    : sale.adminStatus === "APPROVED"
+                    ? "Approuvée"
+                    : sale.adminStatus === "DECLINED"
+                    ? "Rejetée"
+                    : sale.adminStatus === "ESCALATED"
+                    ? "Escaladée"
+                    : "Inconnu"}
                 </div>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    </CardContent>
-  </Card>
+                <Link href={`/analyste/dashboard/alertes/${sale.code}`}>
+                  <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
+                    <Eye className="h-4 w-4" />
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 }

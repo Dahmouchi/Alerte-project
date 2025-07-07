@@ -35,10 +35,7 @@ const Dashboard = async () => {
             Liste des Alertes
           </h2>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Ces alertes ont été validées par l&apos;analyste et sont en attente de
-          votre action.
-        </p>
+
       </div>
       <div className="relative w-full overflow-hidden mt-4">
         <ScrollArea className="w-full rounded-md border">

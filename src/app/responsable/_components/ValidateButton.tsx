@@ -83,8 +83,8 @@ const ValidateButton = ({ con, al }: ValidateButtonProps) => {
           <DialogHeader>
             <DialogTitle>Confirmer la validation</DialogTitle>
             <DialogDescription>
-              Êtes-vous sûr de vouloir valider ces alertes? Cette action enverra
-              les alertes au responsable final.
+              Êtes-vous sûr de vouloir valider cette alerte ? Une fois validée, la réponse sera automatiquement transmise au lanceur d&apos;alerte.
+
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -83,7 +83,6 @@ import { useReactToPrint } from "react-to-print";
 import { AudioRecorder } from "./Record";
 import { categories } from "@/constants/data";
 
-
 export type Category = {
   title: string;
   value: string;
@@ -314,14 +313,12 @@ const Step2 = (alert: { alert: any }) => {
                             <FormLabel>Titre</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Entrez un titre descriptif"
+                                placeholder="Décrivez en quelques mots la situation signalée."
                                 type=""
                                 {...field}
                               />
                             </FormControl>
-                            <FormDescription>
-                              Ceci est votre nom d&apos;affichage public.
-                            </FormDescription>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -334,12 +331,7 @@ const Step2 = (alert: { alert: any }) => {
                             name="location"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>
-                                  Emplacement
-                                  <span className="text-sm text-slate-500 font-light dark:text-slate-300">
-                                    (facultative)
-                                  </span>
-                                </FormLabel>
+                                <FormLabel>Emplacement</FormLabel>
                                 <FormControl>
                                   <Input
                                     placeholder="Entrez l'emplacement"
@@ -348,7 +340,7 @@ const Step2 = (alert: { alert: any }) => {
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  Où cela s&apos;est-il produit ?
+                                  Indiquez le lieu ou le contexte
                                 </FormDescription>
 
                                 <FormMessage />
@@ -363,12 +355,7 @@ const Step2 = (alert: { alert: any }) => {
                             name="dateLieu"
                             render={({ field }) => (
                               <FormItem className="flex flex-col">
-                                <FormLabel>
-                                  Date{" "}
-                                  <span className="text-sm text-slate-500 font-light dark:text-slate-300">
-                                    (facultative)
-                                  </span>
-                                </FormLabel>
+                                <FormLabel>Date </FormLabel>
                                 <DatetimePicker
                                   {...field}
                                   format={[
@@ -377,7 +364,7 @@ const Step2 = (alert: { alert: any }) => {
                                   ]}
                                 />
                                 <FormDescription>
-                                  Ajoutez la date de soumission avec détails.
+                                  Ajoutez la date de survenue des faits
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -399,7 +386,7 @@ const Step2 = (alert: { alert: any }) => {
                           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                             {anonyme && persons.length === 0
                               ? "At least one person is required"
-                              : "Add all relevant individuals"}
+                              : " Ajoutez les personnes concernées par les faits signalés, si vous les connaissez."}
                           </p>
                         </div>
 
@@ -563,7 +550,7 @@ const Step2 = (alert: { alert: any }) => {
                       <div className="py-2 space-y-2 flex justify-between [@media(min-width:1250px)]:flex-row [@media(max-width:1250px)]:flex-col [@media(max-width:729px)]:flex-col">
                         <div>
                           <h1 className="font-semibold text-sm">
-                            Mode de Signalement{" "}
+                            Choisissez votre mode de signalement{" "}
                           </h1>
                         </div>
                         <div className="flex items-center gap-3">
@@ -607,11 +594,13 @@ const Step2 = (alert: { alert: any }) => {
                               <FormItem className="w-full">
                                 <FormLabel>
                                   Description{" "}
-                                  <span className="text-red-600">*</span>
+                                  <span className="text-red-600">
+                                    (champ obligatoire)*
+                                  </span>
                                 </FormLabel>
                                 <FormControl>
                                   <Textarea
-                                    placeholder="Entrez la description"
+                                    placeholder=" Décrivez clairement ce que vous avez observé ou vécu. Soyez le plus factuel possible."
                                     className="h-full bg-transparent"
                                     {...field}
                                     maxLength={2000} // Empêche l'utilisateur de taper plus de 2000 caractères
@@ -658,6 +647,11 @@ const Step2 = (alert: { alert: any }) => {
                                 (facultative)
                               </span>
                             </FormLabel>
+                            <FormDescription>
+                              {" "}
+                              Vous pouvez ajouter des éléments à l&apos;appui de
+                              votre signalement
+                            </FormDescription>
                             <FormControl>
                               <FileUploader
                                 value={files}
@@ -712,9 +706,16 @@ const Step2 = (alert: { alert: any }) => {
                         Souhaitez-vous révéler votre identité pour cette alerte
                         ?
                       </h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Choisissez comment vous souhaitez vous identifier
-                      </p>
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                      <p>  Choisissez comment vous souhaitez vous identifier :</p>
+                       <p>
+                         <span className="font-bold">
+                          [Oui] </span>Je consens à ce que mon identité soit
+                          communiquée.
+                       </p>
+                        
+                        <p><span className="font-bold">[Anonyme]</span>  Je souhaite rester anonyme</p>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -843,10 +844,9 @@ const Step2 = (alert: { alert: any }) => {
                         htmlFor="terms"
                         className="text-sm font-medium leading-snug text-slate-700 dark:text-slate-300"
                       >
-                        J&apos;accepte les termes et conditions
-                        d&apos;utilisation
+                        J&apos;ai lu et j&apos;accepte les termes et conditions d&apos;utilisation
                         <span className="ml-1 text-xs text-red-500 dark:text-red-400">
-                          (requis)
+                          (obligatoire)
                         </span>
                       </label>
                     </div>

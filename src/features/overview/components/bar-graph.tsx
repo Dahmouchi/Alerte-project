@@ -5,7 +5,6 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -92,7 +91,7 @@ export function BarGraph() {
         <div className="flex flex-1 flex-col justify-center gap-2 px-6 !py-0">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold tracking-tight">
-              Alertes Totales
+               Nb total d&apos;alertes
               
             </CardTitle>
            <div>
@@ -106,11 +105,7 @@ export function BarGraph() {
            </div>
             
           </div>
-          <CardDescription>
-            <span className=''>
-              Nombre Total d&apos;Alerte
-            </span>
-          </CardDescription>
+         
         </div>
         <div className="flex">
           {["alertes", "error"].map((key) => {

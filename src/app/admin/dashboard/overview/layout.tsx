@@ -52,15 +52,12 @@ export default async function OverViewLayout({
     <PageContainer>
       <div className="flex flex-1 flex-col space-y-2 relative">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Ravi de vous revoir 👋
-          </h2>
+         
         </div>
 
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card] grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs md:grid-cols-2 lg:grid-cols-4">
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>Nombre Total des Utilisateurs</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {users.length}
               </CardTitle>
@@ -75,9 +72,7 @@ export default async function OverViewLayout({
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>
-                Nombre d&apos;Alertes Non Traitées
-              </CardDescription>
+             
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {pendingAlerts}
               </CardTitle>
@@ -92,7 +87,6 @@ export default async function OverViewLayout({
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>Nombre d&apos;Alerte Traitées</CardDescription>
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {aprovedAlert}
               </CardTitle>
@@ -106,9 +100,7 @@ export default async function OverViewLayout({
 
           <Card className="@container/card bg-white dark:bg-slate-950">
             <CardHeader>
-              <CardDescription>
-                Nombre d&apos;Alertes non acceptées{" "}
-              </CardDescription>
+              
               <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 {totalAlerts}
               </CardTitle>

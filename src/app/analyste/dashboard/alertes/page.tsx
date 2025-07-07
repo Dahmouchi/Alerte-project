@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import { DataTable } from "../../_components/alerte-data-table/data-table";
 import { columns } from "../../_components/alerte-data-table/columns";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { User } from "lucide-react";
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
@@ -28,25 +27,16 @@ const Dashboard = async () => {
   }
   return (
     <div className="overflow-hidden max-w-full p-2">
-      <div className="flex flex-col gap-2 ">
+      <div className="flex flex-col gap-2 mb-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg lg:text-2xl font-semibold lg:font-bold tracking-tight">
             Toutes les Alertes
           </h2>
         </div>
-        <div className="flex lg:items-center items-start gap-2 flex-col lg:flex-row">
-          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/20">
-            <User className="mr-1 h-3.5 w-3.5" />
-            Toutes les alertes
-          </span>
-          <p className="text-sm text-muted-foreground">
-            Cette section regroupe toutes les alertes en attente de traitement
-            ou de validation.
-          </p>
-        </div>
+        
       </div>
       <ScrollArea className=" relative w-full rounded-md border ">
-        <div className="relative w-full overflow-hidden mt-4">
+        <div className="relative w-full overflow-hidden ">
           <Shell className="p-0 sm:p-4">
             <DataTable data={alerts || []} columns={columns} />
           </Shell>

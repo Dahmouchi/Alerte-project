@@ -126,7 +126,7 @@ export const columns: ColumnDef<AlertType>[] = [
 
       return (
         <div
-          className={`relative flex w-[150px] items-center px-2 py-1 rounded-full ${status.color}`}
+          className={`relative flex w-[180px] items-center px-2 py-1 rounded-full ${status.color}`}
         >
           {status.icon && <status.icon className="mr-2 h-4 w-4" />}
           <span className="font-medium text-xs">{status.label}</span>
