@@ -54,7 +54,7 @@ const datas = {
       icon: Users,
     },
     {
-      title: "Users Archive",
+      title: "Archives utilisateurs",
       url: "/admin/dashboard/archive",
       icon: Archive,
     },

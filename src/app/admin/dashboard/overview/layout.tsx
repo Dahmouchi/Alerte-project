@@ -107,7 +107,7 @@ export default async function OverViewLayout({
             </CardHeader>
             <CardFooter className="flex-col items-start gap-1.5 text-sm">
               <div className="line-clamp-1 flex gap-2 font-medium">
-                Le nombre total des alertes refusé <Rows className="size-4" />
+                Le nombre total des alertes refusées <Rows className="size-4" />
               </div>
             </CardFooter>
           </Card>

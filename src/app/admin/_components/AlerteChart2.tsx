@@ -47,7 +47,7 @@ export function CriticiteChart({data}:{data:any}) {
               content={<ChartTooltipContent hideLabel />}
             />
             <Bar
-              dataKey="count"
+              dataKey="Nombre"
               strokeWidth={2}
               radius={8}
               activeBar={(props: any) => (

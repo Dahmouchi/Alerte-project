@@ -18,7 +18,7 @@ import { ChartCirculare } from "@/features/overview/components/chartCircualreCat
 
 type AlertData = {
   month: string;
-  count: number;
+  Nombre: number;
 };
 const criticiteLabels: Record<number, string> = {
   0: "Non classé",
@@ -38,7 +38,7 @@ const criticiteColors: Record<number, string> = {
 
 type AlerteChartItem = {
   label: string;
-  count: number;
+  Nombre: number;
   fill: string;
 };
 type CategoryChartData = {
@@ -49,7 +49,7 @@ type CategoryChartData = {
 // Initialize with all criticity levels
 const initialData: AlerteChartItem[] = [0, 1, 2, 3, 4].map((level) => ({
   label: criticiteLabels[level],
-  count: 0,
+  Nombre: 0,
   fill: criticiteColors[level],
 }));
 const DashboardCharts = () => {
@@ -138,8 +138,8 @@ const DashboardCharts = () => {
           const level = Object.entries(criticiteLabels).find(
             ([_, label]) => label === item.label
           )?.[0];
-          const count = combinedData2.get(Number(level)) || 0;
-          return { ...item, count };
+          const Nombre = combinedData2.get(Number(level)) || 0;
+          return { ...item, Nombre };
         });
 
         setAlertDataCriticity(updatedData);
@@ -200,9 +200,9 @@ const DashboardCharts = () => {
     const criticityMap = new Map<number, number>();
 
     dataArrays.forEach((yearData) => {
-      yearData.forEach(({ criticite, count }) => {
+      yearData.forEach(({ criticite, Nombre }) => {
         const currentCount = criticityMap.get(criticite) || 0;
-        criticityMap.set(criticite, currentCount + count);
+        criticityMap.set(criticite, currentCount + Nombre);
       });
     });
 
@@ -212,15 +212,15 @@ const DashboardCharts = () => {
     const monthMap = new Map<string, number>();
 
     dataArrays.forEach((yearData) => {
-      yearData.forEach(({ month, count }) => {
+      yearData.forEach(({ month, Nombre }) => {
         const currentCount = monthMap.get(month) || 0;
-        monthMap.set(month, currentCount + count);
+        monthMap.set(month, currentCount + Nombre);
       });
     });
 
-    return Array.from(monthMap.entries()).map(([month, count]) => ({
+    return Array.from(monthMap.entries()).map(([month, Nombre]) => ({
       month,
-      count,
+      Nombre,
     }));
   };
 
@@ -248,46 +248,46 @@ const DashboardCharts = () => {
               : "relative bg-white shadow-lg rounded-md px-4 py-2 border my-3"
           }`}
         >
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="font-bold">Alert Statistics</div>
+          <div className="flex justify-between items-center">
             <div>
-              Showing alert counts by month for {selectedYears.join(", ")}
+              <div className="font-bold">Statistiques des alertes</div>
+              <div>
+                Affichage des alertes par mois pour {selectedYears.join(", ")}
+              </div>
+            </div>
+
+            <div className="relative w-1/2 flex items-center justify-end">
+              <MultiSelect
+                options={yearOptions}
+                defaultValue={selectedYearValues}
+                onValueChange={handleYearSelection}
+                placeholder="Select years"
+                variant="inverted"
+                className="w-fit"
+              />
             </div>
           </div>
+        </div>
 
-          <div className="relative w-1/2 flex items-center justify-end">
-            <MultiSelect
-              options={yearOptions}
-              defaultValue={selectedYearValues}
-              onValueChange={handleYearSelection}
-              placeholder="Select years"
-              variant="inverted"
-              className="w-fit"
-            />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <div className="col-span-4">
+            <AlerteChart alertData={alertData} isLoading={isLoading} />
           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <AlerteChart alertData={alertData} isLoading={isLoading} />
-        </div>
-        <div className="col-span-4 md:col-span-3">
-          <RecentSales alerts={alerts} />
-        </div>
-        <div className="col-span-4">
-          <ChartCirculare chartData={categoryData} isLoading={isLoading} />
-        </div>
-        {/*<div className="col-span-4">
+          <div className="col-span-4 md:col-span-3">
+            <RecentSales alerts={alerts} />
+          </div>
+          <div className="col-span-4">
+            <ChartCirculare chartData={categoryData} isLoading={isLoading} />
+          </div>
+          {/*<div className="col-span-4">
             <RadarChart />
            </div>*/}
-        <div className="col-span-4 md:col-span-3">
-          <CriticiteChart data={alertDataCriticity} />
+          <div className="col-span-4 md:col-span-3">
+            <CriticiteChart data={alertDataCriticity} />
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 export default DashboardCharts;

@@ -66,7 +66,7 @@ const navMain = [
     icon: Users,
   },
   {
-    title: "Users Archive",
+    title: "Archives utilisateurs",
     url: "archive",
     icon: Archive,
   },

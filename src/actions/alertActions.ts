@@ -745,7 +745,7 @@ export async function getAlertDataByYear(year: number) {
 
     return monthlyCounts.map((item) => ({
       month: item.month.trim(),
-      count: Number(item.count),
+      Nombre: Number(item.count),
     }));
   } catch (error) {
     console.error("Error fetching alert data:", error);
@@ -765,7 +765,7 @@ export async function getAlerteByCriticite(year: number) {
 
     return data.map((item) => ({
       criticite: item.criticite,
-      count: Number(item.count),
+      Nombre: Number(item.count),
     }));
   } catch (error) {
     console.error("Error fetching alert data by criticité:", error);

@@ -22,7 +22,7 @@ export function RecentSales(alerts: any) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-full w-full rounded-md border">
+        <ScrollArea className="h-[300px] w-full rounded-md border">
           <div className="space-y-1 p-1">
             {alerts.alerts.map((sale: any, index: any) => (
               <div

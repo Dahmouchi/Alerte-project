@@ -79,7 +79,7 @@ export function AlerteChart({alertData,isLoading}:{alertData:any,isLoading:boole
                 content={<ChartTooltipContent indicator="dot" hideLabel />}
               />
               <Area
-                dataKey="count"
+                dataKey="Nombre"
                 type="linear"
                 fill="var(--color-alerts)"
                 fillOpacity={0.4}
