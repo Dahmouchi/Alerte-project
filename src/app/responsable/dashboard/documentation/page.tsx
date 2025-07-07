@@ -1,3 +1,4 @@
+//responsable analyste admin documentation
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { AlertCircle, CheckCircle, XCircle, Mail, User, ClipboardList, FileText, ShieldCheck } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
