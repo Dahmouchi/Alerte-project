@@ -57,7 +57,7 @@ export function DataTableRowActions<TData>({
               Voir détails
             </DropdownMenuItem>
           </DialogTrigger>
-          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/histoire/${task.code}`)}}>
+          <DialogTrigger asChild onClick={() => {router.push(`/admin/dashboard/alertes/histoire/${task.id}`)}}>
             <DropdownMenuItem>
               {" "}
               <History className='mr-2 h-4 w-4' />

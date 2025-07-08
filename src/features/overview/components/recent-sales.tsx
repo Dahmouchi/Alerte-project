@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
@@ -10,8 +11,19 @@ import {
 import { Eye } from "lucide-react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSession } from "next-auth/react";
 
 export function RecentSales(alerts: any) {
+    const { data: session } = useSession();
+   const role = session?.user.role;
+
+  // Determine base path
+  let basePath = "/analyste";
+  if (role === "RESPONSABLE") {
+    basePath = "/responsable";
+  } else if (role === "ADMIN") {
+    basePath = "/admin";
+  }
   return (
     <Card className="bg-white dark:bg-slate-950 h-full">
       <CardHeader>
@@ -72,7 +84,7 @@ export function RecentSales(alerts: any) {
                     ? "Escaladée"
                     : "Inconnu"}
                 </div>
-                <Link href={`/analyste/dashboard/alertes/${sale.code}`}>
+                 <Link href={`${basePath}/dashboard/alertes/${sale.code}`}>
                   <div className="ml-2 bg-slate-200 dark:bg-slate-800 dark:text-white rounded-sm p-1 cursor-pointer">
                     <Eye className="h-4 w-4" />
                   </div>

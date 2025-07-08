@@ -9,7 +9,7 @@ const Alert = async (params: any) => {
   }
 
   const alert = await prisma.alertHistory.findMany({
-    where: { alertId: params.params.id },
+    where: {  alertId: params.params.id },
     orderBy:{
       createdAt:"desc"
     },
