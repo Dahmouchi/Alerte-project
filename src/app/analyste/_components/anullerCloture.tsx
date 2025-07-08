@@ -114,7 +114,7 @@ export default function AnnulerCloture({ task, alerte, onClose }: DeleteProps) {
         try {
           const ocp = await AnnulerClo(task.id, session.user.id, task.alertId);
           if (ocp) {
-            toast.success("Alert Modified successfully!");
+            toast.success("Alerte mis à jour avec succès");
             onClose();
             setIsOpen(false);
             router.refresh();

@@ -224,7 +224,7 @@ const AlertDetails = (alert: any) => {
         const ocp = await removeResponsableAssignment(al.id, session?.user.id);
         if (ocp) {
           setSelectedAnalyst("");
-          toast.success("Alert assigned successfully!");
+          toast.success("Alerte attribuée avec succès !");
           router.refresh();
         }
       } catch (error) {
@@ -243,7 +243,7 @@ const AlertDetails = (alert: any) => {
           messagesEndRef.current?.scrollIntoView({
             behavior: "smooth",
           });
-          toast.success("Alert assigned successfully!");
+          toast.success("Alerte attribuée avec succès !");
           router.refresh();
         }
       } catch (error) {

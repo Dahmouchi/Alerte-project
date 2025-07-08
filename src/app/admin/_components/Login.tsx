@@ -137,7 +137,7 @@ export default function UsernameLogin() {
           });
 
           if (response.data.success) {
-            toast.success("Code verified");
+            toast.success("Code est verifié");
             await update({ twoFactorVerified: true });
             router.push("/admin/dashboard/overview");
           } else {

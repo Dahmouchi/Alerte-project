@@ -33,7 +33,7 @@ import { toast } from "react-toastify";
       const handleDelete = async (id: string) => {
         try {
           await axios.delete(`/api/users/${id}`);
-          toast.success("Item deleted successfully");
+          toast.success("L'élément a été supprimé avec succès");
           // Refresh data or update state after deletion
           router.refresh();
         } catch (error) {

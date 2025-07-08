@@ -124,7 +124,7 @@ export default function AdditionalModalComponent({
             values.criticity
           );
           if (ocp) {
-            toast.success("Alert Modified successfully!");
+            toast.success("Alerte modifiée avec succès !");
             onClose();
             setIsOpen(false);
             router.refresh();

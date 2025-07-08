@@ -67,7 +67,7 @@ const MissingInformationSection = ({ al, onReload }: MissingInformationSectionPr
         toast.success("Justification envoyée avec succès !");
         onReload();
         router.refresh();
-        window.location.reload();
+        window.location.href ="/user/dashboard";
         setJustificationText("");
         setFiles([]);  
     } catch (error) {

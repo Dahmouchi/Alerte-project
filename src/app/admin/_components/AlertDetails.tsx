@@ -149,7 +149,7 @@ const AlertDetails = (alert: any) => {
           session.data.user.id
         );
         if (ocp) {
-          toast.success("Alert assigned successfully!");
+          toast.success("Alerte attribuée avec succès !");
           setIsOpen(false);
           router.refresh();
         }

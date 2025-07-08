@@ -86,7 +86,7 @@ export function AudioRecorder({ onUpload }: AudioRecorderProps) {
       if(url){
         onUpload(url);
         setAudioUrl(url)
-        toast.success("Recording saved successfully!");
+        toast.success("Enregistrement sauvegardé avec succès !");
         setIsUploading(true)
       }  
     } catch (error) {
@@ -106,7 +106,7 @@ export function AudioRecorder({ onUpload }: AudioRecorderProps) {
         const url = await uploadAudio(blobToUpload);
         setAudioUrl(url);
         onUpload(url);
-        toast.success("Recording saved successfully!");
+        toast.success("Enregistrement sauvegardé avec succès !");
       }
       
     } catch (error) {

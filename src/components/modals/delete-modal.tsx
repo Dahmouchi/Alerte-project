@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
       const handleDelete = async (id: string) => {
         try {
           await axios.delete(`/api/alerte/${id}`);
-          toast.success("Item deleted successfully");
+          toast.success("L'élément a été supprimé avec succès");
           router.refresh();
           // Refresh data or update state after deletion
         } catch (error) {

@@ -141,7 +141,7 @@ export default function UsernameLogin() {
           });
 
           if (response.data.success) {
-            toast.success("Code verified");
+            toast.success("Code vérifié");
             await update({ twoFactorVerified: true });
             router.push("/analyste/dashboard/overview");
           } else {

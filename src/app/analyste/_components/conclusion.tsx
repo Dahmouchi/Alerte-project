@@ -93,7 +93,7 @@ export default function UpdateConclusion({ task, alerte }: DeleteProps) {
   async function onSubmit(values: ConclusionSchemaType) {
       try{
         await updateConclusion(task.id,values.commentaire,values.criticity,alerte.id)
-        toast.success("alerte modified");
+        toast.success("alerte modifiée");
         setIsOpen(false)
         window.location.reload();
       }catch(error){
