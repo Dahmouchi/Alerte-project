@@ -10,10 +10,10 @@ const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   const content = {
-    heading: "Soumission & Consultation des ",
-    heading2: "Alertes",
+    heading: "Déposer & Suivre une  ",
+    heading2: "Alerte",
     description:
-      "CompliVox vous offre un canal sécurisé pour signaler tout comportement préoccupant ou contraire à l’éthique, que vous soyez collaborateur, ancien employé, client, partenaire ou fournisseur.",
+      "CompliVox met à votre disposition un canal sécurisé et confidentiel pour signaler tout comportement préoccupant ou contraire à l’éthique, que vous soyez collaborateur, ancien employé, client, partenaire ou fournisseur.",
     buttons: {
       primary: {
         text: "Créer un Profil",
@@ -137,9 +137,6 @@ const HeroSection = () => {
                         </div>
 
                         {/* Window Title */}
-                        <div className="text-xs text-gray-600 font-medium truncate px-2">
-                          Alertes - CompliRisk
-                        </div>
 
                         {/* Spacer */}
                         <div className="w-12"></div>
@@ -158,17 +155,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                   {/* Floating badge */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                    className="absolute -top-4 -right-4 bg-white px-4 py-2 rounded-full shadow-md flex items-center"
-                  >
-                    <div className="w-2 h-2 bg-blue-600 rounded-full mr-2 animate-pulse"></div>
-                    <span className="text-sm font-medium text-gray-900">
-                      Alertes en direct
-                    </span>
-                  </motion.div>
                 </motion.div>
 
                 <motion.div
@@ -181,7 +167,7 @@ const HeroSection = () => {
                     href="/user/login"
                     className="px-8  py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center"
                   >
-                    Faire un signalement
+                    Déposer une alerte
                   </Link>
                   <div
                     onClick={() => scrollToSection("details")}
@@ -215,9 +201,6 @@ const HeroSection = () => {
                       </div>
 
                       {/* Window Title */}
-                      <div className="text-xs text-gray-600 font-medium truncate px-2">
-                        Alertes - CompliRisk
-                      </div>
 
                       {/* Spacer */}
                       <div className="w-12"></div>
@@ -236,17 +219,6 @@ const HeroSection = () => {
                   </div>
                 </div>
                 {/* Floating badge */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="absolute -top-4 -right-4 bg-white px-4 py-2 rounded-full shadow-md flex items-center"
-                >
-                  <div className="w-2 h-2 bg-blue-600 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-sm font-medium text-gray-900">
-                    Alertes en direct
-                  </span>
-                </motion.div>
               </motion.div>
             </div>
           </div>
@@ -335,14 +307,14 @@ const HeroSection = () => {
                   Pourquoi signaler ?
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Un signalement n&apos;est pas une dénonciation. C&apos;est une
-                  action responsable.
+                  Signaler, ce n&apos;est pas dénoncer. C&apos;est agir avec
+                  responsabilité.
                 </p>
                 <ul className="space-y-3">
                   {[
-                    "Prévenir les dérives avant qu&apos;elles ne causent de réels dommages",
-                    "Renforcer la culture de l&apos;éthique, du respect et de la transparence",
-                    "Protéger les personnes, les valeurs et la réputation de l&apos;organisation",
+                    "Prévenir les dérives avant qu’elles ne causent de vrais dommages",
+                    "Renforcer une culture d’éthique, de respect et de transparence",
+                    "Protéger les personnes, les valeurs et la réputation de l’organisation",
                     "Faire entendre sa voix dans un cadre neutre, confidentiel et sécurisé",
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
@@ -388,10 +360,7 @@ const HeroSection = () => {
                       </div>
                     </div>
                     <span className="ml-3 text-gray-700">
-                      <strong>Signaler une situation :</strong> Transmettez un
-                      fait, un doute ou une situation sensible que vous jugez
-                      contraire à l&apos;éthique, aux valeurs de votre
-                      organisation ou à la loi.
+                      <strong>Signaler une situation :</strong> Décrivez un fait, un comportement ou un doute éthique, de manière claire et anonyme si vous le souhaitez.
                     </span>
                   </li>
                   <li className="flex items-start">
@@ -411,9 +380,7 @@ const HeroSection = () => {
                       </div>
                     </div>
                     <span className="ml-3 text-gray-700">
-                      <strong>Suivre votre alerte :</strong> Votre signalement
-                      ne part pas dans le vide. Un espace confidentiel vous est
-                      réservé pour suivre l&apos;évolution.
+                      <strong>Suivre votre alerte :</strong> Vous restez informé à chaque étape du traitement, via un espace confidentiel dédié.
                     </span>
                   </li>
                 </ul>
@@ -481,97 +448,19 @@ const HeroSection = () => {
           {/* FAQ section */}
         </div>
       </section>
-      <section className="py-16 bg-gray-50">
+      <section className="pt-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Protection des données
+              Sécurité, confidentialité et conformité
             </h2>
             <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-              Notre engagement pour la confidentialité et la sécurité de vos
-              informations
+             CompliVox garantit un traitement sécurisé et confidentiel de chaque signalement. Nos engagements reposent sur le respect des normes légales, la protection des données à caractère personnel et l&apos;absence totale d&apos;usage détourné de vos informations.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Card 1: Data Processing */}
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-center mb-4">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="ml-4 text-lg font-semibold text-gray-900">
-                  Traitement des données personnelles
-                </h3>
-              </div>
-              <p className="text-gray-600 mb-3">
-                Les données collectées via CompliVox le sont exclusivement dans
-                le cadre du traitement d&apos;un signalement.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-start">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-blue-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="ml-2">
-                    Conformes à la loi 09-08 marocaine
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-blue-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="ml-2">
-                    Respect des standards internationaux
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <svg
-                    className="flex-shrink-0 h-5 w-5 text-blue-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="ml-2">Aucune exploitation commerciale</span>
-                </li>
-              </ul>
-            </motion.div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
 
             {/* Card 2: Data Access */}
             <motion.div
@@ -599,8 +488,7 @@ const HeroSection = () => {
                 </h3>
               </div>
               <p className="text-gray-600 mb-3">
-                Seules les personnes formellement habilitées peuvent accéder aux
-                informations.
+                Seules les personnes habilitées peuvent consulter les signalements.
               </p>
               <div className="space-y-3">
                 <div className="flex items-start">
@@ -620,7 +508,7 @@ const HeroSection = () => {
                     </div>
                   </div>
                   <span className="ml-3 text-sm text-gray-600">
-                    En cas de signalement anonyme, aucune identification
+                    En cas d&apos;alerte anonyme, aucune identification n&apos;est demandée
                   </span>
                 </div>
                 <div className="flex items-start">
@@ -640,7 +528,27 @@ const HeroSection = () => {
                     </div>
                   </div>
                   <span className="ml-3 text-sm text-gray-600">
-                    Échanges chiffrés sans identification
+                    Les échanges sont entièrement chiffrés
+                  </span>
+                </div>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg
+                        className="w-3 h-3 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <span className="ml-3 text-sm text-gray-600">
+                    Même en interne, l&apos;accès est restreint, traçable, et contrôlé.
                   </span>
                 </div>
               </div>
@@ -672,22 +580,21 @@ const HeroSection = () => {
                 </h3>
               </div>
               <p className="text-gray-600 mb-3">
-                Les données sont conservées pendant une durée limitée et
-                justifiée.
+                Vos données ne sont pas conservées indéfiniment :
               </p>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                   </div>
-                  <span className="ml-3">Temps nécessaire au traitement</span>
+                  <span className="ml-3">Durée strictement limitée, juste le temps nécessaire au traitement</span>
                 </li>
                 <li className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                   </div>
                   <span className="ml-3">
-                    Obligations légales et réglementaires
+                    Respect des obligations légales et internes
                   </span>
                 </li>
                 <li className="flex items-start">
@@ -695,7 +602,7 @@ const HeroSection = () => {
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                   </div>
                   <span className="ml-3">
-                    Politique interne de l&apos;organisation
+                    Conforme à la politique de conservation de l&apos;organisation
                   </span>
                 </li>
               </ul>
@@ -727,13 +634,11 @@ const HeroSection = () => {
                 </h3>
               </div>
               <p className="text-gray-600 mb-3">
-                Conformément à la loi 09-08, vous pouvez exercer vos droits.
+                Vous gardez le contrôle. Conformément à la loi 09-08, vous pouvez à tout moment :
               </p>
               <div className="space-y-3">
                 <div className="bg-amber-50 p-3 rounded-lg">
-                  <h4 className="text-sm font-medium text-amber-800">
-                    Droits disponibles :
-                  </h4>
+                 
                   <ul className="mt-2 space-y-1 text-sm text-amber-700">
                     <li className="flex items-start">
                       <svg
@@ -747,7 +652,7 @@ const HeroSection = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="ml-2">Accès et rectification</span>
+                      <span className="ml-2">Accéder ou rectifier vos informations</span>
                     </li>
                     <li className="flex items-start">
                       <svg
@@ -761,7 +666,7 @@ const HeroSection = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="ml-2">Opposition ou suppression</span>
+                      <span className="ml-2">Demander leur suppression</span>
                     </li>
                     <li className="flex items-start">
                       <svg
@@ -776,7 +681,7 @@ const HeroSection = () => {
                         />
                       </svg>
                       <span className="ml-2">
-                        Information sur les traitements
+                        Être informé sur l&apos;usage fait de vos données
                       </span>
                     </li>
                   </ul>
